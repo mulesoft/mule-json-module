@@ -71,18 +71,19 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
   }
 
   /**
-   * Validates that the input content is compliant with a given schema. This operation supports referencing many schemas
-   * (using comma as a separator) which include each other.
+   * Validates that the input content is compliant with a given schema. This operation supports referencing many schemas (using
+   * comma as a separator) which include each other.
    *
-   * @param schema          The location in which the schema to validate against is to be found. This attribute supports URI
-   *                        representations such as "http://org.mule/schema.json" or "resource:/schema.json".
-   *                        It also supports a most common classpath reference such as simply "schema.json".
-   * @param content         the json document to be validated
+   * @param schema The location in which the schema to validate against is to be found. This attribute supports URI
+   *        representations such as "http://org.mule/schema.json" or "resource:/schema.json". It also supports a most common
+   *        classpath reference such as simply "schema.json".
+   * @param content the json document to be validated
    * @param schemaRedirects Allows to redirect any given URI in the Schema (or even the schema location itself) to any other
-   *                        specific URI. The most common use case for this feature is to map external namespace URIs without the
-   *                        need to a local resource
-   * @param dereferencing   Draft v4 defines two dereferencing modes: canonical and inline. CANONICAL will be the default option
-   *                        but INLINE can also be specified. When validating a v3 draft this attribute is ignored.
+   *        specific URI. The most common use case for this feature is to map external namespace URIs without the need to a local
+   *        resource
+   * @param dereferencing Draft v4 defines two dereferencing modes: canonical and inline. CANONICAL will be the default option but
+   *        INLINE can also be specified. When validating a v3 draft this attribute is ignored.
+   * @param allowDuplicateKeys if true, the validator will allow duplicate keys, otherwise it will fail.
    */
   @Validator
   @Execution(CPU_INTENSIVE)
