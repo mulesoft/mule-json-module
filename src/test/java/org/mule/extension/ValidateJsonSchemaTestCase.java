@@ -95,7 +95,7 @@ public class ValidateJsonSchemaTestCase extends AbstractSchemaValidationTestCase
   private void validate(Object content) throws Exception {
     flowRunner("validate")
         .withPayload(content)
-        .withVariable("schemas", schemaLocation)
+        .withVariable("schema", schemaLocation)
         .withVariable("dereferencing", dereferencing)
         .run();
   }

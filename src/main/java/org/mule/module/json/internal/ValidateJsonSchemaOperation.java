@@ -74,10 +74,9 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
    * Validates that the input content is compliant with a given schema. This operation supports referencing many schemas
    * (using comma as a separator) which include each other.
    *
-   * @param schemas         The location in which the schema to validate against is to be found. This attribute supports URI
+   * @param schema          The location in which the schema to validate against is to be found. This attribute supports URI
    *                        representations such as "http://org.mule/schema.json" or "resource:/schema.json".
-   *                        It also supports a most common classpath reference such as simply "schema.json". Multiple schemas
-   *                        can be provided using comma as a separator
+   *                        It also supports a most common classpath reference such as simply "schema.json".
    * @param content         the json document to be validated
    * @param schemaRedirects Allows to redirect any given URI in the Schema (or even the schema location itself) to any other
    *                        specific URI. The most common use case for this feature is to map external namespace URIs without the
@@ -88,14 +87,14 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
   @Validator
   @Execution(CPU_INTENSIVE)
   @Throws(SchemaValidatorErrorTypeProvider.class)
-  public void validateSchema(@Summary("The schema location") @Path(type = FILE, acceptedFileExtensions = "json") String schemas,
+  public void validateSchema(@Summary("The schema location") @Path(type = FILE, acceptedFileExtensions = "json") String schema,
                              @Content InputStream content,
                              @NullSafe @Optional Collection<SchemaRedirect> schemaRedirects,
                              @Optional(defaultValue = "CANONICAL") JsonSchemaDereferencingMode dereferencing) {
 
     JsonSchemaValidator validator;
     GenericObjectPool<JsonSchemaValidator> pool =
-        validatorPool.getUnchecked(new ValidatorKey(schemas, dereferencing, asMap(schemaRedirects)));
+        validatorPool.getUnchecked(new ValidatorKey(schema, dereferencing, asMap(schemaRedirects)));
 
     try {
       validator = pool.borrowObject();

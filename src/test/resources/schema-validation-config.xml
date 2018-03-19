@@ -6,7 +6,7 @@
 
 
     <flow name="validate">
-        <json:validate-schema schemas="#[vars.schemas]" dereferencing="#[vars.dereferencing]"/>
+        <json:validate-schema schema="#[vars.schema]" dereferencing="#[vars.dereferencing]"/>
     </flow>
 
 </mule>
