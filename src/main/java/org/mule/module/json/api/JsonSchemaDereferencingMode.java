@@ -8,6 +8,8 @@ package org.mule.module.json.api;
 
 /**
  * The URI dereferencing modes defined in Json Schema draft 4
+ *
+ * @since 1.0
  */
 public enum JsonSchemaDereferencingMode {
 
