@@ -6,6 +6,7 @@
  */
 package org.mule.module.json.internal;
 
+import static com.fasterxml.jackson.core.JsonParser.Feature.STRICT_DUPLICATE_DETECTION;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
@@ -20,8 +21,9 @@ import org.mule.module.json.internal.error.SchemaValidationException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
+import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jackson.JsonLoader;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonschema.core.load.Dereferencing;
 import com.github.fge.jsonschema.core.load.configuration.LoadingConfiguration;
 import com.github.fge.jsonschema.core.load.configuration.LoadingConfigurationBuilder;
@@ -69,6 +71,8 @@ public class JsonSchemaValidator {
     private String schemaLocation;
     private JsonSchemaDereferencingMode dereferencing = CANONICAL;
     private final Map<String, String> schemaRedirects = new HashMap<>();
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
 
     private Builder() {
     }
@@ -103,6 +107,18 @@ public class JsonSchemaValidator {
     public Builder setDereferencing(JsonSchemaDereferencingMode dereferencing) {
       checkArgument(dereferencing != null, "dereferencing cannot be null");
       this.dereferencing = dereferencing;
+      return this;
+    }
+
+    /**
+     * Determines whether the validator should fail when the document contains duplicate keys.
+     * @param allowDuplicateKeys: if true, the validator will allow duplicate keys, otherwise it will fail.
+     * @return this builder.
+     */
+    public Builder allowDuplicateKeys(boolean allowDuplicateKeys) {
+      if (!allowDuplicateKeys) {
+        objectMapper.enable(STRICT_DUPLICATE_DETECTION);
+      }
       return this;
     }
 
@@ -168,7 +184,7 @@ public class JsonSchemaValidator {
           .freeze();
 
       try {
-        return new JsonSchemaValidator(loadSchema(factory));
+        return new JsonSchemaValidator(loadSchema(factory), objectMapper);
       } catch (ModuleException e) {
         throw e;
       } catch (Exception e) {
@@ -233,8 +249,11 @@ public class JsonSchemaValidator {
 
   private final JsonSchema schema;
 
-  private JsonSchemaValidator(JsonSchema schema) {
+  private final ObjectMapper objectMapper;
+
+  private JsonSchemaValidator(JsonSchema schema, ObjectMapper objectMapper) {
     this.schema = schema;
+    this.objectMapper = objectMapper;
   }
 
   /**
@@ -262,9 +281,9 @@ public class JsonSchemaValidator {
 
   private JsonNode asJsonNode(InputStream input) {
     try {
-      return JsonLoader.fromReader(new InputStreamReader(input));
+      return objectMapper.readTree(input);
     } catch (Exception e) {
-      throw new ModuleException(createStaticMessage("Input content was not a Json document"), INVALID_INPUT_JSON);
+      throw new ModuleException(createStaticMessage("Input content was not a valid Json document"), INVALID_INPUT_JSON, e);
     }
   }
 }

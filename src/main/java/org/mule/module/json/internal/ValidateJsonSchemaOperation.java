@@ -71,18 +71,19 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
   }
 
   /**
-   * Validates that the input content is compliant with a given schema. This operation supports referencing many schemas
-   * (using comma as a separator) which include each other.
+   * Validates that the input content is compliant with a given schema. This operation supports referencing many schemas (using
+   * comma as a separator) which include each other.
    *
-   * @param schema          The location in which the schema to validate against is to be found. This attribute supports URI
-   *                        representations such as "http://org.mule/schema.json" or "resource:/schema.json".
-   *                        It also supports a most common classpath reference such as simply "schema.json".
-   * @param content         the json document to be validated
+   * @param schema The location in which the schema to validate against is to be found. This attribute supports URI
+   *        representations such as "http://org.mule/schema.json" or "resource:/schema.json". It also supports a most common
+   *        classpath reference such as simply "schema.json".
+   * @param content the json document to be validated
    * @param schemaRedirects Allows to redirect any given URI in the Schema (or even the schema location itself) to any other
-   *                        specific URI. The most common use case for this feature is to map external namespace URIs without the
-   *                        need to a local resource
-   * @param dereferencing   Draft v4 defines two dereferencing modes: canonical and inline. CANONICAL will be the default option
-   *                        but INLINE can also be specified. When validating a v3 draft this attribute is ignored.
+   *        specific URI. The most common use case for this feature is to map external namespace URIs without the need to a local
+   *        resource
+   * @param dereferencing Draft v4 defines two dereferencing modes: canonical and inline. CANONICAL will be the default option but
+   *        INLINE can also be specified. When validating a v3 draft this attribute is ignored.
+   * @param allowDuplicateKeys if true, the validator will allow duplicate keys, otherwise it will fail.
    */
   @Validator
   @Execution(CPU_INTENSIVE)
@@ -90,11 +91,12 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
   public void validateSchema(@Summary("The schema location") @Path(type = FILE, acceptedFileExtensions = "json") String schema,
                              @Content InputStream content,
                              @NullSafe @Optional Collection<SchemaRedirect> schemaRedirects,
-                             @Optional(defaultValue = "CANONICAL") JsonSchemaDereferencingMode dereferencing) {
+                             @Optional(defaultValue = "CANONICAL") JsonSchemaDereferencingMode dereferencing,
+                             @Optional(defaultValue = "true") boolean allowDuplicateKeys) {
 
     JsonSchemaValidator validator;
     GenericObjectPool<JsonSchemaValidator> pool =
-        validatorPool.getUnchecked(new ValidatorKey(schema, dereferencing, asMap(schemaRedirects)));
+        validatorPool.getUnchecked(new ValidatorKey(schema, dereferencing, asMap(schemaRedirects), allowDuplicateKeys));
 
     try {
       validator = pool.borrowObject();
@@ -114,11 +116,13 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
     private String schemas;
     private JsonSchemaDereferencingMode dereferencingType;
     private Map<String, String> schemaRedirects;
+    private final boolean allowDuplicateKeys;
 
-    public ValidatorKey(String schemas, JsonSchemaDereferencingMode dereferencingType, Map<String, String> schemaRedirects) {
+    public ValidatorKey(String schemas, JsonSchemaDereferencingMode dereferencingType, Map<String, String> schemaRedirects, boolean allowDuplicateKeys) {
       this.schemas = schemas;
       this.dereferencingType = dereferencingType;
       this.schemaRedirects = schemaRedirects;
+      this.allowDuplicateKeys = allowDuplicateKeys;
     }
 
     @Override
@@ -148,6 +152,7 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
             .addSchemaRedirects(key.schemaRedirects)
             .setDereferencing(key.dereferencingType)
             .setSchemaLocation(key.schemas)
+            .allowDuplicateKeys(key.allowDuplicateKeys)
             .build();
       }
 
