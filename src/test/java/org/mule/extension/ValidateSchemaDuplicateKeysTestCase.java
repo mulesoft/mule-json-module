@@ -7,9 +7,12 @@
 package org.mule.extension;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Collection;
@@ -48,11 +51,11 @@ public class ValidateSchemaDuplicateKeysTestCase extends AbstractSchemaValidatio
 
   @Test
   public void duplicateKeys() throws Exception {
-    flowRunner("validate")
+    CoreEvent result = flowRunner("validate")
         .withPayload(getFstabWithDuplicateKeys())
         .withVariable("schema", SCHEMA_FSTAB_JSON)
         .withVariable("allowDuplicateKeys", allowDuplicateKeys).run();
-
+    assertThat(result.getMessage().getPayload().getValue(), is(getFstabWithDuplicateKeys()));
   }
 
   private static ExpectedException getExpectedExceptionForDuplicateKeys() {

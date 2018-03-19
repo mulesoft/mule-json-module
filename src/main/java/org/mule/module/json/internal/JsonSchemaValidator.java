@@ -110,16 +110,15 @@ public class JsonSchemaValidator {
       return this;
     }
 
-    public Builder allowDuplicateKeys (boolean allowDuplicateKeys) {
-      if (!allowDuplicateKeys)
-      {
-        addParserFeature(STRICT_DUPLICATE_DETECTION);
+    /**
+     * Determines whether if the validator should fail if the json document contains duplicate keys.
+     * @param allowDuplicateKeys: if true, the validator will allow duplicate keys, otherwise it will fail.
+     * @return this builder.
+     */
+    public Builder allowDuplicateKeys(boolean allowDuplicateKeys) {
+      if (!allowDuplicateKeys) {
+        objectMapper.enable(STRICT_DUPLICATE_DETECTION);
       }
-      return this;
-    }
-
-    public Builder addParserFeature(Feature feature) {
-      objectMapper.enable(feature);
       return this;
     }
 
