@@ -90,11 +90,12 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
   public void validateSchema(@Summary("The schema location") @Path(type = FILE, acceptedFileExtensions = "json") String schema,
                              @Content InputStream content,
                              @NullSafe @Optional Collection<SchemaRedirect> schemaRedirects,
-                             @Optional(defaultValue = "CANONICAL") JsonSchemaDereferencingMode dereferencing) {
+                             @Optional(defaultValue = "CANONICAL") JsonSchemaDereferencingMode dereferencing,
+                             @Optional(defaultValue = "true") boolean allowDuplicateKeys) {
 
     JsonSchemaValidator validator;
     GenericObjectPool<JsonSchemaValidator> pool =
-        validatorPool.getUnchecked(new ValidatorKey(schema, dereferencing, asMap(schemaRedirects)));
+        validatorPool.getUnchecked(new ValidatorKey(schema, dereferencing, asMap(schemaRedirects), allowDuplicateKeys));
 
     try {
       validator = pool.borrowObject();
@@ -114,11 +115,13 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
     private String schemas;
     private JsonSchemaDereferencingMode dereferencingType;
     private Map<String, String> schemaRedirects;
+    private final boolean allowDuplicateKeys;
 
-    public ValidatorKey(String schemas, JsonSchemaDereferencingMode dereferencingType, Map<String, String> schemaRedirects) {
+    public ValidatorKey(String schemas, JsonSchemaDereferencingMode dereferencingType, Map<String, String> schemaRedirects, boolean allowDuplicateKeys) {
       this.schemas = schemas;
       this.dereferencingType = dereferencingType;
       this.schemaRedirects = schemaRedirects;
+      this.allowDuplicateKeys = allowDuplicateKeys;
     }
 
     @Override
@@ -148,6 +151,7 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
             .addSchemaRedirects(key.schemaRedirects)
             .setDereferencing(key.dereferencingType)
             .setSchemaLocation(key.schemas)
+            .allowDuplicateKeys(key.allowDuplicateKeys)
             .build();
       }
 
