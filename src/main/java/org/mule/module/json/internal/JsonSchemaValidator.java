@@ -111,7 +111,7 @@ public class JsonSchemaValidator {
     }
 
     /**
-     * Determines whether the validator should fail when document contains duplicate keys.
+     * Determines whether the validator should fail when the document contains duplicate keys.
      * @param allowDuplicateKeys: if true, the validator will allow duplicate keys, otherwise it will fail.
      * @return this builder.
      */
