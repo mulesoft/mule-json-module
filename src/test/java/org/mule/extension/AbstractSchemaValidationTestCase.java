@@ -12,7 +12,7 @@ import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-public abstract class AbstractSchemaValidationTestCase extends MuleArtifactFunctionalTestCase  {
+public abstract class AbstractSchemaValidationTestCase extends MuleArtifactFunctionalTestCase {
 
   protected static final String SCHEMA_FSTAB_GOOD_JSON = "schema/fstab-good.json";
   protected static final String SCHEMA_FSTAB_BAD_JSON = "schema/fstab-bad.json";

@@ -53,7 +53,7 @@ public class JsonSchemaValidator {
   private static boolean isBlank(String value) {
     return value == null || value.trim().length() == 0;
   }
-  
+
   /**
    * An implementation of the builder design pattern to create
    * instances of {@link JsonSchemaValidator}.
@@ -74,8 +74,7 @@ public class JsonSchemaValidator {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
 
-    private Builder() {
-    }
+    private Builder() {}
 
     /**
      * A location in which the json schema is present. It allows both local and external resources. For example, all of the following are valid:
@@ -174,8 +173,8 @@ public class JsonSchemaValidator {
 
       final LoadingConfigurationBuilder loadingConfigurationBuilder = LoadingConfiguration.newBuilder()
           .dereferencing(dereferencing == CANONICAL
-                             ? Dereferencing.CANONICAL
-                             : Dereferencing.INLINE)
+              ? Dereferencing.CANONICAL
+              : Dereferencing.INLINE)
           .setURITranslatorConfiguration(translatorConfigurationBuilder.freeze());
 
       LoadingConfiguration loadingConfiguration = loadingConfigurationBuilder.freeze();
@@ -270,7 +269,9 @@ public class JsonSchemaValidator {
       report = schema.validate(jsonNode);
     } catch (Exception e) {
       throw new MuleRuntimeException(createStaticMessage(
-          "Exception was found while trying to validate against json schema. Content was: " + jsonNode.toString()), e);
+                                                         "Exception was found while trying to validate against json schema. Content was: "
+                                                             + jsonNode.toString()),
+                                     e);
     }
 
     if (!report.isSuccess()) {
