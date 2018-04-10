@@ -1,18 +1,12 @@
-# JsonModule Extension
+# Json Module
 
-Add description ...
-
-
-...
-
-
-...
+Json Module for Mule 4
 
 
 Add this dependency to your application pom.xml
 
 ```
 <groupId>org.mule.modules</groupId>
-<artifactId>mule-xml-module</artifactId>
-<version>1.0.0-SNAPSHOT</version>
+<artifactId>mule-json-module</artifactId>
+<version>1.0.0</version>
 ```
