@@ -6,6 +6,7 @@
  */
 package org.mule.module.json.internal;
 
+import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.stream.Collectors.toMap;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
@@ -17,8 +18,12 @@ import org.mule.module.json.internal.error.SchemaValidatorErrorTypeProvider;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
+import org.mule.runtime.api.metadata.DataType;
+import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
+import org.mule.runtime.api.transformation.TransformationService;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.execution.Execution;
+import org.mule.runtime.extension.api.annotation.metadata.TypeResolver;
 import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
@@ -31,10 +36,13 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+
+import javax.inject.Inject;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.pool2.BasePooledObjectFactory;
@@ -52,6 +60,9 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
 
   private static final int MIN_IDLE_POOL_COUNT = 1;
   private static final int MAX_IDLE_POOL_COUNT = 32;
+
+  @Inject
+  TransformationService transformationService;
 
   private LoadingCache<ValidatorKey, GenericObjectPool<JsonSchemaValidator>> validatorPool;
 
@@ -96,10 +107,13 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
   @Execution(CPU_INTENSIVE)
   @Throws(SchemaValidatorErrorTypeProvider.class)
   public void validateSchema(@Summary("The schema location") @Path(type = FILE, acceptedFileExtensions = "json") String schema,
-                             @Content InputStream content,
+                             @TypeResolver(JsonAnyStaticTypeResolver.class) @Content Object content,
                              @NullSafe @Optional Collection<SchemaRedirect> schemaRedirects,
                              @Optional(defaultValue = "CANONICAL") JsonSchemaDereferencingMode dereferencing,
                              @Optional(defaultValue = "true") boolean allowDuplicateKeys) {
+
+    //TODO - This could be removed once the Min Mule version is 4.2+ or 4.1.2+
+    InputStream contentInputStream = getContentToInputStream(content);
 
     JsonSchemaValidator validator;
     GenericObjectPool<JsonSchemaValidator> pool =
@@ -112,7 +126,7 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
     }
 
     try {
-      validator.validate(content);
+      validator.validate(contentInputStream);
     } finally {
       pool.returnObject(validator);
     }
@@ -198,5 +212,26 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
     return config;
   }
 
+  private InputStream getContentToInputStream(Object content) {
+    InputStream inputStream;
+    if (content instanceof InputStream) {
+      inputStream = (InputStream) content;
+    } else if (content instanceof CursorStreamProvider) {
+      inputStream = ((CursorStreamProvider) content).openCursor();
+    } else if (content instanceof String) {
+      inputStream = new ByteArrayInputStream(((String) content).getBytes());
+    } else if (content instanceof byte[]) {
+      inputStream = new ByteArrayInputStream((byte[]) content);
+    } else {
+      try {
+        inputStream = (InputStream) transformationService.transform(content, DataType.fromObject(content), DataType.INPUT_STREAM);
+      } catch (Exception e) {
+        throw new MuleRuntimeException(createStaticMessage(format("Unable to transform content of type [%s] value to a InputStream",
+                                                                  content.getClass())),
+                                       e);
+      }
+    }
+    return inputStream;
+  }
 
 }
