@@ -7,11 +7,12 @@
 package org.mule.module.json.internal;
 
 import static com.fasterxml.jackson.core.JsonParser.Feature.STRICT_DUPLICATE_DETECTION;
+import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.joining;
 import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
 import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
@@ -21,7 +22,6 @@ import org.mule.module.json.internal.error.SchemaValidationException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
-import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonschema.core.load.Dereferencing;
@@ -34,7 +34,6 @@ import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
@@ -111,6 +110,7 @@ public class JsonSchemaValidator {
 
     /**
      * Determines whether the validator should fail when the document contains duplicate keys.
+     *
      * @param allowDuplicateKeys: if true, the validator will allow duplicate keys, otherwise it will fail.
      * @return this builder.
      */
@@ -266,7 +266,7 @@ public class JsonSchemaValidator {
     JsonNode jsonNode = asJsonNode(input);
     ProcessingReport report;
     try {
-      report = schema.validate(jsonNode);
+      report = schema.validate(jsonNode, true);
     } catch (Exception e) {
       throw new MuleRuntimeException(createStaticMessage(
                                                          "Exception was found while trying to validate against json schema. Content was: "
@@ -275,9 +275,21 @@ public class JsonSchemaValidator {
     }
 
     if (!report.isSuccess()) {
-      throw new SchemaValidationException("Json content is not compliant with schema",
-                                          newArrayList(report).stream().map(Object::toString).collect(toList()));
+      throw new SchemaValidationException("Json content is not compliant with schema", reportAsJson(report));
     }
+  }
+
+  private String reportAsJson(ProcessingReport report) {
+    String jsonReport = "[" + newArrayList(report).stream()
+        .map(p -> p.asJson().toString())
+        .collect(joining(",")) + "]";
+
+    try {
+      jsonReport = objectMapper.writer(INDENT_OUTPUT).writeValueAsString(objectMapper.readTree(jsonReport));
+    } catch (Exception e) {
+      // if couldn't format, then keep unformatted.
+    }
+    return jsonReport;
   }
 
   private JsonNode asJsonNode(InputStream input) {

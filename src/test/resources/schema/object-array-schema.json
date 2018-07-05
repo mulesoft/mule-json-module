@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "a": {
+        "type": "string",
+		"minLength": 1,
+		"maxLength": 255
+		},
+      "b": {
+        "type": "string",
+		"minLength": 1,
+		"maxLength": 255
+      }
+    },
+    "required": ["a", "b"]
+  }
+}

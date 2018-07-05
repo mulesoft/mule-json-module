@@ -1,0 +1,149 @@
+[ {
+  "level" : "error",
+  "schema" : {
+    "loadingURI" : "file:/Users/marianogonzalez/Documents/source/mule-uber/mule-json-module/target/test-classes/schema/vopak-schema.json#",
+    "pointer" : "/items/properties/a"
+  },
+  "instance" : {
+    "pointer" : "/0/a"
+  },
+  "domain" : "validation",
+  "keyword" : "minLength",
+  "message" : "string \"\" is too short (length: 0, required minimum: 1)",
+  "value" : "",
+  "found" : 0,
+  "minLength" : 1
+}, {
+  "level" : "error",
+  "schema" : {
+    "loadingURI" : "file:/Users/marianogonzalez/Documents/source/mule-uber/mule-json-module/target/test-classes/schema/vopak-schema.json#",
+    "pointer" : "/items/properties/b"
+  },
+  "instance" : {
+    "pointer" : "/0/b"
+  },
+  "domain" : "validation",
+  "keyword" : "minLength",
+  "message" : "string \"\" is too short (length: 0, required minimum: 1)",
+  "value" : "",
+  "found" : 0,
+  "minLength" : 1
+}, {
+  "level" : "error",
+  "schema" : {
+    "loadingURI" : "file:/Users/marianogonzalez/Documents/source/mule-uber/mule-json-module/target/test-classes/schema/vopak-schema.json#",
+    "pointer" : "/items/properties/a"
+  },
+  "instance" : {
+    "pointer" : "/1/a"
+  },
+  "domain" : "validation",
+  "keyword" : "minLength",
+  "message" : "string \"\" is too short (length: 0, required minimum: 1)",
+  "value" : "",
+  "found" : 0,
+  "minLength" : 1
+}, {
+  "level" : "error",
+  "schema" : {
+    "loadingURI" : "file:/Users/marianogonzalez/Documents/source/mule-uber/mule-json-module/target/test-classes/schema/vopak-schema.json#",
+    "pointer" : "/items/properties/b"
+  },
+  "instance" : {
+    "pointer" : "/1/b"
+  },
+  "domain" : "validation",
+  "keyword" : "minLength",
+  "message" : "string \"\" is too short (length: 0, required minimum: 1)",
+  "value" : "",
+  "found" : 0,
+  "minLength" : 1
+}, {
+  "level" : "error",
+  "schema" : {
+    "loadingURI" : "file:/Users/marianogonzalez/Documents/source/mule-uber/mule-json-module/target/test-classes/schema/vopak-schema.json#",
+    "pointer" : "/items"
+  },
+  "instance" : {
+    "pointer" : "/2"
+  },
+  "domain" : "validation",
+  "keyword" : "required",
+  "message" : "object has missing required properties ([\"b\"])",
+  "required" : [ "a", "b" ],
+  "missing" : [ "b" ]
+}, {
+  "level" : "error",
+  "schema" : {
+    "loadingURI" : "file:/Users/marianogonzalez/Documents/source/mule-uber/mule-json-module/target/test-classes/schema/vopak-schema.json#",
+    "pointer" : "/items/properties/a"
+  },
+  "instance" : {
+    "pointer" : "/2/a"
+  },
+  "domain" : "validation",
+  "keyword" : "minLength",
+  "message" : "string \"\" is too short (length: 0, required minimum: 1)",
+  "value" : "",
+  "found" : 0,
+  "minLength" : 1
+}, {
+  "level" : "error",
+  "schema" : {
+    "loadingURI" : "file:/Users/marianogonzalez/Documents/source/mule-uber/mule-json-module/target/test-classes/schema/vopak-schema.json#",
+    "pointer" : "/items/properties/a"
+  },
+  "instance" : {
+    "pointer" : "/3/a"
+  },
+  "domain" : "validation",
+  "keyword" : "minLength",
+  "message" : "string \"\" is too short (length: 0, required minimum: 1)",
+  "value" : "",
+  "found" : 0,
+  "minLength" : 1
+}, {
+  "level" : "error",
+  "schema" : {
+    "loadingURI" : "file:/Users/marianogonzalez/Documents/source/mule-uber/mule-json-module/target/test-classes/schema/vopak-schema.json#",
+    "pointer" : "/items/properties/b"
+  },
+  "instance" : {
+    "pointer" : "/3/b"
+  },
+  "domain" : "validation",
+  "keyword" : "minLength",
+  "message" : "string \"\" is too short (length: 0, required minimum: 1)",
+  "value" : "",
+  "found" : 0,
+  "minLength" : 1
+}, {
+  "level" : "error",
+  "schema" : {
+    "loadingURI" : "file:/Users/marianogonzalez/Documents/source/mule-uber/mule-json-module/target/test-classes/schema/vopak-schema.json#",
+    "pointer" : "/items"
+  },
+  "instance" : {
+    "pointer" : "/4"
+  },
+  "domain" : "validation",
+  "keyword" : "required",
+  "message" : "object has missing required properties ([\"a\"])",
+  "required" : [ "a", "b" ],
+  "missing" : [ "a" ]
+}, {
+  "level" : "error",
+  "schema" : {
+    "loadingURI" : "file:/Users/marianogonzalez/Documents/source/mule-uber/mule-json-module/target/test-classes/schema/vopak-schema.json#",
+    "pointer" : "/items/properties/b"
+  },
+  "instance" : {
+    "pointer" : "/4/b"
+  },
+  "domain" : "validation",
+  "keyword" : "minLength",
+  "message" : "string \"\" is too short (length: 0, required minimum: 1)",
+  "value" : "",
+  "found" : 0,
+  "minLength" : 1
+} ]

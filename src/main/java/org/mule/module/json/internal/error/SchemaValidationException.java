@@ -10,9 +10,8 @@ import static org.mule.module.json.api.JsonError.SCHEMA_NOT_HONOURED;
 import org.mule.module.json.api.JsonError;
 import org.mule.runtime.api.exception.ErrorMessageAwareException;
 import org.mule.runtime.api.message.Message;
+import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.extension.api.exception.ModuleException;
-
-import java.util.List;
 
 /**
  * A {@link ModuleException} associated with the {@link JsonError#SCHEMA_NOT_HONOURED} type
@@ -28,9 +27,9 @@ public class SchemaValidationException extends ModuleException implements ErrorM
    *
    * @param message  the exception description
    */
-  public SchemaValidationException(String message, List<String> problems) {
+  public SchemaValidationException(String message, String problemsJson) {
     super(message, SCHEMA_NOT_HONOURED);
-    this.message = Message.builder().collectionValue(problems, String.class).build();
+    this.message = Message.builder().value(problemsJson).mediaType(MediaType.APPLICATION_JSON).build();
   }
 
   /**
