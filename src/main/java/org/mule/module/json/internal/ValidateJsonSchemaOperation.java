@@ -50,6 +50,7 @@ import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.mule.runtime.extension.api.exception.ModuleException;
 
 /**
  * Operation to validate an XML document against a schema
@@ -121,6 +122,8 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
 
     try {
       validator = pool.borrowObject();
+    } catch (ModuleException e) {
+      throw e;
     } catch (Exception e) {
       throw new MuleRuntimeException(createStaticMessage("Could not obtain schema validator"), e);
     }
