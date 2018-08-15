@@ -17,6 +17,8 @@ import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
 import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+
+import org.mule.module.json.api.JsonError;
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.module.json.internal.error.SchemaValidationException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -215,7 +217,14 @@ public class JsonSchemaValidator {
     private URL openSchema(String path) {
       URL url = Thread.currentThread().getContextClassLoader().getResource(path);
       if (url == null && path.startsWith("/")) {
-        return openSchema(path.substring(1));
+        url = openSchema(path.substring(1));
+        if (url != null) {
+          return url;
+        }
+      }
+
+      if (url == null) {
+        throw new IllegalArgumentException("Cannot find schema [" + path + "]");
       }
 
       return url;
