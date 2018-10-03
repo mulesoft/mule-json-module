@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
 package org.mule.module.json.internal;
 
 import static java.lang.String.format;
@@ -65,8 +71,9 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
     validatorPool = CacheBuilder.newBuilder()
         .expireAfterAccess(5, MINUTES)
         .removalListener(
-            (RemovalListener<ValidatorKey, GenericObjectPool<JsonSchemaValidator>>) notification -> notification.getValue()
-                .close())
+                         (RemovalListener<ValidatorKey, GenericObjectPool<JsonSchemaValidator>>) notification -> notification
+                             .getValue()
+                             .close())
         .build(new CacheLoader<ValidatorKey, GenericObjectPool<JsonSchemaValidator>>() {
 
           @Override
@@ -132,7 +139,8 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
     private Map<String, String> schemaRedirects;
     private final boolean allowDuplicateKeys;
 
-    public ValidatorKey(String schemas, JsonSchemaDereferencingMode dereferencingType, Map<String, String> schemaRedirects, boolean allowDuplicateKeys) {
+    public ValidatorKey(String schemas, JsonSchemaDereferencingMode dereferencingType, Map<String, String> schemaRedirects,
+                        boolean allowDuplicateKeys) {
       this.schemas = schemas;
       this.dereferencingType = dereferencingType;
       this.schemaRedirects = schemaRedirects;
@@ -171,8 +179,7 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
       }
 
       @Override
-      public void passivateObject(PooledObject<JsonSchemaValidator> p) throws Exception {
-      }
+      public void passivateObject(PooledObject<JsonSchemaValidator> p) throws Exception {}
 
       @Override
       public PooledObject<JsonSchemaValidator> wrap(JsonSchemaValidator validator) {
