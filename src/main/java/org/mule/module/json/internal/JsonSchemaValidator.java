@@ -189,7 +189,7 @@ public class JsonSchemaValidator {
       } catch (ModuleException e) {
         throw e;
       } catch (Exception e) {
-        throw new MuleRuntimeException(createStaticMessage("Could not initialise JsonSchemaValidator"), e);
+//        throw new MuleRuntimeException(createStaticMessage("Could not initialise JsonSchemaValidator"), e);
       }
     }
 
