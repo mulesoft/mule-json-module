@@ -18,11 +18,16 @@ import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
-import org.mule.module.json.api.JsonError;
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.module.json.internal.error.SchemaValidationException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.extension.api.exception.ModuleException;
+
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,12 +39,6 @@ import com.github.fge.jsonschema.core.load.uri.URITranslatorConfigurationBuilder
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
-
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Validates json payloads against json schemas compliant with drafts v3 and v4.
@@ -189,7 +188,7 @@ public class JsonSchemaValidator {
       } catch (ModuleException e) {
         throw e;
       } catch (Exception e) {
-//        throw new MuleRuntimeException(createStaticMessage("Could not initialise JsonSchemaValidator"), e);
+        throw new MuleRuntimeException(createStaticMessage("Could not initialise JsonSchemaValidator"), e);
       }
     }
 
