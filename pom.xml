@@ -19,6 +19,7 @@
     <properties>
         <jacksonVersion>2.9.8</jacksonVersion>
         <guavaVersion>27.1-jre</guavaVersion>
+        <jakartaMailVersion>1.6.3</jakartaMailVersion>
     </properties>
 
     <dependencies>
@@ -60,7 +61,7 @@
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
-            <version>1.6.3</version>
+            <version>${jakartaMailVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
