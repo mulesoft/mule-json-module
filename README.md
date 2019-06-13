@@ -10,3 +10,4 @@ Add this dependency to your application pom.xml
 <artifactId>mule-json-module</artifactId>
 <version>1.0.0</version>
 ```
+
