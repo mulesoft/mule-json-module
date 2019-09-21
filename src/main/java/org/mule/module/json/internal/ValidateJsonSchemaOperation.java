@@ -103,6 +103,8 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
    * @param dereferencing Draft v4 defines two dereferencing modes: canonical and inline. CANONICAL will be the default option but
    *        INLINE can also be specified. When validating a v3 draft this attribute is ignored.
    * @param allowDuplicateKeys if true, the validator will allow duplicate keys, otherwise it will fail.
+   * @param allowArbitraryPrecision if true, the validator will use arbitrary precision when reading floating point values,
+   *                                otherwise double precision will be used.
    */
   @Validator
   @Execution(CPU_INTENSIVE)
@@ -111,14 +113,16 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
                              @TypeResolver(JsonAnyStaticTypeResolver.class) @Content Object content,
                              @NullSafe @Optional Collection<SchemaRedirect> schemaRedirects,
                              @Optional(defaultValue = "CANONICAL") JsonSchemaDereferencingMode dereferencing,
-                             @Optional(defaultValue = "true") boolean allowDuplicateKeys) {
+                             @Optional(defaultValue = "true") boolean allowDuplicateKeys,
+                             @Optional(defaultValue = "false") boolean allowArbitraryPrecision) {
 
     //TODO - This could be removed once the Min Mule version is 4.2+ or 4.1.2+
     InputStream contentInputStream = getContentToInputStream(content);
 
     JsonSchemaValidator validator;
     GenericObjectPool<JsonSchemaValidator> pool =
-        validatorPool.getUnchecked(new ValidatorKey(schema, dereferencing, asMap(schemaRedirects), allowDuplicateKeys));
+        validatorPool.getUnchecked(new ValidatorKey(schema, dereferencing, asMap(schemaRedirects), allowDuplicateKeys,
+                                                    allowArbitraryPrecision));
 
     try {
       validator = pool.borrowObject();
@@ -141,13 +145,15 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
     private JsonSchemaDereferencingMode dereferencingType;
     private Map<String, String> schemaRedirects;
     private final boolean allowDuplicateKeys;
+    private final boolean allowArbitraryPrecision;
 
     public ValidatorKey(String schemas, JsonSchemaDereferencingMode dereferencingType, Map<String, String> schemaRedirects,
-                        boolean allowDuplicateKeys) {
+                        boolean allowDuplicateKeys, boolean allowArbitraryPrecision) {
       this.schemas = schemas;
       this.dereferencingType = dereferencingType;
       this.schemaRedirects = schemaRedirects;
       this.allowDuplicateKeys = allowDuplicateKeys;
+      this.allowArbitraryPrecision = allowArbitraryPrecision;
     }
 
     @Override
@@ -178,6 +184,7 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
             .setDereferencing(key.dereferencingType)
             .setSchemaLocation(key.schemas)
             .allowDuplicateKeys(key.allowDuplicateKeys)
+            .allowArbitraryPrecision(key.allowArbitraryPrecision)
             .build();
       }
 

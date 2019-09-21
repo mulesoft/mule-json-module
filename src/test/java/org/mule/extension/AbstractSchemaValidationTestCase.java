@@ -24,6 +24,7 @@ public abstract class AbstractSchemaValidationTestCase extends MuleArtifactFunct
   protected static final String SCHEMA_FSTAB_JSON = "/schema/fstab.json";
   protected static final String FAKE_SCHEMA_URI = "http://mule.org/schemas/fstab.json";
   protected static final String SCHEMA_FSTAB_DUPLICATE_KEYS = "schema/fstab-duplicate-keys.json";
+  protected static final String SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS = "schema/fstab-arbitrary-precision-keys.json";
 
 
   protected static String getGoodFstab() throws Exception {
