@@ -39,7 +39,7 @@ public class ValidateArbitraryPrecisionTestCase extends AbstractSchemaValidation
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
         {true, none()},
-        {false, getExpectedExceptionForDuplicateKeys()}
+        {false, getExpectedExceptionForArbitraryPrecision()}
     });
   }
 
@@ -56,7 +56,7 @@ public class ValidateArbitraryPrecisionTestCase extends AbstractSchemaValidation
         .withVariable("allowArbitraryPrecision", allowArbitraryPrecision).run();
   }
 
-  private static ExpectedException getExpectedExceptionForDuplicateKeys() {
+  private static ExpectedException getExpectedExceptionForArbitraryPrecision() {
     ExpectedException expectedException = none();
     expectedException.expectCause(new ThrowableMessageMatcher<>(containsString("not compliant with schema")));
     return expectedException;

@@ -10,17 +10,22 @@ import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.stream.Collectors.toMap;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
 import static org.mule.runtime.api.meta.model.display.PathModel.Type.FILE;
 import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_INTENSIVE;
+import static org.mule.runtime.extension.api.annotation.param.display.Placement.ADVANCED_TAB;
+
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.module.json.api.SchemaRedirect;
 import org.mule.module.json.internal.error.SchemaValidatorErrorTypeProvider;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
+import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.api.transformation.TransformationService;
+import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.execution.Execution;
 import org.mule.runtime.extension.api.annotation.metadata.TypeResolver;
@@ -28,6 +33,7 @@ import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.display.Path;
+import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.mule.runtime.extension.api.annotation.param.stereotype.Validator;
 
@@ -113,8 +119,9 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
                              @TypeResolver(JsonAnyStaticTypeResolver.class) @Content Object content,
                              @NullSafe @Optional Collection<SchemaRedirect> schemaRedirects,
                              @Optional(defaultValue = "CANONICAL") JsonSchemaDereferencingMode dereferencing,
-                             @Optional(defaultValue = "true") boolean allowDuplicateKeys,
-                             @Optional(defaultValue = "false") boolean allowArbitraryPrecision) {
+                             @Optional(defaultValue = "true") @Placement(tab = ADVANCED_TAB) boolean allowDuplicateKeys,
+                             @Optional(defaultValue = "false") @Placement(
+                                 tab = ADVANCED_TAB) @Expression(NOT_SUPPORTED) boolean allowArbitraryPrecision) {
 
     //TODO - This could be removed once the Min Mule version is 4.2+ or 4.1.2+
     InputStream contentInputStream = getContentToInputStream(content);
