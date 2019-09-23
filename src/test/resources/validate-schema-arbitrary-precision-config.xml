@@ -5,8 +5,12 @@
           http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
 
 
-    <flow name="validate">
-        <json:validate-schema schema="#[vars.schema]" allowArbitraryPrecision="#[vars.allowArbitraryPrecision]"/>
+    <flow name="validateWithArbitraryPrecision">
+        <json:validate-schema schema="#[vars.schema]" allowArbitraryPrecision="true"/>
+    </flow>
+
+    <flow name="validateWithoutArbitraryPrecision">
+        <json:validate-schema schema="#[vars.schema]" allowArbitraryPrecision="false"/>
     </flow>
 
 </mule>

@@ -50,7 +50,7 @@ public class ValidateArbitraryPrecisionTestCase extends AbstractSchemaValidation
 
   @Test
   public void allowArbitraryPrecision() throws Exception {
-    flowRunner("validate")
+    flowRunner(allowArbitraryPrecision ? "validateWithArbitraryPrecision" : "validateWithoutArbitraryPrecision")
         .withPayload(ARBITRARY_PRECISION_JSON_NUMBER)
         .withVariable("schema", SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS)
         .withVariable("allowArbitraryPrecision", allowArbitraryPrecision).run();
