@@ -7,6 +7,7 @@
 package org.mule.module.json.internal;
 
 import static com.fasterxml.jackson.core.JsonParser.Feature.STRICT_DUPLICATE_DETECTION;
+import static com.fasterxml.jackson.databind.DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS;
 import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
@@ -18,7 +19,6 @@ import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
-import org.mule.module.json.api.JsonError;
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.module.json.internal.error.SchemaValidationException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -119,6 +119,19 @@ public class JsonSchemaValidator {
     public Builder allowDuplicateKeys(boolean allowDuplicateKeys) {
       if (!allowDuplicateKeys) {
         objectMapper.enable(STRICT_DUPLICATE_DETECTION);
+      }
+      return this;
+    }
+
+    /**
+     * Determines whether the validator use arbitrary precision when reading floating points values.
+     *
+     * @param allowArbitraryPrecision: if true, the validator will use arbitrary precision for floating point values.
+     * @return this builder.
+     */
+    public Builder allowArbitraryPrecision(boolean allowArbitraryPrecision) {
+      if (allowArbitraryPrecision) {
+        objectMapper.enable(USE_BIG_DECIMAL_FOR_FLOATS);
       }
       return this;
     }
