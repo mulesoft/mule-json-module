@@ -17,7 +17,7 @@
     <name>Json Module</name>
 
     <properties>
-        <jackson.version>2.10.0</jackson.version>
+        <jackson.version>2.10.1</jackson.version>
         <jackson.databind.version>2.10.0</jackson.databind.version>
         <json.schema.validation.version>2.2.10</json.schema.validation.version>
         <guava.version>27.1-jre</guava.version>
