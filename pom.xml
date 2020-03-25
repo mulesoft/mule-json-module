@@ -18,7 +18,6 @@
 
     <properties>
         <jackson.version>2.10.3</jackson.version>
-        <jackson.databind.version>2.10.3</jackson.databind.version>
         <json.schema.validation.version>2.2.13</json.schema.validation.version>
         <guava.version>27.1-jre</guava.version>
         <jakarta.mail.version>1.6.5</jakarta.mail.version>
@@ -30,7 +29,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.databind.version}</version>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
