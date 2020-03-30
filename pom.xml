@@ -23,6 +23,7 @@
         <jakarta.mail.version>1.6.5</jakarta.mail.version>
         <commons.pool2.version>2.8.0</commons.pool2.version>
         <commons.lang3.version>3.9</commons.lang3.version>
+        <runtimeVersion>4.3.0-SNAPSHOT</runtimeVersion>
     </properties>
 
     <dependencies>
