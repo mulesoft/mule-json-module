@@ -18,7 +18,7 @@
 
     <properties>
         <jackson.version>2.11.0</jackson.version>
-        <json.schema.validation.version>2.2.13</json.schema.validation.version>
+        <json.schema.validation.version>2.2.14</json.schema.validation.version>
         <guava.version>27.1-jre</guava.version>
         <jakarta.mail.version>1.6.5</jakarta.mail.version>
         <commons.pool2.version>2.8.0</commons.pool2.version>
