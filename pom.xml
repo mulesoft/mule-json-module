@@ -22,7 +22,7 @@
         <guava.version>27.1-jre</guava.version>
         <jakarta.mail.version>1.6.5</jakarta.mail.version>
         <commons.pool2.version>2.8.0</commons.pool2.version>
-        <commons.lang3.version>3.10</commons.lang3.version>
+        <commons.lang3.version>3.11</commons.lang3.version>
     </properties>
 
     <dependencies>
