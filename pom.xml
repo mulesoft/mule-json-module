@@ -17,7 +17,7 @@
     <name>Json Module</name>
 
     <properties>
-        <jackson.version>2.11.3</jackson.version>
+        <jackson.version>2.12.0</jackson.version>
         <json.schema.validation.version>2.2.14</json.schema.validation.version>
         <guava.version>27.1-jre</guava.version>
         <jakarta.mail.version>2.0.0</jakarta.mail.version>
