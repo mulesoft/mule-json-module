@@ -17,20 +17,19 @@
     <name>Json Module</name>
 
     <properties>
-        <jackson.version>2.10.3</jackson.version>
-        <jackson.databind.version>2.10.3</jackson.databind.version>
-        <json.schema.validation.version>2.2.13</json.schema.validation.version>
-        <guava.version>27.1-jre</guava.version>
-        <jakarta.mail.version>1.6.4</jakarta.mail.version>
-        <commons.pool2.version>2.8.0</commons.pool2.version>
-        <commons.lang3.version>3.9</commons.lang3.version>
+        <jackson.version>2.12.2</jackson.version>
+        <json.schema.validation.version>2.2.14</json.schema.validation.version>
+        <guava.version>30.1-jre</guava.version>
+        <jakarta.mail.version>2.0.0</jakarta.mail.version>
+        <commons.pool2.version>2.9.0</commons.pool2.version>
+        <commons.lang3.version>3.12.0</commons.lang3.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.databind.version}</version>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
