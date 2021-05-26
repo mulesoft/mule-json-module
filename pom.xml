@@ -12,13 +12,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-json-module</artifactId>
-    <version>2.1.4-SNAPSHOT</version>
+    <version>2.1.4</version>
     <packaging>mule-extension</packaging>
     <name>Json Module</name>
 
     <properties>
-        <jackson.version>2.10.3</jackson.version>
-        <jackson.databind.version>2.10.3</jackson.databind.version>
+        <jackson.version>2.12.2</jackson.version>
         <json.schema.validation.version>2.2.13</json.schema.validation.version>
         <guava.version>27.1-jre</guava.version>
         <jakarta.mail.version>1.6.4</jakarta.mail.version>
@@ -30,7 +29,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.databind.version}</version>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
