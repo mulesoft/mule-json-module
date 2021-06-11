@@ -21,7 +21,7 @@
         <json.schema.validation.version>2.2.14</json.schema.validation.version>
         <guava.version>30.1.1-jre</guava.version>
         <jakarta.mail.version>2.0.1</jakarta.mail.version>
-        <commons.pool2.version>2.9.0</commons.pool2.version>
+        <commons.pool2.version>2.10.0</commons.pool2.version>
         <commons.lang3.version>3.12.0</commons.lang3.version>
     </properties>
 
