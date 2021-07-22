@@ -26,6 +26,7 @@ import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.module.json.api.SchemaRedirect;
 import org.mule.module.json.internal.error.SchemaValidatorErrorTypeProvider;
 import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.api.meta.ExpressionSupport;
@@ -78,7 +79,7 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.0
  */
-public class ValidateJsonSchemaOperation implements Startable, Stoppable {
+public class ValidateJsonSchemaOperation implements Startable, Stoppable, Disposable {
 
   private static final int MIN_IDLE_POOL_COUNT = 1;
   private static final int MAX_IDLE_POOL_COUNT = 32;
@@ -109,7 +110,6 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
   @Override
   public void stop() {
     validatorPool.invalidateAll();
-    cleanExecutorServices();
   }
 
   /**
@@ -227,6 +227,11 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
     } finally {
       pool.returnObject(validator);
     }
+  }
+
+  @Override
+  public void dispose() {
+    cleanExecutorServices();
   }
 
   class ValidatorKey {
