@@ -157,7 +157,7 @@ public class JsonModuleResourceReleaser {
   /**
    * Restores de ExecutorServices for the underlying library.
    */
-  public void restoreExecutorServices() {
+  public synchronized void restoreExecutorServices() {
     Field bundleField = null;
     boolean isAccessible = false;
     try {
