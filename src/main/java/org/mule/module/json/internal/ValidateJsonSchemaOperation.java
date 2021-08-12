@@ -15,22 +15,19 @@ import static org.mule.runtime.api.meta.model.display.PathModel.Type.FILE;
 import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_INTENSIVE;
 import static org.mule.runtime.extension.api.annotation.param.display.Placement.ADVANCED_TAB;
 
-import com.github.fge.jackson.JsonNodeReader;
-import com.github.fge.jsonschema.core.report.ProcessingMessage;
-import com.github.fge.msgsimple.bundle.MessageBundle;
-import com.github.fge.msgsimple.load.MessageBundleLoader;
-import com.github.fge.msgsimple.load.MessageBundles;
-import com.github.fge.msgsimple.provider.LoadingMessageSourceProvider;
-import com.github.fge.msgsimple.provider.MessageSourceProvider;
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.module.json.api.SchemaRedirect;
+import org.mule.module.json.internal.cleanup.JsonModuleResourceReleaser;
 import org.mule.module.json.internal.error.SchemaValidatorErrorTypeProvider;
+import org.mule.module.json.internal.cleanup.InstanceMonitor;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.lifecycle.Disposable;
+import org.mule.runtime.api.lifecycle.Initialisable;
+import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
-import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.api.metadata.DataType;
+import org.mule.runtime.api.scheduler.SchedulerService;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.api.transformation.TransformationService;
 import org.mule.runtime.extension.api.annotation.Expression;
@@ -49,20 +46,13 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.sql.Time;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
-
+import java.util.ResourceBundle;
 import javax.inject.Inject;
-import javax.jms.Message;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.pool2.BasePooledObjectFactory;
@@ -79,14 +69,21 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.0
  */
-public class ValidateJsonSchemaOperation implements Startable, Stoppable, Disposable {
+public class ValidateJsonSchemaOperation implements Disposable, Startable, Stoppable, Initialisable {
 
   private static final int MIN_IDLE_POOL_COUNT = 1;
   private static final int MAX_IDLE_POOL_COUNT = 32;
   private final static Logger LOGGER = LoggerFactory.getLogger(ValidateJsonSchemaOperation.class);
+  private JsonModuleResourceReleaser resourceReleaser;
 
   @Inject
   TransformationService transformationService;
+
+  @Inject
+  InstanceMonitor monitor;
+
+  @Inject
+  SchedulerService schedulerService;
 
   private LoadingCache<ValidatorKey, GenericObjectPool<JsonSchemaValidator>> validatorPool;
 
@@ -112,71 +109,7 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable, Dispos
     validatorPool.invalidateAll();
   }
 
-  /**
-   * The Json Schema Validator Library Leaks threads
-   * in every application un-deployment.
-   * The leak is produced by the LoadingMessageSourceProvider. This class
-   * is not designed to work in a containerized application server, since it
-   * does not provide any method for stopping the ExecutorService.
-   */
-  private void cleanExecutorServices() {
-    LOGGER.debug("Stopping the known executors services");
-    try {
-      Field bundleField = JsonNodeReader.class.getDeclaredField("BUNDLE");
-      bundleField.setAccessible(true);
-      MessageBundle messageBundle = (MessageBundle) bundleField.get(null);
-      cleanMessageBundle(messageBundle);
-    } catch (NoSuchFieldException | IllegalAccessException | InterruptedException ex) {
-      LOGGER.warn("Caught exception while stopping the Executor Service reference of the JsonNodeReader class: {}",
-                  ex.getMessage(), ex);
-    }
 
-    try {
-      Field bundlesField = MessageBundles.class.getDeclaredField("BUNDLES");
-      bundlesField.setAccessible(true);
-      Map<Class<? extends MessageBundleLoader>, MessageBundle> bundles =
-          (Map<Class<? extends MessageBundleLoader>, MessageBundle>) bundlesField.get(null);
-      for (MessageBundle bundle : bundles.values()) {
-        cleanMessageBundle(bundle);
-      }
-    } catch (NoSuchFieldException | IllegalAccessException | InterruptedException ex) {
-      LOGGER.warn("Caught exception while stopping the Executor Service references of the MessageBundles class: {}",
-                  ex.getMessage(), ex);
-    }
-
-    try {
-      Field bundleField = ProcessingMessage.class.getDeclaredField("BUNDLE");
-      bundleField.setAccessible(true);
-      MessageBundle messageBundle = (MessageBundle) bundleField.get(null);
-      cleanMessageBundle(messageBundle);
-    } catch (NoSuchFieldException | IllegalAccessException | InterruptedException ex) {
-      LOGGER.warn("Caught exception while stopping the Executor Service references of the ProcessingMessage class: {}",
-                  ex.getMessage(), ex);
-    }
-  }
-
-  /**
-   * Stops the Executor Service instances of the MessageBundle class
-   * @param bundle a MessageBundle Instance
-   * @throws NoSuchFieldException the requested field does not exists
-   * @throws InterruptedException the executor shutdown was interrupted due timeout
-   */
-  private void cleanMessageBundle(MessageBundle bundle)
-      throws NoSuchFieldException, IllegalAccessException, InterruptedException {
-    Field providersField = MessageBundle.class.getDeclaredField("providers");
-    providersField.setAccessible(true);
-    List<MessageSourceProvider> messageSourceProviders = (List<MessageSourceProvider>) providersField.get(bundle);
-    for (MessageSourceProvider provider : messageSourceProviders) {
-      if (provider instanceof LoadingMessageSourceProvider) {
-        Field serviceField = LoadingMessageSourceProvider.class.getDeclaredField("service");
-        serviceField.setAccessible(true);
-        ExecutorService service = (ExecutorService) serviceField.get(provider);
-        service.shutdownNow();
-        service.awaitTermination(10, TimeUnit.SECONDS);
-      }
-    }
-
-  }
 
   /**
    * Validates that the input content is compliant with a given schema. This operation supports referencing many schemas (using
@@ -231,8 +164,21 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable, Dispos
 
   @Override
   public void dispose() {
-    cleanExecutorServices();
+    if (monitor.unregister() == 0) {
+      resourceReleaser.releaseExecutors();
+    }
   }
+
+  @Override
+  public void initialise() throws InitialisationException {
+    if (this.resourceReleaser == null) {
+      this.resourceReleaser = new JsonModuleResourceReleaser(schedulerService);
+    }
+    if (monitor.register() == 1) {
+      resourceReleaser.restoreExecutorServices();
+    }
+  }
+
 
   class ValidatorKey {
 
