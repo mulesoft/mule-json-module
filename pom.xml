@@ -113,7 +113,9 @@
                     <streamLogs>true</streamLogs>
                     <noLog>true</noLog>
                     <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-                    <settingsFile>${settings.file}</settingsFile>
+                    <properties>
+                        <maven.settings.local>${settings.file}</maven.settings.local>
+                    </properties>
                 </configuration>
                 <executions>
                     <execution>
