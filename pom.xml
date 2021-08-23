@@ -23,6 +23,7 @@
         <jakarta.mail.version>2.0.1</jakarta.mail.version>
         <commons.pool2.version>2.10.0</commons.pool2.version>
         <commons.lang3.version>3.12.0</commons.lang3.version>
+        <settings.file>${java.io.tmpdir}/effective-settings.xml</settings.file>
     </properties>
 
     <dependencies>
@@ -87,6 +88,24 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-help-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <phase>process-test-resources</phase>
+                        <id>copy-settings</id>
+                        <goals>
+                            <goal>effective-settings</goal>
+                        </goals>
+                        <configuration>
+                            <output>${settings.file}</output>
+                            <showPasswords>true</showPasswords>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-invoker-plugin</artifactId>
                 <version>3.2.2</version>
                 <configuration>
@@ -94,9 +113,7 @@
                     <streamLogs>true</streamLogs>
                     <noLog>true</noLog>
                     <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-                    <properties>
-                        <json.module.version>${project.version}</json.module.version>
-                    </properties>
+                    <settingsFile>${settings.file}</settingsFile>
                 </configuration>
                 <executions>
                     <execution>
