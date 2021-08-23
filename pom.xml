@@ -94,16 +94,18 @@
                     <streamLogs>true</streamLogs>
                     <noLog>true</noLog>
                     <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-                    <environmentVariables>
-                        <json-module-version>${project.version}</json-module-version>
-                    </environmentVariables>
+                    <properties>
+                        <json.module.version>${project.version}</json.module.version>
+                    </properties>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>integration-test</id>
+                        <id>tita-tests</id>
+                        <phase>install</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
+                        <inherited>false</inherited>
                     </execution>
                 </executions>
             </plugin>
