@@ -22,7 +22,8 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * This class provides convenience methods for managing the internal
@@ -61,8 +62,8 @@ public class JsonModuleResourceReleaser {
       MessageBundle messageBundle = (MessageBundle) bundleField.get(null);
       cleanMessageBundle(messageBundle);
     } catch (NoSuchFieldException | IllegalAccessException | InterruptedException ex) {
-      LOGGER.warn("Caught exception while stopping the Executor Service reference of the JsonNodeReader class: {}",
-                  ex.getMessage(), ex);
+      LOGGER.error("Caught exception while stopping the Executor Service reference of the JsonNodeReader class: {}",
+                   ex.getMessage(), ex);
     } finally {
       if (bundleField != null) {
         bundleField.setAccessible(isAccessible);
@@ -81,8 +82,8 @@ public class JsonModuleResourceReleaser {
         cleanMessageBundle(bundle);
       }
     } catch (NoSuchFieldException | IllegalAccessException | InterruptedException ex) {
-      LOGGER.warn("Caught exception while stopping the Executor Service references of the MessageBundles class: {}",
-                  ex.getMessage(), ex);
+      LOGGER.error("Caught exception while stopping the Executor Service references of the MessageBundles class: {}",
+                   ex.getMessage(), ex);
     } finally {
       if (bundleField != null) {
         bundleField.setAccessible(isAccessible);
@@ -99,8 +100,8 @@ public class JsonModuleResourceReleaser {
       MessageBundle messageBundle = (MessageBundle) bundleField.get(null);
       cleanMessageBundle(messageBundle);
     } catch (NoSuchFieldException | IllegalAccessException | InterruptedException ex) {
-      LOGGER.warn("Caught exception while stopping the Executor Service references of the ProcessingMessage class: {}",
-                  ex.getMessage(), ex);
+      LOGGER.error("Caught exception while stopping the Executor Service references of the ProcessingMessage class: {}",
+                   ex.getMessage(), ex);
     } finally {
       if (bundleField != null) {
         bundleField.setAccessible(isAccessible);
@@ -137,7 +138,7 @@ public class JsonModuleResourceReleaser {
             serviceField.setAccessible(true);
             ExecutorService service = (ExecutorService) serviceField.get(provider);
             service.shutdown();
-            service.awaitTermination(10, TimeUnit.SECONDS);
+            service.awaitTermination(10, SECONDS);
           } finally {
             if (serviceField != null) {
               serviceField.setAccessible(isServiceFieldAccessible);
@@ -167,8 +168,8 @@ public class JsonModuleResourceReleaser {
       MessageBundle messageBundle = (MessageBundle) bundleField.get(null);
       restoreMessageBundle(messageBundle);
     } catch (NoSuchFieldException | IllegalAccessException ex) {
-      LOGGER.warn("Caught exception while stopping the Executor Service reference of the JsonNodeReader class: {}",
-                  ex.getMessage(), ex);
+      LOGGER.error("Caught exception while stopping the Executor Service reference of the JsonNodeReader class: {}",
+                   ex.getMessage(), ex);
     } finally {
       if (bundleField != null) {
         bundleField.setAccessible(isAccessible);
@@ -188,8 +189,8 @@ public class JsonModuleResourceReleaser {
         restoreMessageBundle(bundle);
       }
     } catch (NoSuchFieldException | IllegalAccessException ex) {
-      LOGGER.warn("Caught exception while stopping the Executor Service references of the MessageBundles class: {}",
-                  ex.getMessage(), ex);
+      LOGGER.error("Caught exception while stopping the Executor Service references of the MessageBundles class: {}",
+                   ex.getMessage(), ex);
     } finally {
       if (bundleField != null) {
         bundleField.setAccessible(isAccessible);
@@ -206,8 +207,8 @@ public class JsonModuleResourceReleaser {
       MessageBundle messageBundle = (MessageBundle) bundleField.get(null);
       restoreMessageBundle(messageBundle);
     } catch (NoSuchFieldException | IllegalAccessException ex) {
-      LOGGER.warn("Caught exception while stopping the Executor Service references of the ProcessingMessage class: {}",
-                  ex.getMessage(), ex);
+      LOGGER.error("Caught exception while stopping the Executor Service references of the ProcessingMessage class: {}",
+                   ex.getMessage(), ex);
     } finally {
       if (bundleField != null) {
         bundleField.setAccessible(isAccessible);
