@@ -17,12 +17,13 @@
     <name>Json Module</name>
 
     <properties>
-        <jackson.version>2.12.2</jackson.version>
-        <json.schema.validation.version>2.2.13</json.schema.validation.version>
-        <guava.version>27.1-jre</guava.version>
-        <jakarta.mail.version>1.6.4</jakarta.mail.version>
-        <commons.pool2.version>2.8.0</commons.pool2.version>
-        <commons.lang3.version>3.9</commons.lang3.version>
+        <jackson.version>2.12.4</jackson.version>
+        <json.schema.validation.version>2.2.14</json.schema.validation.version>
+        <guava.version>30.1.1-jre</guava.version>
+        <jakarta.mail.version>2.0.1</jakarta.mail.version>
+        <commons.pool2.version>2.11.1</commons.pool2.version>
+        <commons.lang3.version>3.12.0</commons.lang3.version>
+        <settings.file>${java.io.tmpdir}/effective-settings.xml</settings.file>
     </properties>
 
     <dependencies>
@@ -82,5 +83,52 @@
             <version>${guava.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-help-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <phase>process-test-resources</phase>
+                        <id>copy-settings</id>
+                        <goals>
+                            <goal>effective-settings</goal>
+                        </goals>
+                        <configuration>
+                            <output>${settings.file}</output>
+                            <showPasswords>true</showPasswords>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-invoker-plugin</artifactId>
+                <version>3.2.2</version>
+                <configuration>
+                    <debug>false</debug>
+                    <streamLogs>true</streamLogs>
+                    <noLog>true</noLog>
+                    <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+                    <properties>
+                        <maven.settings.local>${settings.file}</maven.settings.local>
+                    </properties>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>tita-tests</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <inherited>false</inherited>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

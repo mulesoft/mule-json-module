@@ -17,12 +17,17 @@ import static org.mule.runtime.extension.api.annotation.param.display.Placement.
 
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.module.json.api.SchemaRedirect;
+import org.mule.module.json.internal.cleanup.JsonModuleResourceReleaser;
 import org.mule.module.json.internal.error.SchemaValidatorErrorTypeProvider;
+import org.mule.module.json.internal.cleanup.InstanceMonitor;
 import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.runtime.api.lifecycle.Disposable;
+import org.mule.runtime.api.lifecycle.Initialisable;
+import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
-import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.api.metadata.DataType;
+import org.mule.runtime.api.scheduler.SchedulerService;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.api.transformation.TransformationService;
 import org.mule.runtime.extension.api.annotation.Expression;
@@ -41,13 +46,12 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
-
+import java.util.ResourceBundle;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -57,19 +61,29 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.mule.runtime.extension.api.exception.ModuleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Operation to validate an XML document against a schema
  *
  * @since 1.0
  */
-public class ValidateJsonSchemaOperation implements Startable, Stoppable {
+public class ValidateJsonSchemaOperation implements Disposable, Startable, Stoppable, Initialisable {
 
   private static final int MIN_IDLE_POOL_COUNT = 1;
   private static final int MAX_IDLE_POOL_COUNT = 32;
+  private final static Logger LOGGER = LoggerFactory.getLogger(ValidateJsonSchemaOperation.class);
+  private JsonModuleResourceReleaser resourceReleaser;
 
   @Inject
   TransformationService transformationService;
+
+  @Inject
+  InstanceMonitor monitor;
+
+  @Inject
+  SchedulerService schedulerService;
 
   private LoadingCache<ValidatorKey, GenericObjectPool<JsonSchemaValidator>> validatorPool;
 
@@ -94,6 +108,8 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
   public void stop() {
     validatorPool.invalidateAll();
   }
+
+
 
   /**
    * Validates that the input content is compliant with a given schema. This operation supports referencing many schemas (using
@@ -145,6 +161,24 @@ public class ValidateJsonSchemaOperation implements Startable, Stoppable {
       pool.returnObject(validator);
     }
   }
+
+  @Override
+  public void dispose() {
+    if (monitor.unregister() == 0) {
+      resourceReleaser.releaseExecutors();
+    }
+  }
+
+  @Override
+  public void initialise() throws InitialisationException {
+    if (this.resourceReleaser == null) {
+      this.resourceReleaser = new JsonModuleResourceReleaser(schedulerService);
+    }
+    if (monitor.register() == 1) {
+      resourceReleaser.restoreExecutorServices();
+    }
+  }
+
 
   class ValidatorKey {
 
