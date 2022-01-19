@@ -25,6 +25,7 @@
         <jakarta.mail.version>2.0.1</jakarta.mail.version>
         <commons.pool2.version>2.11.1</commons.pool2.version>
         <commons.lang3.version>3.12.0</commons.lang3.version>
+        <org.mozilla.rhino.version>1.7.14</org.mozilla.rhino.version>
         <settings.file>${java.io.tmpdir}/effective-settings.xml</settings.file>
     </properties>
 
@@ -61,9 +62,18 @@
                     <groupId>javax.mail</groupId>
                     <artifactId>mailapi</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.mozilla</groupId>
+                    <artifactId>rhino</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.mozilla</groupId>
+            <artifactId>rhino</artifactId>
+            <version>${org.mozilla.rhino.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
