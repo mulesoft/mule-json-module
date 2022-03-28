@@ -19,7 +19,7 @@
 
     <properties>
         <jackson.version>2.13.2</jackson.version>
-        <jackson.databind.version>2.13.2</jackson.databind.version>
+        <jackson.databind.version>2.13.2.1</jackson.databind.version>
         <json.schema.validation.version>2.2.14</json.schema.validation.version>
         <guava.version>31.0.1-jre</guava.version>
         <jakarta.mail.version>2.0.1</jakarta.mail.version>
