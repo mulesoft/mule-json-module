@@ -24,6 +24,7 @@ import org.mule.module.json.internal.error.SchemaValidationException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonschema.core.load.Dereferencing;
@@ -285,6 +286,7 @@ public class JsonSchemaValidator {
    * @param input the json to be validated
    */
   public void validate(InputStream input) {
+    objectMapper.enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
     JsonNode jsonNode = asJsonNode(input);
     ProcessingReport report;
     try {
