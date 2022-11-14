@@ -33,11 +33,11 @@ public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCas
   @Override
   protected void doSetUp() throws Exception {
     json = doGetResource("inputs/bad-object.json");
-    System.setProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS, "true");
   }
 
   @Test
   public void validate() throws Exception {
+    System.setProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS, "true");
     expectedException.expectCause(new BaseMatcher<Throwable>() {
 
       @Override
