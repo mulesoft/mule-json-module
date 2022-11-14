@@ -15,7 +15,6 @@ import org.hamcrest.Description;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
 public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCase {
 
