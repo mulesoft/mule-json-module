@@ -7,11 +7,8 @@
 package org.mule.extension;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
-
-import org.mule.runtime.core.api.event.CoreEvent;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
