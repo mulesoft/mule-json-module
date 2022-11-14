@@ -6,23 +6,32 @@
  */
 package org.mule.module.json.internal;
 
-import static com.fasterxml.jackson.core.JsonParser.Feature.STRICT_DUPLICATE_DETECTION;
-import static com.fasterxml.jackson.databind.DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS;
-import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.collect.Lists.newArrayList;
-import static java.lang.String.format;
-import static java.util.stream.Collectors.joining;
 import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
 import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
+import static java.lang.String.format;
+import static java.util.stream.Collectors.joining;
+
+import static com.fasterxml.jackson.core.JsonParser.Feature.STRICT_DUPLICATE_DETECTION;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS;
+import static com.fasterxml.jackson.databind.DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS;
+import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Lists.newArrayList;
+
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.module.json.internal.error.SchemaValidationException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.extension.api.exception.ModuleException;
+
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,12 +44,6 @@ import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Validates json payloads against json schemas compliant with drafts v3 and v4.
  * <p/>
@@ -50,6 +53,8 @@ import java.util.Map;
  * @since 1.0.0
  */
 public class JsonSchemaValidator {
+
+  private static final String VALIDATOR_FAIL_ON_TRAILING_TOKENS = "jsonSchemaValidator.FailOnTrailingTokens";
 
   private static boolean isBlank(String value) {
     return value == null || value.trim().length() == 0;
@@ -285,6 +290,11 @@ public class JsonSchemaValidator {
    * @param input the json to be validated
    */
   public void validate(InputStream input) {
+
+    if (Boolean.parseBoolean(System.getProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS, "false"))) {
+      objectMapper.enable(FAIL_ON_TRAILING_TOKENS);
+    }
+
     JsonNode jsonNode = asJsonNode(input);
     ProcessingReport report;
     try {
