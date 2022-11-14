@@ -38,7 +38,7 @@ public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCas
 
   @Test
   public void validate() throws Exception {
-    
+
     expectedException.expectCause(new BaseMatcher<Throwable>() {
 
       @Override
