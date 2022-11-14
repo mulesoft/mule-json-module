@@ -7,6 +7,7 @@
 package org.mule.module.json.internal;
 
 import static com.fasterxml.jackson.core.JsonParser.Feature.STRICT_DUPLICATE_DETECTION;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS;
 import static com.fasterxml.jackson.databind.DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS;
 import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static com.google.common.base.Preconditions.checkArgument;
@@ -24,7 +25,6 @@ import org.mule.module.json.internal.error.SchemaValidationException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonschema.core.load.Dereferencing;
@@ -51,6 +51,8 @@ import java.util.Map;
  * @since 1.0.0
  */
 public class JsonSchemaValidator {
+
+  private static final String VALIDATOR_FAIL_ON_TRAILING_TOKENS = "jsonSchemaValidator.FailOnTrailingTokens";
 
   private static boolean isBlank(String value) {
     return value == null || value.trim().length() == 0;
@@ -286,7 +288,11 @@ public class JsonSchemaValidator {
    * @param input the json to be validated
    */
   public void validate(InputStream input) {
-    objectMapper.enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
+
+    if (Boolean.parseBoolean(System.getProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS))) {
+      objectMapper.enable(FAIL_ON_TRAILING_TOKENS);
+    }
+
     JsonNode jsonNode = asJsonNode(input);
     ProcessingReport report;
     try {

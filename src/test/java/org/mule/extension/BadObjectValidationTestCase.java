@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCase {
+  private static final String VALIDATOR_FAIL_ON_TRAILING_TOKENS = "jsonSchemaValidator.FailOnTrailingTokens";
 
   private String json;
 
@@ -31,6 +32,7 @@ public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCas
   @Override
   protected void doSetUp() throws Exception {
     json = doGetResource("inputs/bad-object.json");
+    System.setProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS, "true");
   }
 
   @Test
