@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCase {
+
   private static final String VALIDATOR_FAIL_ON_TRAILING_TOKENS = "jsonSchemaValidator.FailOnTrailingTokens";
 
   private String json;
