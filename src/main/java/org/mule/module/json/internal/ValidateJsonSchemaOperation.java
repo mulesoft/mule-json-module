@@ -26,6 +26,7 @@ import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
+import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.scheduler.SchedulerService;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
@@ -37,6 +38,7 @@ import org.mule.runtime.extension.api.annotation.metadata.TypeResolver;
 import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
+import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Path;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
@@ -131,7 +133,9 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
   @Validator
   @Execution(CPU_INTENSIVE)
   @Throws(SchemaValidatorErrorTypeProvider.class)
-  public void validateSchema(@Summary("The schema location") @Path(type = FILE, acceptedFileExtensions = "json") String schema,
+  public void validateSchema(@Optional @Summary("The schema location") @Path(type = FILE,
+      acceptedFileExtensions = "json") String schema,
+                             @Optional @Summary("The schema content to validate") @Expression(ExpressionSupport.SUPPORTED) @DisplayName("Schema Content") String schemaContent,
                              @TypeResolver(JsonAnyStaticTypeResolver.class) @Content Object content,
                              @NullSafe @Optional Collection<SchemaRedirect> schemaRedirects,
                              @Optional(defaultValue = "CANONICAL") JsonSchemaDereferencingMode dereferencing,
@@ -145,7 +149,7 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
     JsonSchemaValidator validator;
     GenericObjectPool<JsonSchemaValidator> pool =
         validatorPool.getUnchecked(new ValidatorKey(schema, dereferencing, asMap(schemaRedirects), allowDuplicateKeys,
-                                                    allowArbitraryPrecision));
+                                                    allowArbitraryPrecision, schemaContent));
 
     try {
       validator = pool.borrowObject();
@@ -187,14 +191,16 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
     private Map<String, String> schemaRedirects;
     private final boolean allowDuplicateKeys;
     private final boolean allowArbitraryPrecision;
+    private String schemaContent;
 
     public ValidatorKey(String schemas, JsonSchemaDereferencingMode dereferencingType, Map<String, String> schemaRedirects,
-                        boolean allowDuplicateKeys, boolean allowArbitraryPrecision) {
+                        boolean allowDuplicateKeys, boolean allowArbitraryPrecision, String schemaContent) {
       this.schemas = schemas;
       this.dereferencingType = dereferencingType;
       this.schemaRedirects = schemaRedirects;
       this.allowDuplicateKeys = allowDuplicateKeys;
       this.allowArbitraryPrecision = allowArbitraryPrecision;
+      this.schemaContent = schemaContent;
     }
 
     @Override
@@ -203,7 +209,8 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
         ValidatorKey key = (ValidatorKey) obj;
         return Objects.equals(schemas, key.schemas)
             && dereferencingType == key.dereferencingType
-            && Objects.equals(schemaRedirects, key.schemaRedirects);
+            && Objects.equals(schemaRedirects, key.schemaRedirects)
+            && Objects.equals(this.schemaContent, key.schemaContent);
       }
 
       return false;
@@ -226,6 +233,7 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
             .setSchemaLocation(key.schemas)
             .allowDuplicateKeys(key.allowDuplicateKeys)
             .allowArbitraryPrecision(key.allowArbitraryPrecision)
+            .setSchemaContent(key.schemaContent)
             .build();
       }
 

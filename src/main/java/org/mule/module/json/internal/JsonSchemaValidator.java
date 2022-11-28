@@ -6,8 +6,7 @@
  */
 package org.mule.module.json.internal;
 
-import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
-import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
+import static org.mule.module.json.api.JsonError.*;
 import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
@@ -22,11 +21,14 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
 
+import com.github.fge.jackson.JsonLoader;
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.module.json.internal.error.SchemaValidationException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
@@ -78,6 +80,7 @@ public class JsonSchemaValidator {
     private JsonSchemaDereferencingMode dereferencing = CANONICAL;
     private final Map<String, String> schemaRedirects = new HashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private String schemaContent;
 
 
     private Builder() {}
@@ -96,8 +99,8 @@ public class JsonSchemaValidator {
      * @throws IllegalArgumentException if {@code schemaLocation} is blank or {@code null}
      */
     public Builder setSchemaLocation(String schemaLocation) {
-      checkArgument(!isBlank(schemaLocation), "schemaLocation cannot be null or blank");
-      this.schemaLocation = formatUri(schemaLocation);
+      //checkArgument(!isBlank(schemaLocation), "schemaLocation cannot be null or blank");
+      this.schemaLocation = schemaLocation;
       return this;
     }
 
@@ -174,6 +177,11 @@ public class JsonSchemaValidator {
       return this;
     }
 
+    public Builder setSchemaContent(String schemaContent) {
+      this.schemaContent = schemaContent;
+      return this;
+    }
+
     /**
      * Builds a new instance per the given configuration. This method can be
      * safely invoked many times, returning a different instance each.
@@ -203,7 +211,9 @@ public class JsonSchemaValidator {
           .freeze();
 
       try {
-        return new JsonSchemaValidator(loadSchema(factory), objectMapper);
+        checkArgument(!(isBlank(schemaContent) && isBlank(schemaLocation)), "Schema cannot be null or blank");
+        JsonSchema schemaLoaded = isBlank(schemaLocation) ? loadSchema(schemaContent) : loadSchema(factory);
+        return new JsonSchemaValidator(schemaLoaded, objectMapper);
       } catch (ModuleException e) {
         throw e;
       } catch (Exception e) {
@@ -214,11 +224,23 @@ public class JsonSchemaValidator {
     private JsonSchema loadSchema(JsonSchemaFactory factory) {
       try {
         checkState(schemaLocation != null, "schemaLocation has not been provided");
-        String realLocation = resolveLocationIfNecessary(schemaLocation);
+        String realLocation = resolveLocationIfNecessary(formatUri(schemaLocation));
         return factory.getJsonSchema(realLocation);
       } catch (Exception e) {
         throw new ModuleException(format("Could not load JSON schema [%s]. %s", schemaLocation, e.getMessage()),
                                   SCHEMA_NOT_FOUND, e);
+      }
+    }
+
+    private JsonSchema loadSchema(String schemaContent) {
+      try {
+        JsonNode schemaNode = JsonLoader.fromString(schemaContent);
+        JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
+        return factory.getJsonSchema(schemaNode);
+      } catch (ProcessingException e) {
+        throw new ModuleException("Invalid Schema", INVALID_SCHEMA, e);
+      } catch (IOException e) {
+        throw new ModuleException("Invalid Input Content", INVALID_INPUT_JSON, e);
       }
     }
 
