@@ -6,7 +6,9 @@
  */
 package org.mule.module.json.internal;
 
-import static org.mule.module.json.api.JsonError.*;
+import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
+import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
+import static org.mule.module.json.api.JsonError.INVALID_SCHEMA;
 import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
