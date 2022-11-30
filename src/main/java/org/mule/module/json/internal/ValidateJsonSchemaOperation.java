@@ -26,7 +26,6 @@ import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
-import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.scheduler.SchedulerService;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
@@ -42,6 +41,7 @@ import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Path;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
+import org.mule.runtime.extension.api.annotation.param.display.Text;
 import org.mule.runtime.extension.api.annotation.param.stereotype.Validator;
 
 import com.google.common.cache.CacheBuilder;
@@ -135,7 +135,7 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
   @Throws(SchemaValidatorErrorTypeProvider.class)
   public void validateSchema(@Optional @Summary("The schema location") @Path(type = FILE,
       acceptedFileExtensions = "json") String schema,
-                             @Optional @Summary("The schema content to validate") @Expression(ExpressionSupport.SUPPORTED) @DisplayName("Schema Content") String schemaContent,
+                             @Optional @Text @Summary("The schema content to validate") @DisplayName("Schema Content") String schemaContent,
                              @TypeResolver(JsonAnyStaticTypeResolver.class) @Content Object content,
                              @NullSafe @Optional Collection<SchemaRedirect> schemaRedirects,
                              @Optional(defaultValue = "CANONICAL") JsonSchemaDereferencingMode dereferencing,

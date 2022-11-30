@@ -10,6 +10,7 @@ import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
 import static org.mule.module.json.api.JsonError.INVALID_SCHEMA;
 import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.api.JsonError.SCHEMA_NOT_HONOURED;
+import static org.mule.module.json.api.JsonError.SCHEMA_INPUT_ERROR;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypeProvider;
 import org.mule.runtime.extension.api.error.ErrorTypeDefinition;
 
@@ -30,6 +31,7 @@ public class SchemaValidatorErrorTypeProvider implements ErrorTypeProvider {
     errors.add(INVALID_INPUT_JSON);
     errors.add(INVALID_SCHEMA);
     errors.add(SCHEMA_NOT_FOUND);
+    errors.add(SCHEMA_INPUT_ERROR);
 
     return errors;
   }
