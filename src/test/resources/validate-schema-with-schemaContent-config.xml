@@ -1,0 +1,60 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:json="http://www.mulesoft.org/schema/mule/json"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+    <flow name="validateSchemaWithSchemaContent">
+        <json:validate-schema>
+            <json:schema-content><![CDATA[{
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "a": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255
+            },
+          "b": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255
+          }
+        },
+        "not": {"required":["c"]}
+      }
+    }]]></json:schema-content>
+        </json:validate-schema>
+    </flow>
+
+    <flow name="validateBothSchemaNotAllowed">
+        <json:validate-schema schema="#[vars.schema]">
+            <json:schema-content><![CDATA[{
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "a": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+            },
+          "b": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          }
+        },
+        "required": ["a", "b"]
+      }
+    }]]></json:schema-content>
+        </json:validate-schema>
+    </flow>
+
+    <flow name="validateExpectedAtLeastOneSchemaTestCase">
+        <json:validate-schema></json:validate-schema>
+    </flow>
+
+</mule>
