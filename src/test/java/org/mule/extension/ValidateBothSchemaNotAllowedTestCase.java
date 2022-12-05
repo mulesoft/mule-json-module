@@ -11,42 +11,49 @@ import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 
 public class ValidateBothSchemaNotAllowedTestCase extends AbstractSchemaValidationTestCase {
-    private static final String VALIDATOR_FAIL_ON_TRAILING_TOKENS = "jsonSchemaValidator.FailOnTrailingTokens";
-    private String json;
 
-    @Rule
-    public ExpectedException expectedException = none();
-    @Override
-    protected String getConfigFile(){ return "validate-schema-with-schemaContent-config.xml";}
-    @Override
-    protected void doTearDown() {
-        System.clearProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS);
-    }
-    @Override
-    protected void doSetUp() throws Exception {
-        json = doGetResource("inputs/bad-object.json");
-        System.setProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS, "true");
-    }
+  private static final String VALIDATOR_FAIL_ON_TRAILING_TOKENS = "jsonSchemaValidator.FailOnTrailingTokens";
+  private String json;
 
-    @Test
-    public void validate_BothSchemaNotAllowed() throws Exception {
-        expectedException.expectCause(new BaseMatcher<Throwable>() {
-            @Override
-            public boolean matches(Object item) {
-                Exception e = (Exception) item;
-                String report = e.getMessage();
-                assertThat(report,containsString("Either the schema or the schema content must be provided"));
-                return true;
-            }
+  @Rule
+  public ExpectedException expectedException = none();
 
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Either the schema or the schema content must be provided");
+  @Override
+  protected String getConfigFile() {
+    return "validate-schema-with-schemaContent-config.xml";
+  }
 
-            }
-        });
-        flowRunner("validateBothSchemaNotAllowed").withPayload(json).withVariable("schema", SCHEMA_FSTAB_JSON).run();
+  @Override
+  protected void doTearDown() {
+    System.clearProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS);
+  }
+
+  @Override
+  protected void doSetUp() throws Exception {
+    json = doGetResource("inputs/bad-object.json");
+    System.setProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS, "true");
+  }
+
+  @Test
+  public void validate_BothSchemaNotAllowed() throws Exception {
+    expectedException.expectCause(new BaseMatcher<Throwable>() {
+
+      @Override
+      public boolean matches(Object item) {
+        Exception e = (Exception) item;
+        String report = e.getMessage();
+        assertThat(report, containsString("Either the schema or the schema content must be provided"));
+        return true;
+      }
+
+      @Override
+      public void describeTo(Description description) {
+        description.appendText("Either the schema or the schema content must be provided");
+
+      }
+    });
+    flowRunner("validateBothSchemaNotAllowed").withPayload(json).withVariable("schema", SCHEMA_FSTAB_JSON).run();
 
 
-    }
+  }
 }
