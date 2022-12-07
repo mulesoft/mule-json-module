@@ -6,10 +6,10 @@
  */
 package org.mule.extension;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.mule.runtime.core.api.event.CoreEvent;
-
-import static org.junit.Assert.assertEquals;
 
 public class ValidateWithSchemaContentDefaultTestCase extends AbstractSchemaValidationTestCase {
 
