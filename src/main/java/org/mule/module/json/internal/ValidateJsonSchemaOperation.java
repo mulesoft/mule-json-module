@@ -120,6 +120,7 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
    * @param schema The location in which the schema to validate against is to be found. This attribute supports URI
    *        representations such as "http://org.mule/schema.json" or "resource:/schema.json". It also supports a most common
    *        classpath reference such as simply "schema.json".
+   * @param schemaContent The content of the schema to validate in text format.
    * @param content the json document to be validated
    * @param schemaRedirects Allows to redirect any given URI in the Schema (or even the schema location itself) to any other
    *        specific URI. The most common use case for this feature is to map external namespace URIs without the need to a local

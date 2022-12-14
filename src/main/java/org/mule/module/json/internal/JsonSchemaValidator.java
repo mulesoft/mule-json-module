@@ -70,7 +70,6 @@ public class JsonSchemaValidator {
    * instances of {@link JsonSchemaValidator}.
    * This builder can be safely reused, returning a different
    * instance each time {@link #build()} is invoked.
-   * It is mandatory to invoke {@link #setSchemaLocation(String)}
    * with a valid value before
    * attempting to {@link #build()} an instance
    *
@@ -96,13 +95,10 @@ public class JsonSchemaValidator {
      * <ul>resource:/schemas/schema.json</ul>
      * <ul>http://mule.org/schemas/schema.json</ul>
      * </li>
-     *
      * @param schemaLocation the location of the schema to validate against
      * @return this builder
-     * @throws IllegalArgumentException if {@code schemaLocation} is blank or {@code null}
      */
     public Builder setSchemaLocation(String schemaLocation) {
-      //checkArgument(!isBlank(schemaLocation), "schemaLocation cannot be null or blank");
       this.schemaLocation = schemaLocation;
       return this;
     }
@@ -180,6 +176,10 @@ public class JsonSchemaValidator {
       return this;
     }
 
+    /**
+     * @param schemaContent the content of the schema against which it is validated
+     * @return this builder
+     */
     public Builder setSchemaContent(String schemaContent) {
       this.schemaContent = schemaContent;
       return this;
@@ -189,8 +189,12 @@ public class JsonSchemaValidator {
      * Builds a new instance per the given configuration. This method can be
      * safely invoked many times, returning a different instance each.
      *
+     * There is a mutually exclusive relationship between the attributes {@link #schemaLocation} and {@link #schemaContent}.
+     * Only one is allowed at a time, you cannot use both at the same time.
+     *
      * @return a {@link JsonSchemaValidator}
-     * @throws IllegalStateException if {@link #setSchemaLocation(String)} was not invoked
+     * @throws ModuleException if {@link #schemaContent} and {@link #schemaLocation} both are empty or null then produce SCHEMA_NOT_FOUND error.
+     * @throws ModuleException if {@link #schemaContent} and {@link #schemaLocation} both have a content it produces SCHEMA_INPUT_ERROR error.
      */
     public JsonSchemaValidator build() {
 
