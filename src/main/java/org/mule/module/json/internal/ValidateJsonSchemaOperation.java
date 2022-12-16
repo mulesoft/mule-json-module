@@ -11,7 +11,6 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.stream.Collectors.toMap;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
-import static org.mule.runtime.api.meta.model.display.PathModel.Type.FILE;
 import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_INTENSIVE;
 import static org.mule.runtime.extension.api.annotation.param.display.Placement.ADVANCED_TAB;
 
@@ -37,11 +36,8 @@ import org.mule.runtime.extension.api.annotation.metadata.TypeResolver;
 import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
-import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
-import org.mule.runtime.extension.api.annotation.param.display.Path;
+import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
-import org.mule.runtime.extension.api.annotation.param.display.Summary;
-import org.mule.runtime.extension.api.annotation.param.display.Text;
 import org.mule.runtime.extension.api.annotation.param.stereotype.Validator;
 
 import com.google.common.cache.CacheBuilder;
@@ -53,7 +49,6 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
-import java.util.ResourceBundle;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -117,10 +112,7 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
    * Validates that the input content is compliant with a given schema. This operation supports referencing many schemas (using
    * comma as a separator) which include each other.
    *
-   * @param schema The location in which the schema to validate against is to be found. This attribute supports URI
-   *        representations such as "http://org.mule/schema.json" or "resource:/schema.json". It also supports a most common
-   *        classpath reference such as simply "schema.json".
-   * @param schemaContent The content of the schema to validate in text format.
+   * @param jsonSchema a {@link JsonSchema} as a parameter group
    * @param content the json document to be validated
    * @param schemaRedirects Allows to redirect any given URI in the Schema (or even the schema location itself) to any other
    *        specific URI. The most common use case for this feature is to map external namespace URIs without the need to a local
@@ -136,9 +128,7 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
   @Validator
   @Execution(CPU_INTENSIVE)
   @Throws(SchemaValidatorErrorTypeProvider.class)
-  public void validateSchema(@Optional @Summary("The schema location") @Path(type = FILE,
-      acceptedFileExtensions = "json") String schema,
-                             @Optional @Text @Summary("The schema content to validate") @DisplayName("Schema Content") String schemaContent,
+  public void validateSchema(@ParameterGroup(name = "Schema") JsonSchema jsonSchema,
                              @TypeResolver(JsonAnyStaticTypeResolver.class) @Content Object content,
                              @NullSafe @Optional Collection<SchemaRedirect> schemaRedirects,
                              @Optional(defaultValue = "CANONICAL") JsonSchemaDereferencingMode dereferencing,
@@ -151,8 +141,9 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
 
     JsonSchemaValidator validator;
     GenericObjectPool<JsonSchemaValidator> pool =
-        validatorPool.getUnchecked(new ValidatorKey(schema, dereferencing, asMap(schemaRedirects), allowDuplicateKeys,
-                                                    allowArbitraryPrecision, schemaContent));
+        validatorPool
+            .getUnchecked(new ValidatorKey(jsonSchema.getSchema(), dereferencing, asMap(schemaRedirects), allowDuplicateKeys,
+                                           allowArbitraryPrecision, jsonSchema.getContents()));
 
     try {
       validator = pool.borrowObject();

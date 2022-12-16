@@ -9,7 +9,6 @@ package org.mule.module.json.internal;
 import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
 import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.api.JsonError.INVALID_SCHEMA;
-import static org.mule.module.json.api.JsonError.SCHEMA_INPUT_ERROR;
 import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
@@ -193,8 +192,8 @@ public class JsonSchemaValidator {
      * Only one is allowed at a time, you cannot use both at the same time.
      *
      * @return a {@link JsonSchemaValidator}
-     * @throws ModuleException if {@link #schemaContent} and {@link #schemaLocation} both are empty or nul, so throw SCHEMA_NOT_FOUND error.
-     * @throws ModuleException if {@link #schemaContent} and {@link #schemaLocation} both have a content, so throw   SCHEMA_INPUT_ERROR error.
+     * @throws ModuleException
+     * @throws MuleRuntimeException
      */
     public JsonSchemaValidator build() {
 
@@ -218,13 +217,6 @@ public class JsonSchemaValidator {
           .freeze();
 
       try {
-        if (isBlank(schemaContent) && isBlank(schemaLocation)) {
-          throw new ModuleException("Schema cannot be null or blank", SCHEMA_NOT_FOUND);
-        }
-        if (!isBlank(schemaContent) && !isBlank(schemaLocation)) {
-          throw new ModuleException("Either the schema or the schema content must be provided, and you cannot provide both.",
-                                    SCHEMA_INPUT_ERROR);
-        }
         JsonSchema schemaLoaded = isBlank(schemaLocation) ? loadSchema(schemaContent) : loadSchema(factory);
         return new JsonSchemaValidator(schemaLoaded, objectMapper);
       } catch (ModuleException e) {
