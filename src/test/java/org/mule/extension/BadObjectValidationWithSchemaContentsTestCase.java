@@ -16,7 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class ValidateBothSchemaNotAllowedTestCase extends AbstractSchemaValidationTestCase {
+public class BadObjectValidationWithSchemaContentsTestCase extends AbstractSchemaValidationTestCase {
 
   private static final String VALIDATOR_FAIL_ON_TRAILING_TOKENS = "jsonSchemaValidator.FailOnTrailingTokens";
   private String json;
@@ -26,7 +26,7 @@ public class ValidateBothSchemaNotAllowedTestCase extends AbstractSchemaValidati
 
   @Override
   protected String getConfigFile() {
-    return "validate-schema-with-schemaContent-config.xml";
+    return "validate-schema-with-schemaContents-config.xml";
   }
 
   @Override
@@ -41,25 +41,23 @@ public class ValidateBothSchemaNotAllowedTestCase extends AbstractSchemaValidati
   }
 
   @Test
-  public void validate_BothSchemaNotAllowed() throws Exception {
+  public void validate_ErrorDataContent() throws Exception {
     expectedException.expectCause(new BaseMatcher<Throwable>() {
 
       @Override
       public boolean matches(Object item) {
         Exception e = (Exception) item;
         String report = e.getMessage();
-        assertThat(report, containsString("Either the schema or the schema content must be provided"));
+        assertThat(report, containsString("Trailing token (of type START_OBJECT) found after value"));
         return true;
       }
 
       @Override
       public void describeTo(Description description) {
-        description.appendText("Either the schema or the schema content must be provided");
-
+        description.appendText("Error report did not match");
       }
     });
-    flowRunner("validateBothSchemaNotAllowed").withPayload(json).withVariable("schema", SCHEMA_FSTAB_JSON).run();
-
+    flowRunner("validateSchemaWithSchemaContents").withPayload(json).run();
 
   }
 }

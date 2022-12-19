@@ -17,7 +17,7 @@ public class ValidateWithSchemaContentDefaultTestCase extends AbstractSchemaVali
 
   @Override
   protected String getConfigFile() {
-    return "validate-schema-with-schemaContent-config.xml";
+    return "validate-schema-with-schemaContents-config.xml";
   }
 
   @Override
@@ -27,7 +27,7 @@ public class ValidateWithSchemaContentDefaultTestCase extends AbstractSchemaVali
 
   @Test
   public void validateDefaultBehaviourWithSchemaContent() throws Exception {
-    CoreEvent event = flowRunner("validateSchemaWithSchemaContent").withPayload(json).run();
+    CoreEvent event = flowRunner("validateSchemaWithSchemaContents").withPayload(json).run();
     assertEquals(json, event.getMessage().getPayload().getValue());
   }
 }

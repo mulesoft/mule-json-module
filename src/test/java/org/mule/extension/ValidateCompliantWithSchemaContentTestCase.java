@@ -26,7 +26,7 @@ public class ValidateCompliantWithSchemaContentTestCase extends AbstractSchemaVa
 
   @Override
   protected String getConfigFile() {
-    return "validate-schema-with-schemaContent-config.xml";
+    return "validate-schema-with-schemaContents-config.xml";
   }
 
   @Override
@@ -57,6 +57,6 @@ public class ValidateCompliantWithSchemaContentTestCase extends AbstractSchemaVa
         description.appendText("Json content is not compliant with schema");
       }
     });
-    flowRunner("validateSchemaWithSchemaContent").withPayload(json).run();
+    flowRunner("validateSchemaWithSchemaContents").withPayload(json).run();
   }
 }
