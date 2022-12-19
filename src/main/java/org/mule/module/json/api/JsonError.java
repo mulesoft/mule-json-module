@@ -37,11 +37,7 @@ public enum JsonError implements ErrorTypeDefinition<JsonError> {
   /**
    * The supplied schema is invalid
    */
-  INVALID_SCHEMA,
-  /**
-   * The Input is not valid, only one entry is allowed.
-   */
-  SCHEMA_INPUT_ERROR;
+  INVALID_SCHEMA;
 
   private ErrorTypeDefinition<? extends Enum<?>> parentError;
 
