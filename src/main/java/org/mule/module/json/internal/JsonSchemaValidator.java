@@ -6,6 +6,7 @@
  */
 package org.mule.module.json.internal;
 
+import static com.networknt.schema.SpecVersion.VersionFlag.V202012;
 import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
 import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
@@ -22,6 +23,10 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.networknt.schema.SchemaValidatorsConfig;
+import com.networknt.schema.SpecVersion;
+import com.networknt.schema.SpecVersionDetector;
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.module.json.internal.error.SchemaValidationException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -181,7 +186,7 @@ public class JsonSchemaValidator {
      * @return a {@link JsonSchemaValidator}
      * @throws IllegalStateException if {@link #setSchemaLocation(String)} was not invoked
      */
-    public JsonSchemaValidator build() {
+    public JsonSchemaValidator build() throws JsonProcessingException {
 
       final URITranslatorConfigurationBuilder translatorConfigurationBuilder = URITranslatorConfiguration.newBuilder();
       for (Map.Entry<String, String> redirect : schemaRedirects.entrySet()) {
@@ -201,6 +206,13 @@ public class JsonSchemaValidator {
       JsonSchemaFactory factory = JsonSchemaFactory.newBuilder()
           .setLoadingConfiguration(loadingConfiguration)
           .freeze();
+
+      JsonNode jsonNode = objectMapper.readTree(schemaLocation);
+      com.networknt.schema.JsonSchemaFactory jsonSchemaFactory = com.networknt.schema.JsonSchemaFactory.getInstance(V202012);
+
+
+      SchemaValidatorsConfig schemaValidatorsConfig = new SchemaValidatorsConfig();
+      jsonSchemaFactory.getSchema(jsonNode, schemaValidatorsConfig);
 
       try {
         return new JsonSchemaValidator(loadSchema(factory), objectMapper);
@@ -277,9 +289,12 @@ public class JsonSchemaValidator {
 
   private final ObjectMapper objectMapper;
 
-  private JsonSchemaValidator(JsonSchema schema, ObjectMapper objectMapper) {
+  private final com.networknt.schema.JsonSchema networkntJsonSchema;
+
+  private JsonSchemaValidator(JsonSchema schema, ObjectMapper objectMapper, com.networknt.schema.JsonSchema networkntJsonSchema) {
     this.schema = schema;
     this.objectMapper = objectMapper;
+    this.networkntJsonSchema = networkntJsonSchema;
   }
 
   /**
@@ -297,13 +312,20 @@ public class JsonSchemaValidator {
 
     JsonNode jsonNode = asJsonNode(input);
     ProcessingReport report;
-    try {
-      report = schema.validate(jsonNode, true);
-    } catch (Exception e) {
-      throw new MuleRuntimeException(createStaticMessage(
-                                                         "Exception was found while trying to validate against json schema. Content was: "
-                                                             + jsonNode.toString()),
-                                     e);
+
+    if(SpecVersionDetector.detect(jsonNode).equals(V202012)){
+      //      com.networknt.schema.JsonSchemaFactory jsonSchemaFactory = com.networknt.schema.JsonSchemaFactory.getInstance(V202012);
+      report = null;
+    }else{
+
+      try {
+        report = schema.validate(jsonNode, true);
+      } catch (Exception e) {
+        throw new MuleRuntimeException(createStaticMessage(
+                "Exception was found while trying to validate against json schema. Content was: "
+                        + jsonNode.toString()),
+                e);
+      }
     }
 
     if (!report.isSuccess()) {
