@@ -124,7 +124,6 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
    *                                otherwise double precision will be used.
    */
 
-  //TODO - This implementation should be changed in the next Major release to use the @ExclusiveOptionals annotation on the schemaContent and schemaLocation fields.(W-12220672)
   @Validator
   @Execution(CPU_INTENSIVE)
   @Throws(SchemaValidatorErrorTypeProvider.class)

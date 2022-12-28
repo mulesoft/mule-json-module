@@ -69,8 +69,9 @@ public class JsonSchemaValidator {
    * instances of {@link JsonSchemaValidator}.
    * This builder can be safely reused, returning a different
    * instance each time {@link #build()} is invoked.
-   * with a valid value before
-   * attempting to {@link #build()} an instance
+   * It is mandatory to invoke with a valid value one of the methods that allow setting a value for the schema to be validated against
+   * {@link #setSchemaLocation(String)} or {@link #setSchemaContent(String)}
+   * before attempting to {@link #build()} an instance
    *
    * @since 1.0
    */
