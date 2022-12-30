@@ -26,9 +26,6 @@ import static org.hamcrest.Matchers.lessThan;
 @RunWith(Ambar.class)
 public class RedeploymentTestCase{
 
-
-    /*
-
     private static final Identifier api1 = identifier("api1");
     private static final Identifier api2 = identifier("api2");
     private static final Identifier port = identifier("port");
@@ -49,7 +46,6 @@ public class RedeploymentTestCase{
 
     @Test
     public void redeploymentTestCase(){
-        /*
         for(int i =0;i<10;i++){
             HttpResponse response = runtime.api(api1).request( "/validate").get();
             assertThat(response.statusCode(), is(equalTo(200)));
@@ -58,8 +54,6 @@ public class RedeploymentTestCase{
             assertThat(Integer.valueOf(response.asString()),is(lessThan(10)));
             assertThat(response.statusCode(), is(equalTo(200)));
         }
-
     }
-         */
 
 }
