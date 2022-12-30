@@ -6,7 +6,7 @@
  */
 package org.mule.module.json.internal;
 
-import static com.networknt.schema.SpecVersion.VersionFlag.V202012;
+import static com.networknt.schema.SpecVersion.VersionFlag.*;
 import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
 import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.api.JsonError.INVALID_SCHEMA;
@@ -24,21 +24,18 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.networknt.schema.SchemaValidatorsConfig;
-import com.networknt.schema.SpecVersion;
-import com.networknt.schema.SpecVersionDetector;
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
+import org.mule.module.json.internal.cleanup.JsonModuleResourceReleaser;
 import org.mule.module.json.internal.error.SchemaValidationException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,8 +47,13 @@ import com.github.fge.jsonschema.core.load.uri.URITranslatorConfigurationBuilder
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
-import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.networknt.schema.JsonSchemaException;
+import com.networknt.schema.SpecVersionDetector;
+import com.networknt.schema.ValidationMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Validates json payloads against json schemas compliant with drafts v3 and v4.
@@ -64,6 +66,7 @@ import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 public class JsonSchemaValidator {
 
   private static final String VALIDATOR_FAIL_ON_TRAILING_TOKENS = "jsonSchemaValidator.FailOnTrailingTokens";
+  private static final Logger LOGGER = LoggerFactory.getLogger(JsonModuleResourceReleaser.class);
 
   private static boolean isBlank(String value) {
     return value == null || value.trim().length() == 0;
@@ -200,8 +203,88 @@ public class JsonSchemaValidator {
      * @throws ModuleException
      * @throws MuleRuntimeException
      */
-    public JsonSchemaValidator build() throws JsonProcessingException {
+    public JsonSchemaValidator build() {
 
+      //Parse schema to a jsonNode
+      JsonNode jsonNodeSchema = getSchemaJsonNode();
+
+      //Detect if is needed to use the new library (Draft 6,7 2019-09 and 2020-12
+      Boolean useNetworkntLibrary = isNeededNetworkntJsonSchema(jsonNodeSchema);
+
+      try {
+        //if is used the new library create a schema factory with the needed schema and
+        // a JsonSchemaValidator class with the Schema class to make validations
+        // The first parameter is null because we dont need the validator of the com.github.fge library
+      if (useNetworkntLibrary) {
+        com.networknt.schema.JsonSchemaFactory schemaFactory =
+            com.networknt.schema.JsonSchemaFactory.getInstance(SpecVersionDetector.detect(jsonNodeSchema));
+        LOGGER.info("Networknt Library in use");
+        return new JsonSchemaValidator(null, objectMapper, schemaFactory.getSchema(jsonNodeSchema), useNetworkntLibrary);
+      }
+        return new JsonSchemaValidator(loadSchema(jsonNodeSchema), objectMapper, null, useNetworkntLibrary);
+      } catch (ModuleException e) {
+        throw e;
+      } catch (Exception e) {
+        throw new MuleRuntimeException(createStaticMessage("Could not initialise JsonSchemaValidator"), e);
+      }
+    }
+
+    /**
+     * Networknt library support these new versions of Json Schema, else we use com.github.fge library.
+     */
+    private Boolean isNeededNetworkntJsonSchema(JsonNode jsonNode) {
+
+      try {
+        return SpecVersionDetector.detect(jsonNode).equals(V6) ||
+            SpecVersionDetector.detect(jsonNode).equals(V7) ||
+            SpecVersionDetector.detect(jsonNode).equals(V201909) ||
+            SpecVersionDetector.detect(jsonNode).equals(V202012);
+      } catch (JsonSchemaException exception) {
+        return false;
+      }
+    }
+
+    /**
+     * Load Json node from schema content or schema location, and make validations.
+     * Decided to obtain first the JsonNode, to read the json and know what version of
+     * schema is needed and then create JsonSchemaValidator with class JsonSchema of
+     * com.github.fge (Draft 3 & 4) or com.networknt (Draft 6, 7, 2019-09 & 2020-12)
+     */
+
+    private JsonNode getSchemaJsonNode() {
+
+      if (!isBlank(schemaContent)) {
+          try {
+          return objectMapper.readTree(schemaContent);
+          } catch (JsonProcessingException e) {
+            throw new ModuleException("Invalid Input Content", INVALID_INPUT_JSON, e);
+          }
+        }
+      try{
+        checkState(schemaLocation != null, "schemaLocation has not been provided");
+        return objectMapper.readTree(resolveLocationIfNecessary(schemaLocation));
+      } catch (Exception e) {
+
+        throw new ModuleException(format("Could not load JSON schema [%s]. %s", schemaLocation, e.getMessage()),
+                SCHEMA_NOT_FOUND, e);
+      }
+    }
+
+    private JsonSchema loadSchema(JsonNode jsonNodeSchema){
+      try {
+        if (!isBlank(schemaContent)) {
+          JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
+          return factory.getJsonSchema(jsonNodeSchema);
+        } else {
+          JsonSchemaFactory factory = getFactoryAndLoadConfiguration();
+          return factory.getJsonSchema(jsonNodeSchema);
+        }
+      } catch (ProcessingException e) {
+        throw new ModuleException("Invalid Schema", INVALID_SCHEMA, e);
+      }
+    }
+
+    private JsonSchemaFactory getFactoryAndLoadConfiguration() {
       final URITranslatorConfigurationBuilder translatorConfigurationBuilder = URITranslatorConfiguration.newBuilder();
       for (Map.Entry<String, String> redirect : schemaRedirects.entrySet()) {
         String key = resolveLocationIfNecessary(redirect.getKey());
@@ -211,54 +294,16 @@ public class JsonSchemaValidator {
       }
 
       final LoadingConfigurationBuilder loadingConfigurationBuilder = LoadingConfiguration.newBuilder()
-          .dereferencing(dereferencing == CANONICAL
-              ? Dereferencing.CANONICAL
-              : Dereferencing.INLINE)
-          .setURITranslatorConfiguration(translatorConfigurationBuilder.freeze());
+              .dereferencing(dereferencing == CANONICAL
+                      ? Dereferencing.CANONICAL
+                      : Dereferencing.INLINE)
+              .setURITranslatorConfiguration(translatorConfigurationBuilder.freeze());
 
       LoadingConfiguration loadingConfiguration = loadingConfigurationBuilder.freeze();
       JsonSchemaFactory factory = JsonSchemaFactory.newBuilder()
-          .setLoadingConfiguration(loadingConfiguration)
-          .freeze();
-
-      JsonNode jsonNode = objectMapper.readTree(schemaLocation);
-      com.networknt.schema.JsonSchemaFactory jsonSchemaFactory = com.networknt.schema.JsonSchemaFactory.getInstance(V202012);
-
-
-      SchemaValidatorsConfig schemaValidatorsConfig = new SchemaValidatorsConfig();
-      jsonSchemaFactory.getSchema(jsonNode, schemaValidatorsConfig);
-
-      try {
-        JsonSchema schemaLoaded = isBlank(schemaLocation) ? loadSchema(schemaContent) : loadSchema(factory);
-        return new JsonSchemaValidator(schemaLoaded, objectMapper);
-      } catch (ModuleException e) {
-        throw e;
-      } catch (Exception e) {
-        throw new MuleRuntimeException(createStaticMessage("Could not initialise JsonSchemaValidator"), e);
-      }
-    }
-
-    private JsonSchema loadSchema(JsonSchemaFactory factory) {
-      try {
-        checkState(schemaLocation != null, "schemaLocation has not been provided");
-        String realLocation = resolveLocationIfNecessary(formatUri(schemaLocation));
-        return factory.getJsonSchema(realLocation);
-      } catch (Exception e) {
-        throw new ModuleException(format("Could not load JSON schema [%s]. %s", schemaLocation, e.getMessage()),
-                                  SCHEMA_NOT_FOUND, e);
-      }
-    }
-
-    private JsonSchema loadSchema(String schemaContent) {
-      try {
-        JsonNode schemaNode = JsonLoader.fromString(schemaContent);
-        JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-        return factory.getJsonSchema(schemaNode);
-      } catch (ProcessingException e) {
-        throw new ModuleException("Invalid Schema", INVALID_SCHEMA, e);
-      } catch (IOException e) {
-        throw new ModuleException("Invalid Input Content", INVALID_INPUT_JSON, e);
-      }
+              .setLoadingConfiguration(loadingConfiguration)
+              .freeze();
+      return factory;
     }
 
     private String resolveLocationIfNecessary(String path) {
@@ -318,10 +363,14 @@ public class JsonSchemaValidator {
 
   private final com.networknt.schema.JsonSchema networkntJsonSchema;
 
-  private JsonSchemaValidator(JsonSchema schema, ObjectMapper objectMapper, com.networknt.schema.JsonSchema networkntJsonSchema) {
+  private final boolean useNetworkntLibrary;
+
+  private JsonSchemaValidator(JsonSchema schema, ObjectMapper objectMapper, com.networknt.schema.JsonSchema networkntJsonSchema,
+                              boolean useNetworkntLibrary) {
     this.schema = schema;
     this.objectMapper = objectMapper;
     this.networkntJsonSchema = networkntJsonSchema;
+    this.useNetworkntLibrary = useNetworkntLibrary;
   }
 
   /**
@@ -339,24 +388,30 @@ public class JsonSchemaValidator {
 
     JsonNode jsonNode = asJsonNode(input);
     ProcessingReport report;
+    Set<ValidationMessage> responseValidate = null;
 
-    if(SpecVersionDetector.detect(jsonNode).equals(V202012)){
-      //      com.networknt.schema.JsonSchemaFactory jsonSchemaFactory = com.networknt.schema.JsonSchemaFactory.getInstance(V202012);
-      report = null;
-    }else{
-
-      try {
+    try {
+      if (useNetworkntLibrary) {
+        responseValidate = networkntJsonSchema.validate(jsonNode);
+        report = null;
+      } else {
         report = schema.validate(jsonNode, true);
-      } catch (Exception e) {
-        throw new MuleRuntimeException(createStaticMessage(
-                "Exception was found while trying to validate against json schema. Content was: "
-                        + jsonNode.toString()),
-                e);
       }
+
+    } catch (Exception e) {
+      throw new MuleRuntimeException(createStaticMessage(
+                                                         "Exception was found while trying to validate against json schema. Content was: "
+                                                             + jsonNode.toString()),
+                                     e);
     }
 
-    if (!report.isSuccess()) {
-      throw new SchemaValidationException("Json content is not compliant with schema", reportAsJson(report));
+    if (useNetworkntLibrary && responseValidate.size() != 0) {
+      throw new SchemaValidationException("Json content is not compliant with schema: " + responseValidate,
+                                          responseValidate.toString());
+    }
+
+    if (!useNetworkntLibrary && !report.isSuccess()) {
+      throw new SchemaValidationException("Json content is not compliant with schema: " + report, reportAsJson(report));
     }
   }
 
