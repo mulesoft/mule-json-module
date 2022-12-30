@@ -215,12 +215,12 @@ public class JsonSchemaValidator {
         //if is used the new library create a schema factory with the needed schema and
         // a JsonSchemaValidator class with the Schema class to make validations
         // The first parameter is null because we dont need the validator of the com.github.fge library
-      if (useNetworkntLibrary) {
-        com.networknt.schema.JsonSchemaFactory schemaFactory =
-            com.networknt.schema.JsonSchemaFactory.getInstance(SpecVersionDetector.detect(jsonNodeSchema));
-        LOGGER.info("Networknt Library in use");
-        return new JsonSchemaValidator(null, objectMapper, schemaFactory.getSchema(jsonNodeSchema), useNetworkntLibrary);
-      }
+        if (useNetworkntLibrary) {
+          com.networknt.schema.JsonSchemaFactory schemaFactory =
+              com.networknt.schema.JsonSchemaFactory.getInstance(SpecVersionDetector.detect(jsonNodeSchema));
+          LOGGER.info("Networknt Library in use");
+          return new JsonSchemaValidator(null, objectMapper, schemaFactory.getSchema(jsonNodeSchema), useNetworkntLibrary);
+        }
         return new JsonSchemaValidator(loadSchema(jsonNodeSchema), objectMapper, null, useNetworkntLibrary);
       } catch (ModuleException e) {
         throw e;
@@ -254,23 +254,23 @@ public class JsonSchemaValidator {
     private JsonNode getSchemaJsonNode() {
 
       if (!isBlank(schemaContent)) {
-          try {
+        try {
           return objectMapper.readTree(schemaContent);
-          } catch (JsonProcessingException e) {
-            throw new ModuleException("Invalid Input Content", INVALID_INPUT_JSON, e);
-          }
+        } catch (JsonProcessingException e) {
+          throw new ModuleException("Invalid Input Content", INVALID_INPUT_JSON, e);
         }
-      try{
+      }
+      try {
         checkState(schemaLocation != null, "schemaLocation has not been provided");
         return objectMapper.readTree(resolveLocationIfNecessary(schemaLocation));
       } catch (Exception e) {
 
         throw new ModuleException(format("Could not load JSON schema [%s]. %s", schemaLocation, e.getMessage()),
-                SCHEMA_NOT_FOUND, e);
+                                  SCHEMA_NOT_FOUND, e);
       }
     }
 
-    private JsonSchema loadSchema(JsonNode jsonNodeSchema){
+    private JsonSchema loadSchema(JsonNode jsonNodeSchema) {
       try {
         if (!isBlank(schemaContent)) {
           JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
@@ -294,15 +294,15 @@ public class JsonSchemaValidator {
       }
 
       final LoadingConfigurationBuilder loadingConfigurationBuilder = LoadingConfiguration.newBuilder()
-              .dereferencing(dereferencing == CANONICAL
-                      ? Dereferencing.CANONICAL
-                      : Dereferencing.INLINE)
-              .setURITranslatorConfiguration(translatorConfigurationBuilder.freeze());
+          .dereferencing(dereferencing == CANONICAL
+              ? Dereferencing.CANONICAL
+              : Dereferencing.INLINE)
+          .setURITranslatorConfiguration(translatorConfigurationBuilder.freeze());
 
       LoadingConfiguration loadingConfiguration = loadingConfigurationBuilder.freeze();
       JsonSchemaFactory factory = JsonSchemaFactory.newBuilder()
-              .setLoadingConfiguration(loadingConfiguration)
-              .freeze();
+          .setLoadingConfiguration(loadingConfiguration)
+          .freeze();
       return factory;
     }
 
