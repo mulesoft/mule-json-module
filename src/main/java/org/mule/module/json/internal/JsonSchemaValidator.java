@@ -262,7 +262,7 @@ public class JsonSchemaValidator {
       }
       try {
         checkState(schemaLocation != null, "schemaLocation has not been provided");
-        return objectMapper.readTree(resolveLocationIfNecessary(schemaLocation));
+        return objectMapper.readTree(new URL(resolveLocationIfNecessary(schemaLocation)));
       } catch (Exception e) {
 
         throw new ModuleException(format("Could not load JSON schema [%s]. %s", schemaLocation, e.getMessage()),
