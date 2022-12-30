@@ -18,7 +18,7 @@
 
     <properties>
         <jackson.version>2.14.1</jackson.version>
-        <jackson.databind.version>2.14.0</jackson.databind.version>
+        <jackson.databind.version>2.14.1</jackson.databind.version>
         <json.schema.validation.version>2.2.14</json.schema.validation.version>
         <guava.version>31.1-jre</guava.version>
         <jakarta.mail.version>2.0.1</jakarta.mail.version>
