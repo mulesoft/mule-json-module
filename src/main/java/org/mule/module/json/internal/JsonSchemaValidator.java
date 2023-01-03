@@ -24,7 +24,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
 
+import com.fasterxml.jackson.core.JsonPointer;
 import com.github.fge.jackson.JsonLoader;
+import com.networknt.schema.SchemaValidatorsConfig;
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.module.json.internal.cleanup.JsonModuleResourceReleaser;
 import org.mule.module.json.internal.error.SchemaValidationException;
@@ -34,6 +36,7 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -210,20 +213,16 @@ public class JsonSchemaValidator {
       //Parse schema to a jsonNode
       JsonNode jsonNodeSchema = getSchemaJsonNode();
 
-      //Detect if is needed to use the new library (Draft 6,7 2019-09 and 2020-12
-      boolean useNetworkntLibrary = isNeededNetworkntJsonSchema(jsonNodeSchema);
+      boolean useNetworkntLibrary = isNeededNetworkntJsonSchemaLibrary(jsonNodeSchema);
 
       try {
-        //if is used the new library create a schema factory with the needed schema and
-        // a JsonSchemaValidator class with the Schema class to make validations
-        // The first parameter is null because we dont need the validator of the com.github.fge library
         if (useNetworkntLibrary) {
-          com.networknt.schema.JsonSchemaFactory schemaFactory =
-              com.networknt.schema.JsonSchemaFactory.getInstance(SpecVersionDetector.detect(jsonNodeSchema));
           LOGGER.info("Networknt Library in use");
-          return new JsonSchemaValidator(null, objectMapper, schemaFactory.getSchema(jsonNodeSchema), useNetworkntLibrary);
+          return new JsonSchemaValidator(null, objectMapper,
+                                         loadSchemaNetworkntLibrary(jsonNodeSchema),
+                                         useNetworkntLibrary);
         }
-        return new JsonSchemaValidator(loadSchema(), objectMapper, null, useNetworkntLibrary);
+        return new JsonSchemaValidator(loadSchemaFGELibrary(jsonNodeSchema), objectMapper, null, useNetworkntLibrary);
       } catch (ModuleException e) {
         throw e;
       } catch (Exception e) {
@@ -233,8 +232,9 @@ public class JsonSchemaValidator {
 
     /**
      * Networknt library support these new versions of Json Schema, else we use com.github.fge library.
+     * If a version is not detected, return false, is used the old library and Draft V3 o V4.
      */
-    private Boolean isNeededNetworkntJsonSchema(JsonNode jsonNode) {
+    private Boolean isNeededNetworkntJsonSchemaLibrary(JsonNode jsonNode) {
 
       try {
         return SpecVersionDetector.detect(jsonNode).equals(V6) ||
@@ -257,8 +257,7 @@ public class JsonSchemaValidator {
 
       if (!isBlank(schemaContent)) {
         try {
-          return objectMapper.readValue(schemaContent, JsonNode.class);
-          // return objectMapper.readTree(schemaContent);
+          return objectMapper.readTree(schemaContent);
         } catch (JsonProcessingException e) {
           throw new ModuleException("Invalid Input Content", INVALID_INPUT_JSON, e);
         }
@@ -275,23 +274,61 @@ public class JsonSchemaValidator {
 
     /**
      * Load Schema for com.github.fge (Draft 3 & 4)
+     * If the schema comes from a TEXT, is loaded with a jsonNode
+     * but If the schema comes from a PATH, is loaded with this location
+     * because is needed to solve references (example: $ref to other schema file).
      */
-    private JsonSchema loadSchema() {
+    private JsonSchema loadSchemaFGELibrary(JsonNode jsonNode) {
+      JsonSchemaFactory factory = getFactoryAndLoadConfigurationFGE();
       try {
         if (!isBlank(schemaContent)) {
-          JsonNode schemaNode = JsonLoader.fromString(schemaContent);
-          JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-          return factory.getJsonSchema(schemaNode);
+          return factory.getJsonSchema(jsonNode);
         } else {
-          JsonSchemaFactory factory = getFactoryAndLoadConfiguration();
           return factory.getJsonSchema(resolveLocationIfNecessary(schemaLocation));
         }
-      } catch (ProcessingException | IOException e) {
+      } catch (ProcessingException e) {
         throw new ModuleException("Invalid Schema", INVALID_SCHEMA, e);
       }
     }
 
-    private JsonSchemaFactory getFactoryAndLoadConfiguration() {
+    /**
+     * Load Schema for com.networknt( Draft 6, 7, 2019-09 & 2020-12)
+     * If the schema comes from a TEXT, is loaded with a jsonNode
+     * but If the schema comes from a PATH, is loaded with this location
+     * because is needed to solve references (example: $ref to other schema file).
+     */
+    private com.networknt.schema.JsonSchema loadSchemaNetworkntLibrary(JsonNode jsonNode) throws URISyntaxException {
+
+      com.networknt.schema.JsonSchemaFactory schemaFactory =
+          com.networknt.schema.JsonSchemaFactory.getInstance(SpecVersionDetector.detect(jsonNode));
+
+      if (schemaLocation == null) {
+        return schemaFactory.getSchema(jsonNode, getUriRedirectConfigNetworknt());
+      } else {
+        return schemaFactory.getSchema(new URI(resolveLocationIfNecessary(schemaLocation)), getUriRedirectConfigNetworknt());
+      }
+    }
+
+    private SchemaValidatorsConfig getUriRedirectConfigNetworknt() {
+
+      SchemaValidatorsConfig schemaValidatorsConfig = new SchemaValidatorsConfig();
+      if (!schemaRedirects.entrySet().isEmpty()) {
+        Map<String, String> uriRedirects = new HashMap();
+
+        for (Map.Entry<String, String> redirect : schemaRedirects.entrySet()) {
+          String key = resolveLocationIfNecessary(redirect.getKey());
+          String value = resolveLocationIfNecessary(redirect.getValue());
+          uriRedirects.put(key, value);
+        }
+        schemaValidatorsConfig.setUriMappings(uriRedirects);
+      }
+      return schemaValidatorsConfig;
+    }
+
+    /**
+     * Get factory to create Schema instances for com.github.fge library
+     */
+    private JsonSchemaFactory getFactoryAndLoadConfigurationFGE() {
       final URITranslatorConfigurationBuilder translatorConfigurationBuilder = URITranslatorConfiguration.newBuilder();
       for (Map.Entry<String, String> redirect : schemaRedirects.entrySet()) {
         String key = resolveLocationIfNecessary(redirect.getKey());
