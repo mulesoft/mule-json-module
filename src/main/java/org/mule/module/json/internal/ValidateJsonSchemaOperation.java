@@ -226,9 +226,11 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
         JsonNode schemaJsonNode = jsonSchemaParser.getSchemaJsonNode(key.schemaContent, key.schemas);
 
         if (ValidatorSchemaLibraryDetector.detectValidator(schemaJsonNode).equals(ValidationLibraries.NETWORKNT)) {
-          return new SchemaValidatorNetworknt(key.schemas, key.dereferencingType, key.allowDuplicateKeys, key.allowArbitraryPrecision, key.schemaRedirects, schemaJsonNode);
+          return new SchemaValidatorNetworknt(key.schemas, key.dereferencingType, key.allowDuplicateKeys,
+                                              key.allowArbitraryPrecision, key.schemaRedirects, schemaJsonNode);
         }
-        return new SchemaValidatorJavaJsonTools(key.schemas, key.dereferencingType, key.allowDuplicateKeys, key.allowArbitraryPrecision, key.schemaRedirects, schemaJsonNode);
+        return new SchemaValidatorJavaJsonTools(key.schemas, key.dereferencingType, key.allowDuplicateKeys,
+                                                key.allowArbitraryPrecision, key.schemaRedirects, schemaJsonNode);
       }
 
       @Override

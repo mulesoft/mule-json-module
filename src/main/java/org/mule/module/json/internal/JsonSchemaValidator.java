@@ -34,15 +34,15 @@ public abstract class JsonSchemaValidator {
   private String schemaLocation;
   private JsonSchemaDereferencingMode dereferencing;
 
-/**
- * Allows to redirect any given URI in the Schema (or even the schema location itself)
- * to any other specific URI. The most common use case for this feature is to map external
- * namespace URIs without the need to a local resource
- */
+  /**
+   * Allows to redirect any given URI in the Schema (or even the schema location itself)
+   * to any other specific URI. The most common use case for this feature is to map external
+   * namespace URIs without the need to a local resource
+   */
   private final Map<String, String> schemaRedirects = new HashMap<>();
 
   protected JsonSchemaValidator(String schemaLocation, JsonSchemaDereferencingMode dereferencing,
-                             boolean allowDuplicateKeys, boolean allowArbitraryPrecision, Map<String, String> redirects){
+                                boolean allowDuplicateKeys, boolean allowArbitraryPrecision, Map<String, String> redirects) {
     checkArgument(dereferencing != null, "dereferencing cannot be null");
 
     this.schemaLocation = schemaLocation;
@@ -68,21 +68,21 @@ public abstract class JsonSchemaValidator {
     }
   }
 
-    public void validate(InputStream inputStream){
+  public void validate(InputStream inputStream) {
     // do nothing
-    }
+  }
 
-    public String getSchemaLocation(){
-      return schemaLocation;
-    }
+  public String getSchemaLocation() {
+    return schemaLocation;
+  }
 
-    public Map<String, String> getSchemaRedirects(){
-      return schemaRedirects;
-    }
+  public Map<String, String> getSchemaRedirects() {
+    return schemaRedirects;
+  }
 
-    public JsonSchemaDereferencingMode getDereferencing(){
-      return dereferencing;
-    }
+  public JsonSchemaDereferencingMode getDereferencing() {
+    return dereferencing;
+  }
 
   public JsonNode asJsonNode(InputStream input) {
     try {

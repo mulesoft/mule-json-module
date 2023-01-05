@@ -17,23 +17,23 @@ import com.networknt.schema.SpecVersionDetector;
 
 public class ValidatorSchemaLibraryDetector {
 
-    /**
-     * Networknt library support these new versions of Json Schema, else we use java-json-tools library.
-     * If a version is not detected the method SpecVersionDetector.detect
-     * throws and exeption and is returned JAVA_JSON_TOOLS library - Draft V3 o V4.
-     */
-    public static ValidationLibraries detectValidator(JsonNode jsonNode){
-        try {
-            if (SpecVersionDetector.detect(jsonNode).equals(V6) ||
-                    SpecVersionDetector.detect(jsonNode).equals(V7) ||
-                    SpecVersionDetector.detect(jsonNode).equals(V201909) ||
-                    SpecVersionDetector.detect(jsonNode).equals(V202012)){
-                return ValidationLibraries.NETWORKNT;
-            }else{
-                return ValidationLibraries.JAVA_JSON_TOOLS;
-            }
-        } catch (JsonSchemaException exception) {
-            return ValidationLibraries.JAVA_JSON_TOOLS;
-        }
+  /**
+   * Networknt library support these new versions of Json Schema, else we use java-json-tools library.
+   * If a version is not detected the method SpecVersionDetector.detect
+   * throws and exeption and is returned JAVA_JSON_TOOLS library - Draft V3 o V4.
+   */
+  public static ValidationLibraries detectValidator(JsonNode jsonNode) {
+    try {
+      if (SpecVersionDetector.detect(jsonNode).equals(V6) ||
+          SpecVersionDetector.detect(jsonNode).equals(V7) ||
+          SpecVersionDetector.detect(jsonNode).equals(V201909) ||
+          SpecVersionDetector.detect(jsonNode).equals(V202012)) {
+        return ValidationLibraries.NETWORKNT;
+      } else {
+        return ValidationLibraries.JAVA_JSON_TOOLS;
+      }
+    } catch (JsonSchemaException exception) {
+      return ValidationLibraries.JAVA_JSON_TOOLS;
     }
+  }
 }
