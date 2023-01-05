@@ -327,6 +327,9 @@ public class JsonSchemaValidator {
     ProcessingReport report;
     try {
       report = schema.validate(jsonNode, true);
+    } catch (ProcessingException processingException) {
+      //TODO We must create a new error: INVALID_REFERENCE, to inform the user that the external references declared in the Schema cannot be accessed(W-12301483)
+      throw new MuleRuntimeException(createStaticMessage("Invalid Schema References"), processingException);
     } catch (Exception e) {
       throw new MuleRuntimeException(createStaticMessage(
                                                          "Exception was found while trying to validate against json schema. Content was: "
