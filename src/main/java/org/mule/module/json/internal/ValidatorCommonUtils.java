@@ -6,16 +6,8 @@
  */
 package org.mule.module.json.internal;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.mule.runtime.extension.api.exception.ModuleException;
-
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-
-import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
 public class ValidatorCommonUtils {
 
@@ -47,13 +39,5 @@ public class ValidatorCommonUtils {
 
   public static boolean isBlank(String value) {
     return value == null || value.trim().length() == 0;
-  }
-
-  public static JsonNode asJsonNode(InputStream input, ObjectMapper objectMapper) {
-    try {
-      return objectMapper.readTree(input);
-    } catch (Exception e) {
-      throw new ModuleException(createStaticMessage("Input content was not a valid Json document"), INVALID_INPUT_JSON, e);
-    }
   }
 }
