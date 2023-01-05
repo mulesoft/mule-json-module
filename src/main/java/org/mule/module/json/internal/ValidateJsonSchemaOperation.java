@@ -6,6 +6,7 @@
  */
 package org.mule.module.json.internal;
 
+import static com.networknt.schema.SpecVersion.VersionFlag.*;
 import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.stream.Collectors.toMap;
@@ -14,6 +15,9 @@ import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
 import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_INTENSIVE;
 import static org.mule.runtime.extension.api.annotation.param.display.Placement.ADVANCED_TAB;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.networknt.schema.JsonSchemaException;
+import com.networknt.schema.SpecVersionDetector;
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.module.json.api.SchemaRedirect;
 import org.mule.module.json.internal.cleanup.JsonModuleResourceReleaser;
@@ -72,6 +76,8 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
   private static final int MAX_IDLE_POOL_COUNT = 32;
   private final static Logger LOGGER = LoggerFactory.getLogger(ValidateJsonSchemaOperation.class);
   private JsonModuleResourceReleaser resourceReleaser;
+  private JsonSchemaParser jsonSchemaParser = new JsonSchemaParser();
+  private ValidatorSchemaLibraryDetector validatorSchemaLibraryDetector = new ValidatorSchemaLibraryDetector();
 
   @Inject
   TransformationService transformationService;
@@ -220,7 +226,21 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
 
       @Override
       public JsonSchemaValidator create() throws Exception {
+
+        // Obtengo el schema como jsonNode
+        JsonNode schemaJsonNode = jsonSchemaParser.getSchemaJsonNode(key.schemaContent, key.schemas);
+
+        org.mule.module.json.internal.Validator validator;
+
+        if (validatorSchemaLibraryDetector.detectValidator(schemaJsonNode).equals(ValidationLibraries.NETWORKNT)) {
+          validator =
+                  new ValidatorNetworknt().create(schemaJsonNode, key.schemas, key.dereferencingType, key.schemaRedirects, key.schemaContent);
+        } else {
+          validator = new ValidatorJavaJsonTools().create(schemaJsonNode, key.schemas, key.dereferencingType, key.schemaRedirects, key.schemaContent);
+        }
+
         return JsonSchemaValidator.builder()
+                .setValidator(validator)
             .addSchemaRedirects(key.schemaRedirects)
             .setDereferencing(key.dereferencingType)
             .setSchemaLocation(key.schemas)
@@ -285,5 +305,4 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
     }
     return inputStream;
   }
-
 }
