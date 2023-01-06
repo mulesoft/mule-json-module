@@ -26,12 +26,12 @@ import static java.lang.String.format;
 import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
 
-public class SchemaValidatorNetworknt extends JsonSchemaValidator {
+public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
 
   private JsonSchema jsonSchema;
 
-  public SchemaValidatorNetworknt(String schemaLocation, JsonSchemaDereferencingMode dereferencing, boolean allowDuplicateKeys,
-                                  boolean allowArbitraryPrecision, Map<String, String> redirects, JsonNode jsonSchemaNode) {
+  public JsonSchemaValidatorNetworkntWrapper(String schemaLocation, JsonSchemaDereferencingMode dereferencing, boolean allowDuplicateKeys,
+                                             boolean allowArbitraryPrecision, Map<String, String> redirects, JsonNode jsonSchemaNode) {
     super(schemaLocation, dereferencing, allowDuplicateKeys, allowArbitraryPrecision, redirects);
     jsonSchema = loadSchemaLibrary(jsonSchemaNode, super.getSchemaLocation(), super.getSchemaRedirects());
   }

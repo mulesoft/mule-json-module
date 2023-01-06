@@ -48,10 +48,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
@@ -60,7 +58,6 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Operation to validate an XML document against a schema
@@ -73,7 +70,7 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
   private static final int MAX_IDLE_POOL_COUNT = 32;
   private final static Logger LOGGER = LoggerFactory.getLogger(ValidateJsonSchemaOperation.class);
   private JsonModuleResourceReleaser resourceReleaser;
-  private final JsonSchemaParser jsonSchemaParser = new JsonSchemaParser();
+  private final JsonSchemaValidationFactory jsonSchemaValidationFactory = new JsonSchemaValidationFactory();
 
   @Inject
   TransformationService transformationService;
@@ -178,59 +175,12 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
     }
   }
 
-
-  class ValidatorKey {
-
-    private String schemas;
-    private JsonSchemaDereferencingMode dereferencingType;
-    private Map<String, String> schemaRedirects;
-    private final boolean allowDuplicateKeys;
-    private final boolean allowArbitraryPrecision;
-    private String schemaContent;
-
-    public ValidatorKey(String schemas, JsonSchemaDereferencingMode dereferencingType, Map<String, String> schemaRedirects,
-                        boolean allowDuplicateKeys, boolean allowArbitraryPrecision, String schemaContent) {
-      this.schemas = schemas;
-      this.dereferencingType = dereferencingType;
-      this.schemaRedirects = schemaRedirects;
-      this.allowDuplicateKeys = allowDuplicateKeys;
-      this.allowArbitraryPrecision = allowArbitraryPrecision;
-      this.schemaContent = schemaContent;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (obj instanceof ValidatorKey) {
-        ValidatorKey key = (ValidatorKey) obj;
-        return Objects.equals(schemas, key.schemas)
-            && dereferencingType == key.dereferencingType
-            && Objects.equals(schemaRedirects, key.schemaRedirects)
-            && Objects.equals(this.schemaContent, key.schemaContent);
-      }
-
-      return false;
-    }
-
-    @Override
-    public int hashCode() {
-      return new HashCodeBuilder().append(schemas).append(dereferencingType).append(schemaRedirects).toHashCode();
-    }
-  }
-
   private BasePooledObjectFactory<JsonSchemaValidator> createPooledObjectFactory(ValidatorKey key) {
     return new BasePooledObjectFactory<JsonSchemaValidator>() {
 
       @Override
       public JsonSchemaValidator create() {
-
-        JsonNode schemaJsonNode = jsonSchemaParser.getSchemaJsonNode(key.schemaContent, key.schemas);
-
-        if (ValidatorSchemaLibraryDetector.detectValidator(schemaJsonNode).equals(ValidationLibraries.NETWORKNT)) {
-          return new SchemaValidatorNetworknt(key.schemas, key.dereferencingType, key.allowDuplicateKeys,
-                                              key.allowArbitraryPrecision, key.schemaRedirects, schemaJsonNode);
-        }
-        return new SchemaValidatorJavaJsonTools(key.schemas, key.dereferencingType, key.allowDuplicateKeys,
-                                                key.allowArbitraryPrecision, key.schemaRedirects, schemaJsonNode);
+        return jsonSchemaValidationFactory.create(key);
       }
 
       @Override

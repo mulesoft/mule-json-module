@@ -33,14 +33,14 @@ import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
 import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
-public class SchemaValidatorJavaJsonTools extends JsonSchemaValidator {
+public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator {
 
   private JsonSchema jsonSchema;
   private ObjectMapper objectMapper;
 
-  public SchemaValidatorJavaJsonTools(String schemaLocation, JsonSchemaDereferencingMode dereferencing,
-                                      boolean allowDuplicateKeys, boolean allowArbitraryPrecision, Map<String, String> redirects,
-                                      JsonNode jsonSchemaNode) {
+  public JsonSchemaValidatorJavaJsonToolsWrapper(String schemaLocation, JsonSchemaDereferencingMode dereferencing,
+                                                 boolean allowDuplicateKeys, boolean allowArbitraryPrecision, Map<String, String> redirects,
+                                                 JsonNode jsonSchemaNode) {
     super(schemaLocation, dereferencing, allowDuplicateKeys, allowArbitraryPrecision, redirects);
     jsonSchema =
         loadSchemaLibrary(jsonSchemaNode, super.getSchemaLocation(), super.getSchemaRedirects(), super.getDereferencing());
@@ -65,7 +65,6 @@ public class SchemaValidatorJavaJsonTools extends JsonSchemaValidator {
       throw new SchemaValidationException("Json content is not compliant with schema: " + report,
                                           reportAsJson(report, objectMapper));
     }
-
   }
 
   /**
