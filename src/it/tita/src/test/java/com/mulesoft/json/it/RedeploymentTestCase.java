@@ -14,6 +14,7 @@ import com.mulesoft.anypoint.tita.runner.ambar.Ambar;
 import com.mulesoft.anypoint.tita.runner.ambar.annotation.Application;
 import com.mulesoft.anypoint.tita.runner.ambar.annotation.runtime.Standalone;
 import com.mulesoft.anypoint.tita.environment.api.runtime.Runtime;
+import com.mulesoft.anypoint.tita.runner.ambar.annotation.TestTarget;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -31,9 +32,10 @@ public class RedeploymentTestCase{
     private static final Identifier port = identifier("port");
     private static final Identifier REDEPLOYABLE_APP = identifier("json-module-app");
     
-    @Standalone(testing="4.3.0")
+    @Standalone(testing="4.4.0")
     private Runtime runtime;
 
+    @TestTarget
     @Application
     public static ApplicationBuilder app(ApplicationSelector runtimeBuilder) {
         return runtimeBuilder
