@@ -6,11 +6,11 @@
  */
 package org.mule.module.json.internal;
 
-import static com.google.common.base.Preconditions.checkState;
 import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
 import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.internal.ValidatorCommonUtils.isBlank;
 import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
+import static com.google.common.base.Preconditions.checkState;
 import static java.lang.String.format;
 
 import org.mule.runtime.extension.api.exception.ModuleException;
@@ -19,6 +19,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * The objective is get the Json Schema, from a Path (SchemaLocation) or a String(SchemaContent), like a JsonNode.
+ */
 public class JsonSchemaParser {
 
   private final ObjectMapper objectMapper;
