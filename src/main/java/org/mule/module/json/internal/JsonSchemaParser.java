@@ -30,13 +30,6 @@ public class JsonSchemaParser {
     objectMapper = new ObjectMapper();
   }
 
-  /**
-   * Load Json node from schema content or schema location, and make validations.
-   * Decided to obtain first the JsonNode, to read the json and know what version of
-   * schema is needed and then create JsonSchemaValidator with class JsonSchema of
-   * java-json-tools (Draft 3 & 4) or com.networknt (Draft 6, 7, 2019-09 & 2020-12)
-   */
-
   public JsonNode getSchemaJsonNode(String schemaContent, String schemaLocation) {
 
     if (!isBlank(schemaContent)) {
