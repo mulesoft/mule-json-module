@@ -39,7 +39,8 @@ public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator
   private ObjectMapper objectMapper;
 
   public JsonSchemaValidatorJavaJsonToolsWrapper(String schemaLocation, JsonSchemaDereferencingMode dereferencing,
-                                                 boolean allowDuplicateKeys, boolean allowArbitraryPrecision, Map<String, String> redirects,
+                                                 boolean allowDuplicateKeys, boolean allowArbitraryPrecision,
+                                                 Map<String, String> redirects,
                                                  JsonNode jsonSchemaNode) {
     super(schemaLocation, dereferencing, allowDuplicateKeys, allowArbitraryPrecision, redirects);
     jsonSchema =
@@ -62,7 +63,7 @@ public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator
     }
 
     if (!report.isSuccess()) {
-      throw new SchemaValidationException("Json content is not compliant with schema: " + report,
+      throw new SchemaValidationException("Json content is not compliant with schema: \n" + report,
                                           reportAsJson(report, objectMapper));
     }
   }

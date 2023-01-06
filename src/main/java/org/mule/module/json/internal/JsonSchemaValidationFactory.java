@@ -10,17 +10,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class JsonSchemaValidationFactory {
 
-    private final JsonSchemaParser jsonSchemaParser = new JsonSchemaParser();
+  private final JsonSchemaParser jsonSchemaParser = new JsonSchemaParser();
 
-    public JsonSchemaValidator create(ValidatorKey key){
+  public JsonSchemaValidator create(ValidatorKey key) {
 
-        JsonNode schemaJsonNode = jsonSchemaParser.getSchemaJsonNode(key.getSchemaContent(), key.getSchemas());
+    JsonNode schemaJsonNode = jsonSchemaParser.getSchemaJsonNode(key.getSchemaContent(), key.getSchemas());
 
-        if (ValidatorSchemaLibraryDetector.detectValidator(schemaJsonNode).equals(ValidationLibraries.NETWORKNT)) {
-            return new JsonSchemaValidatorNetworkntWrapper(key.getSchemas(), key.getDereferencingType(), key.isAllowDuplicateKeys(),
-                    key.isAllowArbitraryPrecision(), key.getSchemaRedirects(), schemaJsonNode);
-        }
-        return new JsonSchemaValidatorJavaJsonToolsWrapper(key.getSchemas(), key.getDereferencingType(), key.isAllowDuplicateKeys(),
-                key.isAllowArbitraryPrecision(), key.getSchemaRedirects(), schemaJsonNode);
+    if (ValidatorSchemaLibraryDetector.detectValidator(schemaJsonNode).equals(ValidationLibraries.NETWORKNT)) {
+      return new JsonSchemaValidatorNetworkntWrapper(key.getSchemas(), key.getDereferencingType(), key.isAllowDuplicateKeys(),
+                                                     key.isAllowArbitraryPrecision(), key.getSchemaRedirects(), schemaJsonNode);
     }
+    return new JsonSchemaValidatorJavaJsonToolsWrapper(key.getSchemas(), key.getDereferencingType(), key.isAllowDuplicateKeys(),
+                                                       key.isAllowArbitraryPrecision(), key.getSchemaRedirects(), schemaJsonNode);
+  }
 }

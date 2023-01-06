@@ -30,8 +30,10 @@ public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
 
   private JsonSchema jsonSchema;
 
-  public JsonSchemaValidatorNetworkntWrapper(String schemaLocation, JsonSchemaDereferencingMode dereferencing, boolean allowDuplicateKeys,
-                                             boolean allowArbitraryPrecision, Map<String, String> redirects, JsonNode jsonSchemaNode) {
+  public JsonSchemaValidatorNetworkntWrapper(String schemaLocation, JsonSchemaDereferencingMode dereferencing,
+                                             boolean allowDuplicateKeys,
+                                             boolean allowArbitraryPrecision, Map<String, String> redirects,
+                                             JsonNode jsonSchemaNode) {
     super(schemaLocation, dereferencing, allowDuplicateKeys, allowArbitraryPrecision, redirects);
     jsonSchema = loadSchemaLibrary(jsonSchemaNode, super.getSchemaLocation(), super.getSchemaRedirects());
   }
@@ -41,7 +43,7 @@ public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
     JsonNode jsonNode = super.asJsonNode(inputStream);
     Set<ValidationMessage> responseValidate = jsonSchema.validate(jsonNode);
     if (!responseValidate.isEmpty()) {
-      throw new SchemaValidationException("Json content is not compliant with schema: " + responseValidate,
+      throw new SchemaValidationException("Json content is not compliant with schema: \n" + responseValidate,
                                           responseValidate.toString());
     }
   }
