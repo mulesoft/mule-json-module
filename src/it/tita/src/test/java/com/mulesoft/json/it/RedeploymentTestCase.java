@@ -56,6 +56,7 @@ public class RedeploymentTestCase{
             assertThat(Integer.valueOf(response.asString()),is(lessThan(10)));
             assertThat(response.statusCode(), is(equalTo(200)));
         }
+        return true;
     }
 
 }
