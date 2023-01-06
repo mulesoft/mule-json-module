@@ -6,6 +6,20 @@
  */
 package org.mule.module.json.internal;
 
+import static org.mule.module.json.api.JsonError.INVALID_SCHEMA;
+import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
+import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
+import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+import static java.util.stream.Collectors.joining;
+import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
+import static com.google.common.collect.Lists.newArrayList;
+
+import org.mule.module.json.api.JsonSchemaDereferencingMode;
+import org.mule.module.json.internal.error.SchemaValidationException;
+import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import java.io.InputStream;
+import java.util.Map;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
@@ -17,32 +31,16 @@ import com.github.fge.jsonschema.core.load.uri.URITranslatorConfigurationBuilder
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
-import org.mule.module.json.api.JsonSchemaDereferencingMode;
-import org.mule.module.json.internal.error.SchemaValidationException;
-import org.mule.runtime.api.exception.MuleRuntimeException;
-import org.mule.runtime.extension.api.exception.ModuleException;
 
-import java.io.InputStream;
-import java.util.Map;
-
-import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
-import static com.google.common.collect.Lists.newArrayList;
-import static java.util.stream.Collectors.joining;
-import static org.mule.module.json.api.JsonError.INVALID_SCHEMA;
-import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
-import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
 public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator {
 
-  private JsonSchema jsonSchema;
-  private ObjectMapper objectMapper;
+  private final JsonSchema jsonSchema;
+  private final ObjectMapper objectMapper;
 
-  public JsonSchemaValidatorJavaJsonToolsWrapper(String schemaLocation, JsonSchemaDereferencingMode dereferencing,
-                                                 boolean allowDuplicateKeys, boolean allowArbitraryPrecision,
-                                                 Map<String, String> redirects,
-                                                 JsonNode jsonSchemaNode) {
-    super(schemaLocation, dereferencing, allowDuplicateKeys, allowArbitraryPrecision, redirects);
+  public JsonSchemaValidatorJavaJsonToolsWrapper(ValidatorKey key, JsonNode jsonSchemaNode) {
+    super(key.getSchemas(), key.getDereferencingType(), key.isAllowDuplicateKeys(),
+          key.isAllowArbitraryPrecision(), key.getSchemaRedirects());
     jsonSchema =
         loadSchemaLibrary(jsonSchemaNode, super.getSchemaLocation(), super.getSchemaRedirects(), super.getDereferencing());
     objectMapper = new ObjectMapper();

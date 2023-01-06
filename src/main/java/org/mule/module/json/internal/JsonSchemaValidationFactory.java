@@ -6,6 +6,8 @@
  */
 package org.mule.module.json.internal;
 
+import static org.mule.module.json.internal.ValidationLibraries.NETWORKNT;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class JsonSchemaValidationFactory {
@@ -16,11 +18,9 @@ public class JsonSchemaValidationFactory {
 
     JsonNode schemaJsonNode = jsonSchemaParser.getSchemaJsonNode(key.getSchemaContent(), key.getSchemas());
 
-    if (ValidatorSchemaLibraryDetector.detectValidator(schemaJsonNode).equals(ValidationLibraries.NETWORKNT)) {
-      return new JsonSchemaValidatorNetworkntWrapper(key.getSchemas(), key.getDereferencingType(), key.isAllowDuplicateKeys(),
-                                                     key.isAllowArbitraryPrecision(), key.getSchemaRedirects(), schemaJsonNode);
+    if (ValidatorSchemaLibraryDetector.detectValidator(schemaJsonNode).equals(NETWORKNT)) {
+      return new JsonSchemaValidatorNetworkntWrapper(key, schemaJsonNode);
     }
-    return new JsonSchemaValidatorJavaJsonToolsWrapper(key.getSchemas(), key.getDereferencingType(), key.isAllowDuplicateKeys(),
-                                                       key.isAllowArbitraryPrecision(), key.getSchemaRedirects(), schemaJsonNode);
+    return new JsonSchemaValidatorJavaJsonToolsWrapper(key, schemaJsonNode);
   }
 }

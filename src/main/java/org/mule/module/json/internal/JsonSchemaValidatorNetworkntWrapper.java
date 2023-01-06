@@ -6,35 +6,31 @@
  */
 package org.mule.module.json.internal;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.networknt.schema.JsonSchema;
-import com.networknt.schema.SchemaValidatorsConfig;
-import com.networknt.schema.SpecVersionDetector;
-import com.networknt.schema.ValidationMessage;
-import org.mule.module.json.api.JsonSchemaDereferencingMode;
+import static java.lang.String.format;
+import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
+import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
+
 import org.mule.module.json.internal.error.SchemaValidationException;
 import org.mule.runtime.extension.api.exception.ModuleException;
-
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import static java.lang.String.format;
-import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
-import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.SchemaValidatorsConfig;
+import com.networknt.schema.SpecVersionDetector;
+import com.networknt.schema.ValidationMessage;
 
 public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
 
-  private JsonSchema jsonSchema;
+  private final JsonSchema jsonSchema;
 
-  public JsonSchemaValidatorNetworkntWrapper(String schemaLocation, JsonSchemaDereferencingMode dereferencing,
-                                             boolean allowDuplicateKeys,
-                                             boolean allowArbitraryPrecision, Map<String, String> redirects,
-                                             JsonNode jsonSchemaNode) {
-    super(schemaLocation, dereferencing, allowDuplicateKeys, allowArbitraryPrecision, redirects);
+  public JsonSchemaValidatorNetworkntWrapper(ValidatorKey key, JsonNode jsonSchemaNode) {
+    super(key.getSchemas(), key.getDereferencingType(), key.isAllowDuplicateKeys(),
+          key.isAllowArbitraryPrecision(), key.getSchemaRedirects());
     jsonSchema = loadSchemaLibrary(jsonSchemaNode, super.getSchemaLocation(), super.getSchemaRedirects());
   }
 
