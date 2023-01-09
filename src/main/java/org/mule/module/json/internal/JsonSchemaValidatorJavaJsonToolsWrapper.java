@@ -32,7 +32,10 @@ import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 
-
+/**
+ * This Wrapper make validations with library java.json.tools
+ * Supports Json schema validations with version Draft V3 and V4
+ */
 public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator {
 
   private final JsonSchema jsonSchema;
@@ -54,6 +57,10 @@ public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator
       report = jsonSchema.validate(jsonNode);
 
     } catch (Exception e) {
+      System.err.println(e.getMessage());
+      System.err.println(e.getLocalizedMessage());
+      System.err.println(e.getClass());
+
       throw new MuleRuntimeException(createStaticMessage(
                                                          "Exception was found while trying to validate against json schema. Content was: "
                                                              + jsonNode.toString()),

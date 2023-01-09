@@ -24,6 +24,10 @@ import com.networknt.schema.SchemaValidatorsConfig;
 import com.networknt.schema.SpecVersionDetector;
 import com.networknt.schema.ValidationMessage;
 
+/**
+ * This Wrapper make validations with library com.networknt
+ * Supports Json schema validations with version Draft V6, V7, 2019-09 and 2020-12
+ */
 public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
 
   private final JsonSchema jsonSchema;

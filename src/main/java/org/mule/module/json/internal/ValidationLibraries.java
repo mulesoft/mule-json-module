@@ -6,6 +6,9 @@
  */
 package org.mule.module.json.internal;
 
+/**
+ * Libraries that can be used to make validations
+ */
 public enum ValidationLibraries {
   JAVA_JSON_TOOLS, NETWORKNT
 }

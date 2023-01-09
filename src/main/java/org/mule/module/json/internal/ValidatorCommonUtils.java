@@ -9,7 +9,12 @@ package org.mule.module.json.internal;
 import java.net.URI;
 import java.net.URL;
 
+/**
+ * Common methods that are useful for the other classes
+ */
 public class ValidatorCommonUtils {
+
+  private ValidatorCommonUtils() {}
 
   public static String resolveLocationIfNecessary(String path) {
     URI uri = URI.create(path);

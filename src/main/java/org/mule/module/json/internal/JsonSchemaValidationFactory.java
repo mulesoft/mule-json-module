@@ -10,6 +10,11 @@ import static org.mule.module.json.internal.ValidationLibraries.NETWORKNT;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+/**
+ * Create instances of {@link JsonSchemaValidator},
+ * returning their wrappers making validations, can return  {@link JsonSchemaValidatorNetworkntWrapper} or
+ * {@link JsonSchemaValidatorJavaJsonToolsWrapper
+ */
 public class JsonSchemaValidationFactory {
 
   private final JsonSchemaParser jsonSchemaParser = new JsonSchemaParser();

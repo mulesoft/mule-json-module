@@ -12,6 +12,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * This class contains raw attributes useful to manage Validators and his creation.
+ */
 class ValidatorKey {
 
   private String schemas;
