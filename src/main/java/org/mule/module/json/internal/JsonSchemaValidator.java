@@ -68,9 +68,7 @@ public abstract class JsonSchemaValidator {
     }
   }
 
-  public void validate(InputStream inputStream) {
-    // do nothing
-  }
+  public abstract void validate(InputStream inputStream);
 
   public String getSchemaLocation() {
     return schemaLocation;
