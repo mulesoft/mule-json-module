@@ -41,19 +41,19 @@ public abstract class JsonSchemaValidator {
    */
   private final Map<String, String> schemaRedirects = new HashMap<>();
 
-  protected JsonSchemaValidator(String schemaLocation, JsonSchemaDereferencingMode dereferencing,
-                                boolean allowDuplicateKeys, boolean allowArbitraryPrecision, Map<String, String> redirects) {
-    checkArgument(dereferencing != null, "dereferencing cannot be null");
+  protected JsonSchemaValidator(ValidatorKey key) {
 
-    this.schemaLocation = schemaLocation;
-    this.dereferencing = dereferencing;
+    checkArgument(key.getDereferencingType() != null, "dereferencing cannot be null");
+
+    this.schemaLocation = key.getSchemas();
+    this.dereferencing = key.getDereferencingType();
     objectMapper = new ObjectMapper();
 
-    if (!allowDuplicateKeys) {
+    if (!key.isAllowDuplicateKeys()) {
       objectMapper.enable(STRICT_DUPLICATE_DETECTION);
     }
 
-    if (allowArbitraryPrecision) {
+    if (key.isAllowArbitraryPrecision()) {
       objectMapper.enable(USE_BIG_DECIMAL_FOR_FLOATS);
     }
 
@@ -61,7 +61,7 @@ public abstract class JsonSchemaValidator {
       objectMapper.enable(FAIL_ON_TRAILING_TOKENS);
     }
 
-    for (Map.Entry<String, String> redirect : redirects.entrySet()) {
+    for (Map.Entry<String, String> redirect : key.getSchemaRedirects().entrySet()) {
       checkArgument(!isBlank(redirect.getKey()), "from cannot be null or blank");
       checkArgument(!isBlank(redirect.getValue()), "to cannot be null or blank");
       schemaRedirects.put(formatUri(redirect.getKey()), formatUri(redirect.getValue()));

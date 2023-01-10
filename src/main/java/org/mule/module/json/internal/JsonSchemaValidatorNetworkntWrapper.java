@@ -6,9 +6,9 @@
  */
 package org.mule.module.json.internal;
 
-import static java.lang.String.format;
 import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
+import static java.lang.String.format;
 
 import org.mule.module.json.internal.error.SchemaValidationException;
 import org.mule.runtime.extension.api.exception.ModuleException;
@@ -18,13 +18,13 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
-
-import com.fasterxml.jackson.databind.JsonNode;
+import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.JsonSchema;
-import com.networknt.schema.SchemaValidatorsConfig;
 import com.networknt.schema.SpecVersionDetector;
 import com.networknt.schema.ValidationMessage;
+import com.networknt.schema.SchemaValidatorsConfig;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * This Wrapper make validations with library com.networknt
@@ -35,8 +35,7 @@ public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
   private final JsonSchema jsonSchema;
 
   public JsonSchemaValidatorNetworkntWrapper(ValidatorKey key, JsonNode jsonSchemaNode) {
-    super(key.getSchemas(), key.getDereferencingType(), key.isAllowDuplicateKeys(),
-          key.isAllowArbitraryPrecision(), key.getSchemaRedirects());
+    super(key);
     jsonSchema = loadSchemaLibrary(jsonSchemaNode, super.getSchemaLocation(), super.getSchemaRedirects());
   }
 
@@ -60,8 +59,7 @@ public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
                                                             Map<String, String> schemaRedirects)
       throws ModuleException {
     try {
-      com.networknt.schema.JsonSchemaFactory schemaFactory =
-          com.networknt.schema.JsonSchemaFactory.getInstance(SpecVersionDetector.detect(jsonNode));
+      JsonSchemaFactory schemaFactory = JsonSchemaFactory.getInstance(SpecVersionDetector.detect(jsonNode));
 
       if (schemaLocation == null) {
         return schemaFactory.getSchema(jsonNode, getUriRedirectConfig(schemaRedirects));
@@ -90,5 +88,4 @@ public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
     }
     return schemaValidatorsConfig;
   }
-
 }

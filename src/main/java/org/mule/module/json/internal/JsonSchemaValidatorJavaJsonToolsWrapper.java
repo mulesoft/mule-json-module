@@ -42,8 +42,7 @@ public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator
   private final ObjectMapper objectMapper;
 
   public JsonSchemaValidatorJavaJsonToolsWrapper(ValidatorKey key, JsonNode jsonSchemaNode) {
-    super(key.getSchemas(), key.getDereferencingType(), key.isAllowDuplicateKeys(),
-          key.isAllowArbitraryPrecision(), key.getSchemaRedirects());
+    super(key);
     jsonSchema =
         loadSchemaLibrary(jsonSchemaNode, super.getSchemaLocation(), super.getSchemaRedirects(), super.getDereferencing());
     objectMapper = new ObjectMapper();
