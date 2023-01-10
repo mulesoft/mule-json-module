@@ -57,10 +57,6 @@ public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator
       report = jsonSchema.validate(jsonNode);
 
     } catch (Exception e) {
-      System.err.println(e.getMessage());
-      System.err.println(e.getLocalizedMessage());
-      System.err.println(e.getClass());
-
       throw new MuleRuntimeException(createStaticMessage(
                                                          "Exception was found while trying to validate against json schema. Content was: "
                                                              + jsonNode.toString()),
@@ -92,7 +88,6 @@ public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator
       throw new ModuleException("Invalid Schema", INVALID_SCHEMA, e);
     }
   }
-
 
   /**
    * Get factory to create Schema instances for java-json-tools library

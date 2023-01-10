@@ -24,13 +24,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class JsonSchemaParser {
 
-  private final ObjectMapper objectMapper;
+  private static final ObjectMapper objectMapper = new ObjectMapper();
 
-  public JsonSchemaParser() {
-    objectMapper = new ObjectMapper();
-  }
-
-  public JsonNode getSchemaJsonNode(String schemaContent, String schemaLocation) {
+  public static JsonNode getSchemaJsonNode(String schemaContent, String schemaLocation) {
 
     if (!isBlank(schemaContent)) {
       try {

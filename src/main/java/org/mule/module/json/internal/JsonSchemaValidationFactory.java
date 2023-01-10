@@ -6,7 +6,7 @@
  */
 package org.mule.module.json.internal;
 
-import static org.mule.module.json.internal.ValidationLibraries.NETWORKNT;
+import static org.mule.module.json.internal.JsonSchemaParser.getSchemaJsonNode;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -17,15 +17,18 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public class JsonSchemaValidationFactory {
 
-  private final JsonSchemaParser jsonSchemaParser = new JsonSchemaParser();
+  private final LibraryLink firstLinkInTheChain;
+
+  /**
+   * Here is defined the order of the links
+   */
+  public JsonSchemaValidationFactory() {
+    JavaJsonToolsLink javaJsonToolsSecondLink = new JavaJsonToolsLink(null);
+    firstLinkInTheChain = new NetworkNTLink(javaJsonToolsSecondLink);
+  }
 
   public JsonSchemaValidator create(ValidatorKey key) {
-
-    JsonNode schemaJsonNode = jsonSchemaParser.getSchemaJsonNode(key.getSchemaContent(), key.getSchemas());
-
-    if (ValidatorSchemaLibraryDetector.detectValidator(schemaJsonNode).equals(NETWORKNT)) {
-      return new JsonSchemaValidatorNetworkntWrapper(key, schemaJsonNode);
-    }
-    return new JsonSchemaValidatorJavaJsonToolsWrapper(key, schemaJsonNode);
+    JsonNode schemaJsonNode = getSchemaJsonNode(key.getSchemaContent(), key.getSchemas());
+    return firstLinkInTheChain.getWrapper(key, schemaJsonNode);
   }
 }

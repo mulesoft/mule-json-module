@@ -14,12 +14,16 @@ import java.io.InputStream;
 
 public abstract class AbstractSchemaValidationTestCase extends MuleArtifactFunctionalTestCase {
 
+  //Requests
   protected static final String SCHEMA_FSTAB_GOOD_JSON = "schema/fstab-good.json";
   protected static final String SCHEMA_FSTAB_BAD_JSON = "schema/fstab-bad.json";
   protected static final String SCHEMA_FSTAB_BAD2_JSON = "schema/fstab-bad2.json";
   protected static final String SCHEMA_FSTAB_GOOD_INLINE_JSON = "schema/fstab-good-inline.json";
+
+  //Schemas
   protected static final String SCHEMA_FSTAB_DRAFTV3 = "/schema/fstab-draftv3.json";
   protected static final String SCHEMA_FSTAB_INLINE = "/schema/fstab-inline.json";
+
   protected static final String SCHEMA_FSTAB_REFERRING = "/schema/fstab-referring.json";
   protected static final String SCHEMA_FSTAB_JSON = "/schema/fstab.json";
   protected static final String FAKE_SCHEMA_URI = "http://mule.org/schemas/fstab.json";
