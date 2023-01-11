@@ -4,12 +4,13 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension;
+package org.mule.extension.Draft34;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.rules.ExpectedException.none;
 
+import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Collection;
@@ -45,7 +46,7 @@ public class ValidateArbitraryPrecisionTestCase extends AbstractSchemaValidation
 
   @Override
   protected String getConfigFile() {
-    return "validate-schema-arbitrary-precision-config.xml";
+    return "Draft34/config/validate-schema-arbitrary-precision-config.xml";
   }
 
   @Test

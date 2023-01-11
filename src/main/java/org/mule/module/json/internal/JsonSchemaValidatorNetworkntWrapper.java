@@ -9,8 +9,10 @@ package org.mule.module.json.internal;
 import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
 import static java.lang.String.format;
+import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
 import org.mule.module.json.internal.error.SchemaValidationException;
+import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import java.io.InputStream;
 import java.net.URI;
@@ -42,9 +44,18 @@ public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
   @Override
   public void validate(InputStream inputStream) {
     JsonNode jsonNode = super.asJsonNode(inputStream);
-    Set<ValidationMessage> responseValidate = jsonSchema.validate(jsonNode);
+    Set<ValidationMessage> responseValidate;
+    try {
+      responseValidate = jsonSchema.validate(jsonNode);
+    } catch (Exception e) {
+      throw new MuleRuntimeException(createStaticMessage(
+                                                         "Exception was found while trying to validate against json schema. Content was: "
+                                                             + jsonNode.toString()),
+                                     e);
+    }
+
     if (!responseValidate.isEmpty()) {
-      throw new SchemaValidationException("Json content is not compliant with schema: \n" + responseValidate,
+      throw new SchemaValidationException("Json content is not compliant with schema (NetworkNT): \n" + responseValidate,
                                           responseValidate.toString());
     }
   }

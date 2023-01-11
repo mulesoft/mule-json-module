@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension;
+package org.mule.extension.Draft34;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
@@ -13,6 +13,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Collection;
@@ -46,7 +47,7 @@ public class ValidateSchemaDuplicateKeysTestCase extends AbstractSchemaValidatio
 
   @Override
   protected String getConfigFile() {
-    return "validate-schema-duplicate-keys-config.xml";
+    return "Draft34/config/validate-schema-duplicate-keys-config.xml";
   }
 
   @Test

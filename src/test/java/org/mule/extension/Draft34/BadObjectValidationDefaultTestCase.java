@@ -4,13 +4,14 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension;
+package org.mule.extension.Draft34;
 
 import static org.junit.Assert.assertEquals;
 
 import org.mule.runtime.core.api.event.CoreEvent;
 
 import org.junit.Test;
+import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 
 public class BadObjectValidationDefaultTestCase extends AbstractSchemaValidationTestCase {
 
@@ -18,7 +19,7 @@ public class BadObjectValidationDefaultTestCase extends AbstractSchemaValidation
 
   @Override
   protected String getConfigFile() {
-    return "object-array-validation-config.xml";
+    return "Draft34/config/object-array-validation-config.xml";
   }
 
   @Override

@@ -4,11 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension;
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.rules.ExpectedException.none;
+package org.mule.extension.Draft6;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -16,10 +12,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCase {
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
+import static org.junit.rules.ExpectedException.none;
+
+public class BadObjectValidationWithSchemaContentsTestCase extends AbstractSchemaValidationTestCase {
 
   private static final String VALIDATOR_FAIL_ON_TRAILING_TOKENS = "jsonSchemaValidator.FailOnTrailingTokens";
-
   private String json;
 
   @Rule
@@ -27,7 +26,12 @@ public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCas
 
   @Override
   protected String getConfigFile() {
-    return "object-array-validation-config.xml";
+    return "Draft6/config/validate-schema-with-schemaContents-config.xml";
+  }
+
+  @Override
+  protected void doTearDown() {
+    System.clearProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS);
   }
 
   @Override
@@ -36,14 +40,8 @@ public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCas
     System.setProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS, "true");
   }
 
-  @Override
-  protected void doTearDown() {
-    System.clearProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS);
-  }
-
   @Test
-  public void validate() throws Exception {
-
+  public void validate_ErrorDataContent() throws Exception {
     expectedException.expectCause(new BaseMatcher<Throwable>() {
 
       @Override
@@ -51,7 +49,6 @@ public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCas
         Exception e = (Exception) item;
         String report = e.getMessage();
         assertThat(report, containsString("Trailing token (of type START_OBJECT) found after value"));
-
         return true;
       }
 
@@ -60,7 +57,7 @@ public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCas
         description.appendText("Error report did not match");
       }
     });
+    flowRunner("validateSchemaWithSchemaContents").withPayload(json).run();
 
-    flowRunner("validate").withPayload(json).run();
   }
 }

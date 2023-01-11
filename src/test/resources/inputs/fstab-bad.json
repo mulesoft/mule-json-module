@@ -1,11 +1,10 @@
 {
     "/": {
-        "fstype": "btrfs",
+        "device": "/dev/sda1",
         "options": [ "ssd" ]
     },
     "/tmp": {
         "device": "tmpfs",
-        "fstype": "tmpfs",
         "options": [ "size=64M" ]
     },
     "/var/lib/mysql": {

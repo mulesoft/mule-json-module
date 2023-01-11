@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension;
+package org.mule.extension.Draft6;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,7 +19,7 @@ public class ValidateJsonSchemaNegativeTestCase extends AbstractSchemaValidation
 
   @Override
   protected String getConfigFile() {
-    return "schema-validation-config.xml";
+    return "Draft6/config/schema-validation-config.xml";
   }
 
   @Test

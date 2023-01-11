@@ -6,7 +6,11 @@
 
 
     <flow name="validate">
-        <json:validate-schema schema="/schema/object-array-schema.json" />
+        <json:validate-schema schema="#[vars.schema]" dereferencing="#[vars.dereferencing]"/>
+    </flow>
+
+    <flow name="validate-non-existing-schema">
+        <json:validate-schema schema="/this-does-not-exist.json" />
     </flow>
 
 </mule>
