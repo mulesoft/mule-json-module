@@ -1,0 +1,21 @@
+{
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "type": "object",
+    "properties": {
+        "name": { "type": "string" },
+        "credit_card": { "type": "number" },
+        "bank_number": { "type": "number"}
+    },
+    "required": ["name"],
+    "dependentSchemas": {
+        "credit_card": {
+            "properties": {
+                "billing_address": { "type": "string" }
+            },
+            "required": ["billing_address"]
+        }
+    },
+    "dependentRequired": {
+        "bank_number": ["credit_card"]
+    }
+}

@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft7;
+package org.mule.extension.Draft201909;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 
@@ -17,12 +17,12 @@ import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 public abstract class AbstractSchemaValidationTestCase extends MuleArtifactFunctionalTestCase {
 
   //Schemas
-  //Draft 7
-  protected static final String SCHEMA_FSTAB_JSON_DRAFT7 = "/Draft7/schemas/fstab.json";
-  protected static final String SCHEMA_FSTAB_INLINE_DRAFT7 = "/Draft7/schemas/fstab-inline.json";
-  protected static final String SCHEMA_FSTAB_REFERRING_DRAFT7 = "/Draft7/schemas/fstab-referring.json";
-  protected static final String SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS_DRAFT7 =
-      "Draft7/schemas/fstab-arbitrary-precision-keys.json";
+  //Draft 201909
+  protected static final String SCHEMA_FSTAB_JSON_DRAFT201909 = "/Draft201909/schemas/fstab.json";
+  protected static final String SCHEMA_FSTAB_INLINE_DRAFT201909 = "/Draft201909/schemas/fstab-inline.json";
+  protected static final String SCHEMA_FSTAB_REFERRING_DRAFT201909 = "/Draft201909/schemas/fstab-referring.json";
+  protected static final String SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS_DRAFT201909 =
+      "Draft201909/schemas/fstab-arbitrary-precision-keys.json";
 
   protected static String getGoodFstab() throws Exception {
     return doGetResource(SCHEMA_FSTAB_GOOD_JSON);
