@@ -26,7 +26,7 @@ public class ConditionsExclusiveFunctionInvalidTestCase extends AbstractSchemaVa
 
   @Override
   protected String getConfigFile() {
-    return "Draft7/config/draft07-exclusive-function-conditions-config.xml";
+    return "Draft7/config/exclusive-function-conditions-config.xml";
   }
 
   @Override

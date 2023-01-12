@@ -1,0 +1,11 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:json="http://www.mulesoft.org/schema/mule/json"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+
+    <flow name="validate">
+        <json:validate-schema schema="/Draft-2019-09/schemas/draft-2019-09-conditions-schema.json" />
+    </flow>
+
+</mule>
