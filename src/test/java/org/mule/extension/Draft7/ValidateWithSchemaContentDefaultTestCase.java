@@ -4,12 +4,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft34;
-
-import static org.junit.Assert.assertEquals;
+package org.mule.extension.Draft7;
 
 import org.junit.Test;
 import org.mule.runtime.core.api.event.CoreEvent;
+
+import static org.junit.Assert.assertEquals;
 
 public class ValidateWithSchemaContentDefaultTestCase extends AbstractSchemaValidationTestCase {
 
@@ -17,7 +17,7 @@ public class ValidateWithSchemaContentDefaultTestCase extends AbstractSchemaVali
 
   @Override
   protected String getConfigFile() {
-    return "Draft34/config/validate-schema-with-schemaContents-config.xml";
+    return "Draft7/config/validate-schema-with-schemaContents-config.xml";
   }
 
   @Override

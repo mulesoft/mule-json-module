@@ -47,7 +47,7 @@ public class ValidateSchemaDuplicateKeysTestCase extends AbstractSchemaValidatio
 
   @Override
   protected String getConfigFile() {
-    return "Draft34/config/validate-schema-duplicate-keys-config.xml";
+    return "config/validate-schema-duplicate-keys-config.xml";
   }
 
   @Test

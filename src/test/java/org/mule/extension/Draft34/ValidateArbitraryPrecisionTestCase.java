@@ -46,7 +46,7 @@ public class ValidateArbitraryPrecisionTestCase extends AbstractSchemaValidation
 
   @Override
   protected String getConfigFile() {
-    return "Draft34/config/validate-schema-arbitrary-precision-config.xml";
+    return "config/validate-schema-arbitrary-precision-config.xml";
   }
 
   @Test

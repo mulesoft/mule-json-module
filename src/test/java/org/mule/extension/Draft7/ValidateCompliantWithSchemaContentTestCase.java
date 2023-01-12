@@ -4,17 +4,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft34;
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.rules.ExpectedException.none;
+package org.mule.extension.Draft7;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
+import static org.junit.rules.ExpectedException.none;
 
 public class ValidateCompliantWithSchemaContentTestCase extends AbstractSchemaValidationTestCase {
 
@@ -26,7 +26,7 @@ public class ValidateCompliantWithSchemaContentTestCase extends AbstractSchemaVa
 
   @Override
   protected String getConfigFile() {
-    return "Draft34/config/validate-schema-with-schemaContents-config.xml";
+    return "Draft7/config/validate-schema-with-schemaContents-config.xml";
   }
 
   @Override

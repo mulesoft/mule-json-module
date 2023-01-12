@@ -4,12 +4,11 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft34;
+package org.mule.extension.Draft7;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.mule.functional.api.exception.ExpectedError;
-import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 
 import static org.hamcrest.core.StringContains.containsString;
 

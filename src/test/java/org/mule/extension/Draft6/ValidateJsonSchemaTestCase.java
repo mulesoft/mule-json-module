@@ -72,7 +72,7 @@ public class ValidateJsonSchemaTestCase extends AbstractSchemaValidationTestCase
 
   @Override
   protected String getConfigFile() {
-    return "Draft6/config/schema-validation-config.xml";
+    return "config/schema-validation-config.xml";
   }
 
   @Test

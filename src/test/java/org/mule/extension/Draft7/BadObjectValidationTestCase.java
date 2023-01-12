@@ -4,11 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft34;
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.rules.ExpectedException.none;
+package org.mule.extension.Draft7;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -16,9 +12,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class ValidateCompliantWithSchemaContentTestCase extends AbstractSchemaValidationTestCase {
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
+import static org.junit.rules.ExpectedException.none;
+
+public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCase {
 
   private static final String VALIDATOR_FAIL_ON_TRAILING_TOKENS = "jsonSchemaValidator.FailOnTrailingTokens";
+
   private String json;
 
   @Rule
@@ -26,7 +27,13 @@ public class ValidateCompliantWithSchemaContentTestCase extends AbstractSchemaVa
 
   @Override
   protected String getConfigFile() {
-    return "Draft34/config/validate-schema-with-schemaContents-config.xml";
+    return "Draft7/config/object-array-validation-config.xml";
+  }
+
+  @Override
+  protected void doSetUp() throws Exception {
+    json = doGetResource("inputs/bad-object.json");
+    System.setProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS, "true");
   }
 
   @Override
@@ -34,29 +41,26 @@ public class ValidateCompliantWithSchemaContentTestCase extends AbstractSchemaVa
     System.clearProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS);
   }
 
-  @Override
-  protected void doSetUp() throws Exception {
-    json = doGetResource("inputs/objet-array-not-compliant.json");
-    System.setProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS, "true");
-  }
-
   @Test
-  public void validateCompliantWithSchemaContent() throws Exception {
+  public void validate() throws Exception {
+
     expectedException.expectCause(new BaseMatcher<Throwable>() {
 
       @Override
       public boolean matches(Object item) {
         Exception e = (Exception) item;
         String report = e.getMessage();
-        assertThat(report, containsString("Json content is not compliant with schema"));
+        assertThat(report, containsString("Trailing token (of type START_OBJECT) found after value"));
+
         return true;
       }
 
       @Override
       public void describeTo(Description description) {
-        description.appendText("Json content is not compliant with schema");
+        description.appendText("Error report did not match");
       }
     });
-    flowRunner("validateSchemaWithSchemaContents").withPayload(json).run();
+
+    flowRunner("validate").withPayload(json).run();
   }
 }

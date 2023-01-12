@@ -10,8 +10,8 @@ import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
 import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.internal.ValidatorCommonUtils.isBlank;
 import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
-import static com.google.common.base.Preconditions.checkState;
 import static java.lang.String.format;
+import static com.google.common.base.Preconditions.checkState;
 
 import org.mule.runtime.extension.api.exception.ModuleException;
 import java.net.URL;

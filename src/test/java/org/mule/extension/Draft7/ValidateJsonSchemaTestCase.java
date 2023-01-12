@@ -4,21 +4,20 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft34;
-
-import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
-import static org.mule.module.json.api.JsonSchemaDereferencingMode.INLINE;
-import org.mule.module.json.api.JsonError;
-import org.mule.module.json.api.JsonSchemaDereferencingMode;
-import org.mule.functional.api.exception.ExpectedError;
-import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
-import org.mule.test.runner.RunnerDelegateTo;
-
-import java.util.Arrays;
+package org.mule.extension.Draft7;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
+import org.mule.functional.api.exception.ExpectedError;
+import org.mule.module.json.api.JsonError;
+import org.mule.module.json.api.JsonSchemaDereferencingMode;
+import org.mule.test.runner.RunnerDelegateTo;
+
+import java.util.Arrays;
+
+import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
+import static org.mule.module.json.api.JsonSchemaDereferencingMode.INLINE;
 
 @RunnerDelegateTo(Parameterized.class)
 public class ValidateJsonSchemaTestCase extends AbstractSchemaValidationTestCase {
@@ -26,28 +25,26 @@ public class ValidateJsonSchemaTestCase extends AbstractSchemaValidationTestCase
   @Parameterized.Parameters(name = "{0}")
   public static Iterable<Object[]> data() throws Exception {
     return Arrays.asList(new Object[][] {
-        {"SimpleV4Schema as String", SCHEMA_FSTAB_JSON, CANONICAL, getGoodFstab(), getBadFstab(), getBadFstab2()},
-        {"SimpleV4Schema as bytes", SCHEMA_FSTAB_JSON, CANONICAL, getGoodFstab().getBytes(), getBadFstab().getBytes(),
+        {"Draft7: as String", SCHEMA_FSTAB_JSON_DRAFT7, CANONICAL, getGoodFstab(), getBadFstab(), getBadFstab2()},
+        {"Draft7: as bytes", SCHEMA_FSTAB_JSON_DRAFT7, CANONICAL, getGoodFstab().getBytes(), getBadFstab().getBytes(),
             getBadFstab2().getBytes()},
-        {"SimpleV4Schema as Stream", SCHEMA_FSTAB_JSON, CANONICAL, toStream(getGoodFstab()), toStream(getBadFstab()),
+        {"Draft7: as Stream", SCHEMA_FSTAB_JSON_DRAFT7, CANONICAL, toStream(getGoodFstab()), toStream(getBadFstab()),
             toStream(getBadFstab2())},
 
-        {"Inline schema as String", SCHEMA_FSTAB_INLINE, INLINE, getGoodFstabInline(), getBadFstab(), getBadFstab2()},
-        {"Inline schema as bytes", SCHEMA_FSTAB_INLINE, INLINE, getGoodFstabInline().getBytes(), getBadFstab().getBytes(),
+        {"Draft7: Inline schema as String", SCHEMA_FSTAB_INLINE_DRAFT7, INLINE, getGoodFstabInline(), getBadFstab(),
+            getBadFstab2()},
+        {"Draft7: Inline schema as bytes", SCHEMA_FSTAB_INLINE_DRAFT7, INLINE, getGoodFstabInline().getBytes(),
+            getBadFstab().getBytes(),
             getBadFstab2().getBytes()},
-        {"Inline schema as Stream", SCHEMA_FSTAB_INLINE, INLINE, toStream(getGoodFstabInline()), toStream(getBadFstab()),
+        {"Draft7: Inline schema as Stream", SCHEMA_FSTAB_INLINE_DRAFT7, INLINE, toStream(getGoodFstabInline()),
+            toStream(getBadFstab()),
             toStream(getBadFstab2())},
-
-        {"Draft3 as String", SCHEMA_FSTAB_DRAFTV3, CANONICAL, getGoodFstab(), getBadFstab(), getBadFstab2()},
-        {"Draft3 as bytes", SCHEMA_FSTAB_DRAFTV3, CANONICAL, getGoodFstab().getBytes(), getBadFstab().getBytes(),
+        {"Draft7: Referring as String", SCHEMA_FSTAB_REFERRING_DRAFT7, CANONICAL, getGoodFstab(), getBadFstab(), getBadFstab2()},
+        {"Draft7: Referring as bytes", SCHEMA_FSTAB_REFERRING_DRAFT7, CANONICAL, getGoodFstab().getBytes(),
+            getBadFstab().getBytes(),
             getBadFstab2().getBytes()},
-        {"Draft3 as Stream", SCHEMA_FSTAB_DRAFTV3, CANONICAL, toStream(getGoodFstab()), toStream(getBadFstab()),
-            toStream(getBadFstab2())},
-
-        {"ReferringV4Schema as String", SCHEMA_FSTAB_REFERRING, CANONICAL, getGoodFstab(), getBadFstab(), getBadFstab2()},
-        {"ReferringV4Schema as bytes", SCHEMA_FSTAB_REFERRING, CANONICAL, getGoodFstab().getBytes(), getBadFstab().getBytes(),
-            getBadFstab2().getBytes()},
-        {"ReferringV4Schema as Stream", SCHEMA_FSTAB_REFERRING, CANONICAL, toStream(getGoodFstab()), toStream(getBadFstab()),
+        {"Draft7: Referring as Stream", SCHEMA_FSTAB_REFERRING_DRAFT7, CANONICAL, toStream(getGoodFstab()),
+            toStream(getBadFstab()),
             toStream(getBadFstab2())},
     });
   }

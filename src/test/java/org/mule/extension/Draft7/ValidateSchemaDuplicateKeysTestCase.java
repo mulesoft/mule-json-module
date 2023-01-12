@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft6;
+package org.mule.extension.Draft7;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,7 +52,7 @@ public class ValidateSchemaDuplicateKeysTestCase extends AbstractSchemaValidatio
   public void duplicateKeys() throws Exception {
     CoreEvent result = flowRunner("validate")
         .withPayload(getFstabWithDuplicateKeys())
-        .withVariable("schema", SCHEMA_FSTAB_JSON_DRAFT6)
+        .withVariable("schema", SCHEMA_FSTAB_JSON_DRAFT7)
         .withVariable("allowDuplicateKeys", allowDuplicateKeys).run();
     assertThat(result.getMessage().getPayload().getValue(), is(getFstabWithDuplicateKeys()));
   }
