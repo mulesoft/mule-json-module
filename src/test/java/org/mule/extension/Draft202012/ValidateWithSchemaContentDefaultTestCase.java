@@ -4,32 +4,30 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft201909;
+package org.mule.extension.Draft202012;
 
-import io.qameta.allure.junit4.DisplayName;
 import org.junit.Test;
 import org.mule.runtime.core.api.event.CoreEvent;
 
 import static org.junit.Assert.assertEquals;
 
-public class BadObjectValidationDefaultTestCase extends AbstractSchemaValidationTestCase {
+public class ValidateWithSchemaContentDefaultTestCase extends AbstractSchemaValidationTestCase {
 
   private String json;
 
   @Override
   protected String getConfigFile() {
-    return "Draft201909/config/object-array-validation-config.xml";
+    return "Draft202012/config/validate-schema-with-schemaContents-config.xml";
   }
 
   @Override
   protected void doSetUp() throws Exception {
-    json = doGetResource("inputs/bad-object.json");
+    json = doGetResource("inputs/object-array.json");
   }
 
   @Test
-  public void validateDefaultBehaviour() throws Exception {
-
-    CoreEvent flowResult = flowRunner("validate").withPayload(json).run();
-    assertEquals(json, flowResult.getMessage().getPayload().getValue());
+  public void validateDefaultBehaviourWithSchemaContent() throws Exception {
+    CoreEvent event = flowRunner("validateSchemaWithSchemaContents").withPayload(json).run();
+    assertEquals(json, event.getMessage().getPayload().getValue());
   }
 }

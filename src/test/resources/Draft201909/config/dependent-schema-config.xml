@@ -5,7 +5,7 @@
           http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
 
     <flow name="validate">
-        <json:validate-schema schema="/Draft201909/schemas/draft201909-dependent-schema.json" />
+        <json:validate-schema schema="/Draft201909/schemas/dependent-schema.json" />
     </flow>
 
 </mule>

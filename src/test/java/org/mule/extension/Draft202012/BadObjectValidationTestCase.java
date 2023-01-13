@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft201909;
+package org.mule.extension.Draft202012;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -16,8 +16,9 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 
-public class ConditionsExclusiveFunctionInvalidTestCase extends AbstractSchemaValidationTestCase {
+public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCase {
 
+  private static final String VALIDATOR_FAIL_ON_TRAILING_TOKENS = "jsonSchemaValidator.FailOnTrailingTokens";
 
   private String json;
 
@@ -26,12 +27,18 @@ public class ConditionsExclusiveFunctionInvalidTestCase extends AbstractSchemaVa
 
   @Override
   protected String getConfigFile() {
-    return "Draft202012/config/exclusive-function-conditions-config.xml";
+    return "Draft202012/config/object-array-validation-config.xml";
   }
 
   @Override
   protected void doSetUp() throws Exception {
-    json = doGetResource("inputs/drarft-07-orGreater-exclusive-function-conditions-INVALID.json");
+    json = doGetResource("inputs/bad-object.json");
+    System.setProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS, "true");
+  }
+
+  @Override
+  protected void doTearDown() {
+    System.clearProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS);
   }
 
   @Test
@@ -43,7 +50,7 @@ public class ConditionsExclusiveFunctionInvalidTestCase extends AbstractSchemaVa
       public boolean matches(Object item) {
         Exception e = (Exception) item;
         String report = e.getMessage();
-        assertThat(report, containsString("$.bar: is missing but it is required"));
+        assertThat(report, containsString("Trailing token (of type START_OBJECT) found after value"));
 
         return true;
       }

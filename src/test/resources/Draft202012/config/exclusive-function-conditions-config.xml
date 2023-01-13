@@ -4,9 +4,8 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
           http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
 
-
     <flow name="validate">
-        <json:validate-schema schema="/Draft7/schemas/conditions-schema.json" />
+        <json:validate-schema schema="/Draft202012/schemas/conditions-schema.json" />
     </flow>
 
 </mule>

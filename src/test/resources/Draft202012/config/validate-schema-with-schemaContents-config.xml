@@ -1,0 +1,30 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:json="http://www.mulesoft.org/schema/mule/json"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+    <flow name="validateSchemaWithSchemaContents">
+        <json:validate-schema>
+            <json:contents ><![CDATA[{
+      "$schema": "http://json-schema.org/draft/2020-12/schema#",
+      "type": "array",
+      "prefixItems": {
+        "type": "object",
+        "properties": {
+          "a": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255
+            },
+          "b": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255
+          }
+        },
+        "not": {"required":["c"]}
+      }
+    }]]></json:contents>
+        </json:validate-schema>
+    </flow>
+</mule>

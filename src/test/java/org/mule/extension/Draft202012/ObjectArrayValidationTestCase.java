@@ -4,20 +4,22 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft201909;
+package org.mule.extension.Draft202012;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mule.runtime.api.exception.ErrorMessageAwareException;
+import org.mule.runtime.api.metadata.TypedValue;
 
-import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
+import static org.mule.runtime.api.metadata.DataType.JSON_STRING;
 
-public class ConditionsExclusiveFunctionInvalidTestCase extends AbstractSchemaValidationTestCase {
-
+public class ObjectArrayValidationTestCase extends AbstractSchemaValidationTestCase {
 
   private String json;
 
@@ -26,24 +28,23 @@ public class ConditionsExclusiveFunctionInvalidTestCase extends AbstractSchemaVa
 
   @Override
   protected String getConfigFile() {
-    return "Draft202012/config/exclusive-function-conditions-config.xml";
+    return "Draft202012/config/object-array-validation-config.xml";
   }
 
   @Override
   protected void doSetUp() throws Exception {
-    json = doGetResource("inputs/drarft-07-orGreater-exclusive-function-conditions-INVALID.json");
+    json = doGetResource("inputs/object-array.json");
   }
 
   @Test
   public void validate() throws Exception {
-
     expectedException.expectCause(new BaseMatcher<Throwable>() {
 
       @Override
       public boolean matches(Object item) {
-        Exception e = (Exception) item;
-        String report = e.getMessage();
-        assertThat(report, containsString("$.bar: is missing but it is required"));
+        ErrorMessageAwareException e = (ErrorMessageAwareException) item;
+        TypedValue<String> report = e.getErrorMessage().getPayload();
+        assertThat(report.getDataType(), equalTo(JSON_STRING));
 
         return true;
       }

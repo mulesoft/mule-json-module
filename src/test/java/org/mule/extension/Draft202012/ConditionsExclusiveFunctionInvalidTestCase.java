@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft201909;
+package org.mule.extension.Draft202012;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;

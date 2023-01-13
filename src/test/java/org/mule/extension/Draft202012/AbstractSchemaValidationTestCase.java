@@ -4,31 +4,25 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft6;
+package org.mule.extension.Draft202012;
 
-import io.qameta.allure.junit4.DisplayName;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import static org.mule.extension.TestCommonVariablesUtil.SCHEMA_FSTAB_BAD_JSON;
-import static org.mule.extension.TestCommonVariablesUtil.SCHEMA_FSTAB_GOOD_JSON;
-import static org.mule.extension.TestCommonVariablesUtil.SCHEMA_FSTAB_BAD2_JSON;
-import static org.mule.extension.TestCommonVariablesUtil.SCHEMA_FSTAB_GOOD_INLINE_JSON;
-import static org.mule.extension.TestCommonVariablesUtil.SCHEMA_FSTAB_DUPLICATE_KEYS;
+import static org.mule.extension.TestCommonVariablesUtil.*;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 
 public abstract class AbstractSchemaValidationTestCase extends MuleArtifactFunctionalTestCase {
 
   //Schemas
-  //Draft 6
-  protected static final String SCHEMA_FSTAB_JSON_DRAFT6 = "/Draft6/schemas/fstab.json";
-  protected static final String SCHEMA_FSTAB_INLINE_DRAFT6 = "/Draft6/schemas/fstab-inline.json";
-  protected static final String SCHEMA_FSTAB_REFERRING_DRAFT6 = "/Draft6/schemas/fstab-referring.json";
-  protected static final String SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS_DRAFT6 =
-      "Draft6/schemas/fstab-arbitrary-precision-keys.json";
-
+  //Draft 202012
+  protected static final String SCHEMA_FSTAB_JSON_DRAFT202012 = "/Draft202012/schemas/fstab.json";
+  protected static final String SCHEMA_FSTAB_INLINE_DRAFT202012 = "/Draft202012/schemas/fstab-inline.json";
+  protected static final String SCHEMA_FSTAB_REFERRING_DRAFT202012 = "/Draft202012/schemas/fstab-referring.json";
+  protected static final String SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS_DRAFT202012 =
+      "Draft202012/schemas/fstab-arbitrary-precision-keys.json";
 
   protected static String getGoodFstab() throws Exception {
     return doGetResource(SCHEMA_FSTAB_GOOD_JSON);

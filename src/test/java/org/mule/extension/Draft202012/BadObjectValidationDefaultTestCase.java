@@ -4,9 +4,8 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft201909;
+package org.mule.extension.Draft202012;
 
-import io.qameta.allure.junit4.DisplayName;
 import org.junit.Test;
 import org.mule.runtime.core.api.event.CoreEvent;
 
@@ -18,7 +17,7 @@ public class BadObjectValidationDefaultTestCase extends AbstractSchemaValidation
 
   @Override
   protected String getConfigFile() {
-    return "Draft201909/config/object-array-validation-config.xml";
+    return "Draft202012/config/object-array-validation-config.xml";
   }
 
   @Override

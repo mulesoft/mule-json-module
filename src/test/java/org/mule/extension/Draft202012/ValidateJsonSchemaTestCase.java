@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft201909;
+package org.mule.extension.Draft202012;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,26 +25,26 @@ public class ValidateJsonSchemaTestCase extends AbstractSchemaValidationTestCase
   @Parameterized.Parameters(name = "{0}")
   public static Iterable<Object[]> data() throws Exception {
     return Arrays.asList(new Object[][] {
-        {"Draft201909: as String", SCHEMA_FSTAB_JSON_DRAFT201909, CANONICAL, getGoodFstab(), getBadFstab(), getBadFstab2()},
-        {"Draft201909: as bytes", SCHEMA_FSTAB_JSON_DRAFT201909, CANONICAL, getGoodFstab().getBytes(), getBadFstab().getBytes(),
+        {"Draft202012: as String", SCHEMA_FSTAB_JSON_DRAFT202012, CANONICAL, getGoodFstab(), getBadFstab(), getBadFstab2()},
+        {"Draft202012: as bytes", SCHEMA_FSTAB_JSON_DRAFT202012, CANONICAL, getGoodFstab().getBytes(), getBadFstab().getBytes(),
             getBadFstab2().getBytes()},
-        {"Draft201909: as Stream", SCHEMA_FSTAB_JSON_DRAFT201909, CANONICAL, toStream(getGoodFstab()), toStream(getBadFstab()),
+        {"Draft202012: as Stream", SCHEMA_FSTAB_JSON_DRAFT202012, CANONICAL, toStream(getGoodFstab()), toStream(getBadFstab()),
             toStream(getBadFstab2())},
 
-        {"Draft201909: Inline schema as String", SCHEMA_FSTAB_INLINE_DRAFT201909, INLINE, getGoodFstabInline(), getBadFstab(),
+        {"Draft202012: Inline schema as String", SCHEMA_FSTAB_INLINE_DRAFT202012, INLINE, getGoodFstabInline(), getBadFstab(),
             getBadFstab2()},
-        {"Draft201909: Inline schema as bytes", SCHEMA_FSTAB_INLINE_DRAFT201909, INLINE, getGoodFstabInline().getBytes(),
+        {"Draft202012: Inline schema as bytes", SCHEMA_FSTAB_INLINE_DRAFT202012, INLINE, getGoodFstabInline().getBytes(),
             getBadFstab().getBytes(),
             getBadFstab2().getBytes()},
-        {"Draft201909: Inline schema as Stream", SCHEMA_FSTAB_INLINE_DRAFT201909, INLINE, toStream(getGoodFstabInline()),
+        {"Draft202012: Inline schema as Stream", SCHEMA_FSTAB_INLINE_DRAFT202012, INLINE, toStream(getGoodFstabInline()),
             toStream(getBadFstab()),
             toStream(getBadFstab2())},
-        {"Draft201909: Referring as String", SCHEMA_FSTAB_REFERRING_DRAFT201909, CANONICAL, getGoodFstab(), getBadFstab(),
+        {"Draft202012: Referring as String", SCHEMA_FSTAB_REFERRING_DRAFT202012, CANONICAL, getGoodFstab(), getBadFstab(),
             getBadFstab2()},
-        {"Draft201909: Referring as bytes", SCHEMA_FSTAB_REFERRING_DRAFT201909, CANONICAL, getGoodFstab().getBytes(),
+        {"Draft202012: Referring as bytes", SCHEMA_FSTAB_REFERRING_DRAFT202012, CANONICAL, getGoodFstab().getBytes(),
             getBadFstab().getBytes(),
             getBadFstab2().getBytes()},
-        {"Draft201909: Referring as Stream", SCHEMA_FSTAB_REFERRING_DRAFT201909, CANONICAL, toStream(getGoodFstab()),
+        {"Draft202012: Referring as Stream", SCHEMA_FSTAB_REFERRING_DRAFT202012, CANONICAL, toStream(getGoodFstab()),
             toStream(getBadFstab()),
             toStream(getBadFstab2())},
     });
