@@ -40,12 +40,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
 
   private final JsonSchema jsonSchema;
-  private final ObjectMapper objectMapper;
 
   public JsonSchemaValidatorNetworkntWrapper(ValidatorKey key, JsonNode jsonSchemaNode) {
     super(key);
     jsonSchema = loadSchemaLibrary(jsonSchemaNode, super.getSchemaLocation(), super.getSchemaRedirects());
-    objectMapper = new ObjectMapper();
   }
 
   @Override

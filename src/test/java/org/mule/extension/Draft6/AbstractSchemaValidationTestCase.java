@@ -6,7 +6,6 @@
  */
 package org.mule.extension.Draft6;
 
-import io.qameta.allure.junit4.DisplayName;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 
 import java.io.ByteArrayInputStream;

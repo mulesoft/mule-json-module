@@ -6,7 +6,6 @@
  */
 package org.mule.extension.Draft201909;
 
-import io.qameta.allure.junit4.DisplayName;
 import org.junit.Test;
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.runtime.core.api.event.CoreEvent;
