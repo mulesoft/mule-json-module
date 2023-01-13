@@ -10,6 +10,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 import static org.mule.runtime.api.metadata.DataType.JSON_STRING;
+
+import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.runtime.api.exception.ErrorMessageAwareException;
 import org.mule.runtime.api.metadata.TypedValue;
 
@@ -29,7 +31,7 @@ public class ObjectArrayValidationTestCase extends AbstractSchemaValidationTestC
 
   @Override
   protected String getConfigFile() {
-    return "Draft34/config/object-array-validation-config.xml";
+    return "config/schema-validation-config.xml";
   }
 
   @Override
@@ -56,6 +58,9 @@ public class ObjectArrayValidationTestCase extends AbstractSchemaValidationTestC
       }
     });
 
-    flowRunner("validate").withPayload(json).run();
+    flowRunner("validate")
+        .withVariable("schema", SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT34)
+        .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
+        .withPayload(json).run();
   }
 }

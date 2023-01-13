@@ -11,6 +11,7 @@ import org.hamcrest.Description;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mule.module.json.api.JsonSchemaDereferencingMode;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
@@ -27,7 +28,7 @@ public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCas
 
   @Override
   protected String getConfigFile() {
-    return "Draft6/config/object-array-validation-config.xml";
+    return "config/schema-validation-config.xml";
   }
 
   @Override
@@ -61,6 +62,9 @@ public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCas
       }
     });
 
-    flowRunner("validate").withPayload(json).run();
+    flowRunner("validate")
+        .withVariable("schema", SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT6)
+        .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
+        .withPayload(json).run();
   }
 }

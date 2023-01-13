@@ -27,7 +27,7 @@ public abstract class AbstractSchemaValidationTestCase extends MuleArtifactFunct
   protected static final String SCHEMA_FSTAB_INLINE = "/Draft34/schemas/fstab-inline.json";
   protected static final String SCHEMA_FSTAB_REFERRING = "/Draft34/schemas/fstab-referring.json";
   protected static final String SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS = "Draft34/schemas/fstab-arbitrary-precision-keys.json";
-
+  protected static final String SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT34 = "/Draft34/schemas/object-array-schema.json";
 
   protected static String getGoodFstab() throws Exception {
     return doGetResource(SCHEMA_FSTAB_GOOD_JSON);
@@ -40,7 +40,6 @@ public abstract class AbstractSchemaValidationTestCase extends MuleArtifactFunct
   protected static String getBadFstab2() throws Exception {
     return doGetResource(SCHEMA_FSTAB_BAD2_JSON);
   }
-
 
   protected static String getGoodFstabInline() throws Exception {
     return doGetResource(SCHEMA_FSTAB_GOOD_INLINE_JSON);

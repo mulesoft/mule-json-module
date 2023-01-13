@@ -9,6 +9,7 @@ package org.mule.extension.Draft6;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.runtime.core.api.event.CoreEvent;
 
 public class BadObjectValidationDefaultTestCase extends AbstractSchemaValidationTestCase {
@@ -17,7 +18,7 @@ public class BadObjectValidationDefaultTestCase extends AbstractSchemaValidation
 
   @Override
   protected String getConfigFile() {
-    return "Draft6/config/object-array-validation-config.xml";
+    return "config/schema-validation-config.xml";
   }
 
   @Override
@@ -28,7 +29,10 @@ public class BadObjectValidationDefaultTestCase extends AbstractSchemaValidation
   @Test
   public void validateDefaultBehaviour() throws Exception {
 
-    CoreEvent flowResult = flowRunner("validate").withPayload(json).run();
+    CoreEvent flowResult = flowRunner("validate")
+        .withVariable("schema", SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT6)
+        .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
+        .withPayload(json).run();
     assertEquals(json, flowResult.getMessage().getPayload().getValue());
   }
 }
