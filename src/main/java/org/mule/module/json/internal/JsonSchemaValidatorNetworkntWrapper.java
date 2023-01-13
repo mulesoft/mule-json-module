@@ -6,16 +6,11 @@
  */
 package org.mule.module.json.internal;
 
-import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
-import static com.google.common.collect.Lists.newArrayList;
-import static java.util.stream.Collectors.joining;
 import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
 import static java.lang.String.format;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
 import org.mule.module.json.internal.error.SchemaValidationException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.extension.api.exception.ModuleException;
@@ -93,7 +88,7 @@ public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
 
     SchemaValidatorsConfig schemaValidatorsConfig = new SchemaValidatorsConfig();
     if (!schemaRedirects.entrySet().isEmpty()) {
-      Map<String, String> uriRedirects = new HashMap();
+      Map<String, String> uriRedirects = new HashMap<>();
 
       for (Map.Entry<String, String> redirect : schemaRedirects.entrySet()) {
         String key = resolveLocationIfNecessary(redirect.getKey());
