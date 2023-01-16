@@ -7,7 +7,7 @@
 package org.mule.module.json.internal;
 
 import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
-import static org.mule.module.json.internal.ValidatorCommonUtils.*;
+import static org.mule.module.json.internal.ValidatorCommonUtils.isBlank;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static com.fasterxml.jackson.core.JsonParser.Feature.STRICT_DUPLICATE_DETECTION;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS;
