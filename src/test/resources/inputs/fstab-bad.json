@@ -1,6 +1,6 @@
 {
     "/": {
-        "device": "/dev/sda1",
+        "fstype": "btrfs",
         "options": [ "ssd" ]
     },
     "/tmp": {

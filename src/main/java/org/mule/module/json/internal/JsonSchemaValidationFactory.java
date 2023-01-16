@@ -7,10 +7,8 @@
 package org.mule.module.json.internal;
 
 import static org.mule.module.json.internal.JsonSchemaParser.getSchemaJsonNode;
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.mule.runtime.api.exception.MuleRuntimeException;
 
 /**
  * Create instances of {@link JsonSchemaValidator},

@@ -8,8 +8,8 @@ package org.mule.module.json.internal;
 
 import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
-import static java.lang.String.format;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+import static java.lang.String.format;
 
 import org.mule.module.json.internal.error.SchemaValidationException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -25,7 +25,6 @@ import com.networknt.schema.JsonSchema;
 import com.networknt.schema.SpecVersionDetector;
 import com.networknt.schema.ValidationMessage;
 import com.networknt.schema.SchemaValidatorsConfig;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
@@ -61,7 +60,7 @@ public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
     }
 
     if (!responseValidate.isEmpty()) {
-      throw new SchemaValidationException("Json content is not compliant with schema (NetworkNT): \n" + responseValidate,
+      throw new SchemaValidationException("Json content is not compliant with schema: \n" + responseValidate,
                                           responseValidate.toString());
     }
   }

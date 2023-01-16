@@ -8,7 +8,6 @@ package org.mule.module.json.internal;
 
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import java.util.Map;
 import java.util.Objects;
 
