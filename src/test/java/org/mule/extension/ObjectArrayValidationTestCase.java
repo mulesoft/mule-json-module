@@ -4,23 +4,26 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.general;
+package org.mule.extension;
 
+import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT201909;
+import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT202012;
+import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT4;
+import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT6;
+import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT7;
+import static org.mule.runtime.api.metadata.DataType.JSON_STRING;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.junit.rules.ExpectedException.none;
+
+import org.mule.module.json.api.JsonSchemaDereferencingMode;
+import org.mule.runtime.api.exception.ErrorMessageAwareException;
+import org.mule.runtime.api.metadata.TypedValue;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mule.extension.AbstractSchemaValidationTestCase;
-import org.mule.module.json.api.JsonSchemaDereferencingMode;
-import org.mule.runtime.api.exception.ErrorMessageAwareException;
-import org.mule.runtime.api.metadata.TypedValue;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.rules.ExpectedException.none;
-import static org.mule.extension.TestVariables.*;
-import static org.mule.runtime.api.metadata.DataType.JSON_STRING;
 
 public class ObjectArrayValidationTestCase extends AbstractSchemaValidationTestCase {
 
@@ -41,7 +44,7 @@ public class ObjectArrayValidationTestCase extends AbstractSchemaValidationTestC
 
   @Test
   public void Draft4validate() throws Exception {
-    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT34);
+    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT4);
   }
 
   @Test

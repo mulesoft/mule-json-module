@@ -4,19 +4,18 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.general;
+package org.mule.extension;
 
+import static org.mule.extension.TestVariables.SCHEMA_DEPENDENT_DRAFT2019009;
+import static org.mule.extension.TestVariables.SCHEMA_DEPENDENT_DRAFT202012;
+import static org.junit.rules.ExpectedException.none;
+
+import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mule.extension.AbstractSchemaValidationTestCase;
-import org.mule.module.json.api.JsonSchemaDereferencingMode;
 
-import static org.junit.rules.ExpectedException.none;
-import static org.mule.extension.TestVariables.*;
-
-public class ConditionsExclusiveFunctionGoodTestCase extends AbstractSchemaValidationTestCase {
-
+public class DependentSchemaGoodTestCase extends AbstractSchemaValidationTestCase {
 
   private String json;
 
@@ -30,22 +29,17 @@ public class ConditionsExclusiveFunctionGoodTestCase extends AbstractSchemaValid
 
   @Override
   protected void doSetUp() throws Exception {
-    json = doGetResource("inputs/drarft-07-orGreater-exclusive-function-conditions-GOOD.json");
-  }
-
-  @Test
-  public void Draft7validate() throws Exception {
-    runTestWithSchemaAndValidate(SCHEMA_CONDITIONS_DRAFT7);
+    json = doGetResource("inputs/drarft-2019-09-orGreater-exclusive-function-dependent-schema-GOOD.json");
   }
 
   @Test
   public void Draft201909validate() throws Exception {
-    runTestWithSchemaAndValidate(SCHEMA_CONDITIONS_DRAFT201909);
+    runTestWithSchemaAndValidate(SCHEMA_DEPENDENT_DRAFT2019009);
   }
 
   @Test
   public void Draft202012validate() throws Exception {
-    runTestWithSchemaAndValidate(SCHEMA_CONDITIONS_DRAFT202012);
+    runTestWithSchemaAndValidate(SCHEMA_DEPENDENT_DRAFT202012);
   }
 
   private void runTestWithSchemaAndValidate(String schema) throws Exception {
@@ -54,5 +48,4 @@ public class ConditionsExclusiveFunctionGoodTestCase extends AbstractSchemaValid
         .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
         .withPayload(json).run();
   }
-
 }

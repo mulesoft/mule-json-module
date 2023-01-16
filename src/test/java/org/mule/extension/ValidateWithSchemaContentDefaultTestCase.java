@@ -4,20 +4,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.general;
+package org.mule.extension;
 
 import static org.junit.Assert.assertEquals;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
-import org.mule.extension.AbstractSchemaValidationTestCase;
 import org.mule.runtime.core.api.event.CoreEvent;
-
-import javax.management.ObjectName;
-import java.io.File;
-import java.net.URI;
-import java.net.URL;
+import org.junit.Test;
 
 public class ValidateWithSchemaContentDefaultTestCase extends AbstractSchemaValidationTestCase {
 
@@ -37,7 +29,7 @@ public class ValidateWithSchemaContentDefaultTestCase extends AbstractSchemaVali
   @Override
   protected void doSetUp() throws Exception {
     json = doGetResource("inputs/object-array.json");
-    draft4schemaContent = doGetResource("Draft34/schemas/schema-default.json");
+    draft4schemaContent = doGetResource("Draft4/schemas/schema-default.json");
     draft6schemaContent = doGetResource("Draft6/schemas/schema-default.json");
     draft7schemaContent = doGetResource("Draft7/schemas/schema-default.json");
     draft201909schemaContent = doGetResource("Draft201909/schemas/schema-default.json");
@@ -75,5 +67,4 @@ public class ValidateWithSchemaContentDefaultTestCase extends AbstractSchemaVali
         .withPayload(json).run();
     assertEquals(json, event.getMessage().getPayload().getValue());
   }
-
 }

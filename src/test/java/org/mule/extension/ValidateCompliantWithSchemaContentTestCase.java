@@ -4,24 +4,22 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.general;
-
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.mule.extension.AbstractSchemaValidationTestCase;
-import org.mule.runtime.core.api.event.CoreEvent;
+package org.mule.extension;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 
-public class BadObjectValidationWithSchemaContentsTestCase extends AbstractSchemaValidationTestCase {
+import org.mule.runtime.core.api.event.CoreEvent;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
-  private static final String VALIDATOR_FAIL_ON_TRAILING_TOKENS = "jsonSchemaValidator.FailOnTrailingTokens";
+public class ValidateCompliantWithSchemaContentTestCase extends AbstractSchemaValidationTestCase {
+
   private String json;
 
   private String draft4schemaContent;
@@ -39,16 +37,9 @@ public class BadObjectValidationWithSchemaContentsTestCase extends AbstractSchem
   }
 
   @Override
-  protected void doTearDown() {
-    System.clearProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS);
-  }
-
-  @Override
   protected void doSetUp() throws Exception {
-    json = doGetResource("inputs/bad-object.json");
-    System.setProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS, "true");
-
-    draft4schemaContent = doGetResource("Draft34/schemas/schema-default.json");
+    json = doGetResource("inputs/objet-array-not-compliant.json");
+    draft4schemaContent = doGetResource("Draft4/schemas/schema-default.json");
     draft6schemaContent = doGetResource("Draft6/schemas/schema-default.json");
     draft7schemaContent = doGetResource("Draft7/schemas/schema-default.json");
     draft201909schemaContent = doGetResource("Draft201909/schemas/schema-default.json");
@@ -72,12 +63,12 @@ public class BadObjectValidationWithSchemaContentsTestCase extends AbstractSchem
 
   @Test
   public void Draft201909validateDefaultBehaviourWithSchemaContent() throws Exception {
-    runTestWithSchemaAndValidate(draft202012schemaContent);
+    runTestWithSchemaAndValidate(draft201909schemaContent);
   }
 
   @Test
   public void Draft202012validateDefaultBehaviourWithSchemaContent() throws Exception {
-    runTestWithSchemaAndValidate(draft201909schemaContent);
+    runTestWithSchemaAndValidate(draft202012schemaContent);
   }
 
   private void runTestWithSchemaAndValidate(String schemaContent) throws Exception {
@@ -88,13 +79,14 @@ public class BadObjectValidationWithSchemaContentsTestCase extends AbstractSchem
       public boolean matches(Object item) {
         Exception e = (Exception) item;
         String report = e.getMessage();
-        assertThat(report, containsString("Trailing token (of type START_OBJECT) found after value"));
+        System.err.println(report);
+        assertThat(report, containsString("Json content is not compliant with schema"));
         return true;
       }
 
       @Override
       public void describeTo(Description description) {
-        description.appendText("Error report did not match");
+        description.appendText("Json content is not compliant with schema");
       }
     });
 

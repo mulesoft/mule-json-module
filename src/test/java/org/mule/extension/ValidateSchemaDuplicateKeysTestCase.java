@@ -4,25 +4,27 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.general;
+package org.mule.extension;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.internal.matchers.ThrowableMessageMatcher;
-import org.junit.rules.ExpectedException;
-import org.junit.runners.Parameterized;
-import org.mule.extension.AbstractSchemaValidationTestCase;
-import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.test.runner.RunnerDelegateTo;
-
-import java.util.Collection;
-
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_JSON_DRAFT201909;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_JSON_DRAFT202012;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_JSON_DRAFT4;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_JSON_DRAFT6;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_JSON_DRAFT7;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 import static org.hamcrest.core.Is.is;
-import static org.mule.extension.TestVariables.*;
+
+import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.test.runner.RunnerDelegateTo;
+import java.util.Collection;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.internal.matchers.ThrowableMessageMatcher;
+import org.junit.rules.ExpectedException;
+import org.junit.runners.Parameterized;
 
 @RunnerDelegateTo(Parameterized.class)
 public class ValidateSchemaDuplicateKeysTestCase extends AbstractSchemaValidationTestCase {
@@ -52,7 +54,7 @@ public class ValidateSchemaDuplicateKeysTestCase extends AbstractSchemaValidatio
 
   @Test
   public void Draft4duplicateKeys() throws Exception {
-    runTestWithSchemaAndValidate(SCHEMA_FSTAB_JSON_DRAFT34);
+    runTestWithSchemaAndValidate(SCHEMA_FSTAB_JSON_DRAFT4);
   }
 
   @Test

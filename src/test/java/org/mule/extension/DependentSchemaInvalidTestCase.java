@@ -4,24 +4,22 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.general;
+package org.mule.extension;
 
+import static org.mule.extension.TestVariables.SCHEMA_DEPENDENT_DRAFT2019009;
+import static org.mule.extension.TestVariables.SCHEMA_DEPENDENT_DRAFT202012;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
+import static org.junit.rules.ExpectedException.none;
+
+import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mule.extension.AbstractSchemaValidationTestCase;
-import org.mule.module.json.api.JsonSchemaDereferencingMode;
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.rules.ExpectedException.none;
-import static org.mule.extension.TestVariables.SCHEMA_DEPENDENT_DRAFT2019009;
-import static org.mule.extension.TestVariables.SCHEMA_DEPENDENT_DRAFT202012;
 
 public class DependentSchemaInvalidTestCase extends AbstractSchemaValidationTestCase {
-
 
   private String json;
 

@@ -4,14 +4,13 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.general;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.mule.extension.AbstractSchemaValidationTestCase;
-import org.mule.functional.api.exception.ExpectedError;
+package org.mule.extension;
 
 import static org.hamcrest.core.StringContains.containsString;
+
+import org.mule.functional.api.exception.ExpectedError;
+import org.junit.Rule;
+import org.junit.Test;
 
 public class ValidateJsonSchemaNegativeTestCase extends AbstractSchemaValidationTestCase {
 

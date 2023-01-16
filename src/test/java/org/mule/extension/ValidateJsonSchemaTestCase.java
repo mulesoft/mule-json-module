@@ -4,22 +4,35 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.general;
+package org.mule.extension;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runners.Parameterized;
-import org.mule.extension.AbstractSchemaValidationTestCase;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_DRAFTV3;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_INLINE_DRAFT201909;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_INLINE_DRAFT202012;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_INLINE_DRAFT4;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_INLINE_DRAFT6;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_INLINE_DRAFT7;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_JSON_DRAFT201909;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_JSON_DRAFT202012;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_JSON_DRAFT4;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_JSON_DRAFT6;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_JSON_DRAFT7;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_REFERRING_DRAFT201909;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_REFERRING_DRAFT202012;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_REFERRING_DRAFT4;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_REFERRING_DRAFT6;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_REFERRING_DRAFT7;
+import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
+import static org.mule.module.json.api.JsonSchemaDereferencingMode.INLINE;
+
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.module.json.api.JsonError;
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.test.runner.RunnerDelegateTo;
-
 import java.util.Arrays;
-
-import static org.mule.extension.TestVariables.*;
-import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
-import static org.mule.module.json.api.JsonSchemaDereferencingMode.INLINE;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runners.Parameterized;
 
 @RunnerDelegateTo(Parameterized.class)
 public class ValidateJsonSchemaTestCase extends AbstractSchemaValidationTestCase {
@@ -28,16 +41,16 @@ public class ValidateJsonSchemaTestCase extends AbstractSchemaValidationTestCase
   public static Iterable<Object[]> data() throws Exception {
     return Arrays.asList(new Object[][] {
 
-        {"SimpleV4Schema as String", SCHEMA_FSTAB_JSON_DRAFT34, CANONICAL, getGoodFstab(), getBadFstab(), getBadFstab2()},
-        {"SimpleV4Schema as bytes", SCHEMA_FSTAB_JSON_DRAFT34, CANONICAL, getGoodFstab().getBytes(), getBadFstab().getBytes(),
+        {"SimpleV4Schema as String", SCHEMA_FSTAB_JSON_DRAFT4, CANONICAL, getGoodFstab(), getBadFstab(), getBadFstab2()},
+        {"SimpleV4Schema as bytes", SCHEMA_FSTAB_JSON_DRAFT4, CANONICAL, getGoodFstab().getBytes(), getBadFstab().getBytes(),
             getBadFstab2().getBytes()},
-        {"SimpleV4Schema as Stream", SCHEMA_FSTAB_JSON_DRAFT34, CANONICAL, toStream(getGoodFstab()), toStream(getBadFstab()),
+        {"SimpleV4Schema as Stream", SCHEMA_FSTAB_JSON_DRAFT4, CANONICAL, toStream(getGoodFstab()), toStream(getBadFstab()),
             toStream(getBadFstab2())},
 
-        {"Inline schema as String", SCHEMA_FSTAB_INLINE_DRAFT34, INLINE, getGoodFstabInline(), getBadFstab(), getBadFstab2()},
-        {"Inline schema as bytes", SCHEMA_FSTAB_INLINE_DRAFT34, INLINE, getGoodFstabInline().getBytes(), getBadFstab().getBytes(),
+        {"Inline schema as String", SCHEMA_FSTAB_INLINE_DRAFT4, INLINE, getGoodFstabInline(), getBadFstab(), getBadFstab2()},
+        {"Inline schema as bytes", SCHEMA_FSTAB_INLINE_DRAFT4, INLINE, getGoodFstabInline().getBytes(), getBadFstab().getBytes(),
             getBadFstab2().getBytes()},
-        {"Inline schema as Stream", SCHEMA_FSTAB_INLINE_DRAFT34, INLINE, toStream(getGoodFstabInline()), toStream(getBadFstab()),
+        {"Inline schema as Stream", SCHEMA_FSTAB_INLINE_DRAFT4, INLINE, toStream(getGoodFstabInline()), toStream(getBadFstab()),
             toStream(getBadFstab2())},
 
         {"Draft3 as String", SCHEMA_FSTAB_DRAFTV3, CANONICAL, getGoodFstab(), getBadFstab(), getBadFstab2()},
@@ -46,11 +59,11 @@ public class ValidateJsonSchemaTestCase extends AbstractSchemaValidationTestCase
         {"Draft3 as Stream", SCHEMA_FSTAB_DRAFTV3, CANONICAL, toStream(getGoodFstab()), toStream(getBadFstab()),
             toStream(getBadFstab2())},
 
-        {"ReferringV4Schema as String", SCHEMA_FSTAB_REFERRING_DRAFT34, CANONICAL, getGoodFstab(), getBadFstab(), getBadFstab2()},
-        {"ReferringV4Schema as bytes", SCHEMA_FSTAB_REFERRING_DRAFT34, CANONICAL, getGoodFstab().getBytes(),
+        {"ReferringV4Schema as String", SCHEMA_FSTAB_REFERRING_DRAFT4, CANONICAL, getGoodFstab(), getBadFstab(), getBadFstab2()},
+        {"ReferringV4Schema as bytes", SCHEMA_FSTAB_REFERRING_DRAFT4, CANONICAL, getGoodFstab().getBytes(),
             getBadFstab().getBytes(),
             getBadFstab2().getBytes()},
-        {"ReferringV4Schema as Stream", SCHEMA_FSTAB_REFERRING_DRAFT34, CANONICAL, toStream(getGoodFstab()),
+        {"ReferringV4Schema as Stream", SCHEMA_FSTAB_REFERRING_DRAFT4, CANONICAL, toStream(getGoodFstab()),
             toStream(getBadFstab()),
             toStream(getBadFstab2())},
 

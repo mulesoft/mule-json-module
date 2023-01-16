@@ -4,15 +4,20 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.general;
+package org.mule.extension;
 
-import org.junit.Test;
-import org.mule.extension.AbstractSchemaValidationTestCase;
+import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT4;
+import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT6;
+import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT7;
+import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT201909;
+import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT202012;
+import static org.junit.Assert.assertEquals;
+
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.mule.extension.TestVariables.*;
+
 
 public class BadObjectValidationDefaultTestCase extends AbstractSchemaValidationTestCase {
 
@@ -30,7 +35,7 @@ public class BadObjectValidationDefaultTestCase extends AbstractSchemaValidation
 
   @Test
   public void Draft4validateDefaultBehaviour() throws Exception {
-    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT34);
+    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT4);
   }
 
   @Test
@@ -49,7 +54,7 @@ public class BadObjectValidationDefaultTestCase extends AbstractSchemaValidation
   }
 
   @Test
-  public void validateDefaultBehaviour() throws Exception {
+  public void Draft202012validateDefaultBehaviour() throws Exception {
     runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT202012);
   }
 

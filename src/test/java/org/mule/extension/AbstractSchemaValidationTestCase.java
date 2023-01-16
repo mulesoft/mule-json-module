@@ -6,16 +6,13 @@
  */
 package org.mule.extension;
 
-import org.mule.extension.general.ValidateJsonSchemaTestCase;
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
+import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
-
 public abstract class AbstractSchemaValidationTestCase extends MuleArtifactFunctionalTestCase {
-
 
   public static final String SCHEMA_FSTAB_GOOD_JSON = "inputs/fstab-good.json";
   public static final String SCHEMA_FSTAB_BAD_JSON = "inputs/fstab-bad.json";
