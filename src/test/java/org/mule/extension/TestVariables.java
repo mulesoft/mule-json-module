@@ -48,6 +48,8 @@ public class TestVariables {
   public static final String SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT201909 = "/Draft201909/schemas/object-array-schema.json";
   public static final String SCHEMA_CONDITIONS_DRAFT201909 = "/Draft201909/schemas/conditions-schema.json";
 
+  public static final String SCHEMA_DEPENDENT_DRAFT2019009 = "/Draft201909/schemas/dependent-schema.json";
+
   //Schemas
   //Draft 202012
   public static final String SCHEMA_FSTAB_JSON_DRAFT202012 = "/Draft202012/schemas/fstab.json";
@@ -57,6 +59,7 @@ public class TestVariables {
       "Draft202012/schemas/fstab-arbitrary-precision-keys.json";
   public static final String SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT202012 = "/Draft202012/schemas/object-array-schema.json";
   public static final String SCHEMA_CONDITIONS_DRAFT202012 = "/Draft202012/schemas/conditions-schema.json";
+  public static final String SCHEMA_DEPENDENT_DRAFT202012 = "/Draft202012/schemas/dependent-schema.json";
 
 
 

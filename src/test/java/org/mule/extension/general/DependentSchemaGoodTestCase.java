@@ -4,14 +4,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft201909;
+package org.mule.extension.general;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mule.extension.AbstractSchemaValidationTestCase;
+import org.mule.module.json.api.JsonSchemaDereferencingMode;
 
 import static org.junit.rules.ExpectedException.none;
+import static org.mule.extension.TestVariables.SCHEMA_DEPENDENT_DRAFT2019009;
+import static org.mule.extension.TestVariables.SCHEMA_DEPENDENT_DRAFT202012;
 
 public class DependentSchemaGoodTestCase extends AbstractSchemaValidationTestCase {
 
@@ -23,7 +26,7 @@ public class DependentSchemaGoodTestCase extends AbstractSchemaValidationTestCas
 
   @Override
   protected String getConfigFile() {
-    return "Draft201909/config/dependent-schema-config.xml";
+    return "config/schema-validation-config.xml";
   }
 
   @Override
@@ -32,7 +35,19 @@ public class DependentSchemaGoodTestCase extends AbstractSchemaValidationTestCas
   }
 
   @Test
-  public void validate() throws Exception {
-    flowRunner("validate").withPayload(json).run();
+  public void Draft201909validate() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_DEPENDENT_DRAFT2019009);
+  }
+
+  @Test
+  public void Draft202012validate() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_DEPENDENT_DRAFT202012);
+  }
+
+  private void runTestWithSchemaAndValidate(String schema) throws Exception {
+    flowRunner("validate")
+        .withVariable("schema", schema)
+        .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
+        .withPayload(json).run();
   }
 }

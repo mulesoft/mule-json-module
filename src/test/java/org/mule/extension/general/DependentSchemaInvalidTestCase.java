@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft201909;
+package org.mule.extension.general;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -12,14 +12,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mule.extension.AbstractSchemaValidationTestCase;
+import org.mule.module.json.api.JsonSchemaDereferencingMode;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
+import static org.mule.extension.TestVariables.SCHEMA_DEPENDENT_DRAFT2019009;
+import static org.mule.extension.TestVariables.SCHEMA_DEPENDENT_DRAFT202012;
 
-public class BadObjectValidationWithSchemaContentsTestCase extends AbstractSchemaValidationTestCase {
+public class DependentSchemaInvalidTestCase extends AbstractSchemaValidationTestCase {
 
-  private static final String VALIDATOR_FAIL_ON_TRAILING_TOKENS = "jsonSchemaValidator.FailOnTrailingTokens";
+
   private String json;
 
   @Rule
@@ -27,29 +30,33 @@ public class BadObjectValidationWithSchemaContentsTestCase extends AbstractSchem
 
   @Override
   protected String getConfigFile() {
-    return "Draft201909/config/validate-schema-with-schemaContents-config.xml";
-  }
-
-  @Override
-  protected void doTearDown() {
-    System.clearProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS);
+    return "config/schema-validation-config.xml";
   }
 
   @Override
   protected void doSetUp() throws Exception {
-    json = doGetResource("inputs/bad-object.json");
-    System.setProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS, "true");
+    json = doGetResource("inputs/drarft-2019-09-orGreater-exclusive-function-dependant-schema-INVALID.json");
   }
 
   @Test
-  public void validate_ErrorDataContent() throws Exception {
+  public void Draft201909validate() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_DEPENDENT_DRAFT2019009);
+  }
+
+  @Test
+  public void Draft202012validate() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_DEPENDENT_DRAFT202012);
+  }
+
+  private void runTestWithSchemaAndValidate(String schema) throws Exception {
     expectedException.expectCause(new BaseMatcher<Throwable>() {
 
       @Override
       public boolean matches(Object item) {
         Exception e = (Exception) item;
         String report = e.getMessage();
-        assertThat(report, containsString("Trailing token (of type START_OBJECT) found after value"));
+        assertThat(report, containsString("$.billing_address: is missing but it is required"));
+
         return true;
       }
 
@@ -58,7 +65,9 @@ public class BadObjectValidationWithSchemaContentsTestCase extends AbstractSchem
         description.appendText("Error report did not match");
       }
     });
-    flowRunner("validateSchemaWithSchemaContents").withPayload(json).run();
-
+    flowRunner("validate")
+        .withVariable("schema", schema)
+        .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
+        .withPayload(json).run();
   }
 }
