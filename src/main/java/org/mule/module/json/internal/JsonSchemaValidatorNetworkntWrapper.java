@@ -48,10 +48,16 @@ public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
     try {
       responseValidate = jsonSchema.validate(jsonNode);
     } catch (Exception e) {
-      throw new MuleRuntimeException(createStaticMessage(
-                                                         "Exception was found while trying to validate against json schema. Content was: "
-                                                             + jsonNode.toString()),
-                                     e);
+
+      if (e.getMessage().contains("Reference") && e.getMessage().contains("cannot be resolved")) {
+        //TODO We must create a new error: INVALID_REFERENCE, to inform the user that the external references declared in the Schema cannot be accessed(W-12301483)
+        throw new MuleRuntimeException(createStaticMessage("Invalid Schema References"), e);
+      } else {
+        throw new MuleRuntimeException(createStaticMessage(
+                                                           "Exception was found while trying to validate against json schema. Content was: "
+                                                               + jsonNode.toString()),
+                                       e);
+      }
     }
 
     if (!responseValidate.isEmpty()) {

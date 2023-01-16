@@ -55,11 +55,16 @@ public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator
     try {
       report = jsonSchema.validate(jsonNode);
 
-    } catch (Exception e) {
-      throw new MuleRuntimeException(createStaticMessage(
-                                                         "Exception was found while trying to validate against json schema. Content was: "
-                                                             + jsonNode.toString()),
-                                     e);
+    } catch (ProcessingException processingException) {
+      //TODO We must create a new error: INVALID_REFERENCE, to inform the user that the external references declared in the Schema cannot be accessed(W-12301483)
+      if (processingException.getClass().getName().contains("ProcessingException")) {
+        throw new MuleRuntimeException(createStaticMessage("Invalid Schema References"), processingException);
+      } else {
+        throw new MuleRuntimeException(createStaticMessage(
+                                                           "Exception was found while trying to validate against json schema. Content was: "
+                                                               + jsonNode.toString()),
+                                       processingException);
+      }
     }
 
     if (!report.isSuccess()) {
