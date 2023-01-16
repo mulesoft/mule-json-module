@@ -1,0 +1,28 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:json="http://www.mulesoft.org/schema/mule/json"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+    <flow name="validateSchemaReferencesWithSchemaContents">
+        <json:validate-schema>
+            <json:contents ><![CDATA[{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "/etc/fstab",
+  "description": "JSON representation of /etc/fstab",
+  "type": "object",
+  "properties": {
+    "swap": {
+      "$ref": "fstab.json#/definitions/mntent"
+    }
+  },
+  "patternProperties": {
+    "^/([^/]+(/[^/]+)*)?$": {
+      "$ref": "fstab.json#/definitions/mntent"
+    }
+  },
+  "required": [ "/", "swap" ],
+  "additionalProperties": false
+}]]></json:contents>
+        </json:validate-schema>
+    </flow>
+</mule>
