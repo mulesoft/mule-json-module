@@ -4,18 +4,20 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft202012;
+package org.mule.extension.general;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mule.extension.AbstractSchemaValidationTestCase;
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
+import static org.mule.extension.TestVariables.*;
 
 public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCase {
 
@@ -43,7 +45,31 @@ public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCas
   }
 
   @Test
-  public void validate() throws Exception {
+  public void Draft34validate() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT34);
+  }
+
+  @Test
+  public void Draft6validate() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT6);
+  }
+
+  @Test
+  public void Draft7validate() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT7);
+  }
+
+  @Test
+  public void Draft201909validate() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT201909);
+  }
+
+  @Test
+  public void Draft2020129validate() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT202012);
+  }
+
+  private void runTestWithSchemaAndValidate(String schema) throws Exception {
 
     expectedException.expectCause(new BaseMatcher<Throwable>() {
 
@@ -63,7 +89,7 @@ public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCas
     });
 
     flowRunner("validate")
-        .withVariable("schema", SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT202012)
+        .withVariable("schema", schema)
         .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
         .withPayload(json).run();
   }

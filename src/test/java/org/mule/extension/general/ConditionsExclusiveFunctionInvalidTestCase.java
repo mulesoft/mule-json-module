@@ -4,17 +4,20 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft202012;
+package org.mule.extension.general;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mule.extension.AbstractSchemaValidationTestCase;
+import org.mule.module.json.api.JsonSchemaDereferencingMode;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
+import static org.mule.extension.TestVariables.*;
 
 public class ConditionsExclusiveFunctionInvalidTestCase extends AbstractSchemaValidationTestCase {
 
@@ -26,7 +29,7 @@ public class ConditionsExclusiveFunctionInvalidTestCase extends AbstractSchemaVa
 
   @Override
   protected String getConfigFile() {
-    return "Draft202012/config/exclusive-function-conditions-config.xml";
+    return "config/schema-validation-config.xml";
   }
 
   @Override
@@ -35,7 +38,21 @@ public class ConditionsExclusiveFunctionInvalidTestCase extends AbstractSchemaVa
   }
 
   @Test
-  public void validate() throws Exception {
+  public void Draft7validate() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_CONDITIONS_DRAFT7);
+  }
+
+  @Test
+  public void Draft201909validate() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_CONDITIONS_DRAFT201909);
+  }
+
+  @Test
+  public void Draft202012validate() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_CONDITIONS_DRAFT202012);
+  }
+
+  private void runTestWithSchemaAndValidate(String schema) throws Exception {
 
     expectedException.expectCause(new BaseMatcher<Throwable>() {
 
@@ -54,6 +71,9 @@ public class ConditionsExclusiveFunctionInvalidTestCase extends AbstractSchemaVa
       }
     });
 
-    flowRunner("validate").withPayload(json).run();
+    flowRunner("validate")
+        .withVariable("schema", schema)
+        .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
+        .withPayload(json).run();
   }
 }

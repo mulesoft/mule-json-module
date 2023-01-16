@@ -7,6 +7,7 @@
 package org.mule.extension.Draft6;
 
 import org.junit.Test;
+import org.mule.extension.AbstractSchemaValidationTestCase;
 import org.mule.runtime.core.api.event.CoreEvent;
 
 import static org.junit.Assert.assertEquals;

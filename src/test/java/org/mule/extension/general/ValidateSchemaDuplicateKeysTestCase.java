@@ -4,23 +4,25 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft202012;
+package org.mule.extension.general;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.internal.matchers.ThrowableMessageMatcher;
 import org.junit.rules.ExpectedException;
 import org.junit.runners.Parameterized;
+import org.mule.extension.AbstractSchemaValidationTestCase;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Collection;
 
 import static java.util.Arrays.asList;
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
+import static org.hamcrest.core.Is.is;
+import static org.mule.extension.TestVariables.*;
 
 @RunnerDelegateTo(Parameterized.class)
 public class ValidateSchemaDuplicateKeysTestCase extends AbstractSchemaValidationTestCase {
@@ -49,12 +51,29 @@ public class ValidateSchemaDuplicateKeysTestCase extends AbstractSchemaValidatio
   }
 
   @Test
-  public void duplicateKeys() throws Exception {
-    CoreEvent result = flowRunner("validate")
-        .withPayload(getFstabWithDuplicateKeys())
-        .withVariable("schema", SCHEMA_FSTAB_JSON_DRAFT202012)
-        .withVariable("allowDuplicateKeys", allowDuplicateKeys).run();
-    assertThat(result.getMessage().getPayload().getValue(), is(getFstabWithDuplicateKeys()));
+  public void Draft4duplicateKeys() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_FSTAB_JSON_DRAFT34);
+  }
+
+  @Test
+  public void Draft6duplicateKeys() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_FSTAB_JSON_DRAFT6);
+  }
+
+  @Test
+  public void Draft7duplicateKeys() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_FSTAB_JSON_DRAFT7);
+  }
+
+  @Test
+  public void Draft201909duplicateKeys() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_FSTAB_JSON_DRAFT201909);
+  }
+
+
+  @Test
+  public void Draft202012duplicateKeys() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_FSTAB_JSON_DRAFT202012);
   }
 
   private static ExpectedException getExpectedExceptionForDuplicateKeys() {
@@ -63,4 +82,14 @@ public class ValidateSchemaDuplicateKeysTestCase extends AbstractSchemaValidatio
     return expectedException;
   }
 
+
+  private void runTestWithSchemaAndValidate(String schema) throws Exception {
+
+    CoreEvent result = flowRunner("validate")
+        .withPayload(getFstabWithDuplicateKeys())
+        .withVariable("schema", schema)
+        .withVariable("allowDuplicateKeys", allowDuplicateKeys).run();
+    assertThat(result.getMessage().getPayload().getValue(), is(getFstabWithDuplicateKeys()));
+
+  }
 }

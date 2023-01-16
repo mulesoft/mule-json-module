@@ -9,6 +9,7 @@ package org.mule.extension.Draft202012;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mule.extension.AbstractSchemaValidationTestCase;
 
 import static org.junit.rules.ExpectedException.none;
 

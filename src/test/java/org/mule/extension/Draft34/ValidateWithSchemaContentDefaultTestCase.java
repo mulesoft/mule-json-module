@@ -9,6 +9,7 @@ package org.mule.extension.Draft34;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.mule.extension.AbstractSchemaValidationTestCase;
 import org.mule.runtime.core.api.event.CoreEvent;
 
 public class ValidateWithSchemaContentDefaultTestCase extends AbstractSchemaValidationTestCase {

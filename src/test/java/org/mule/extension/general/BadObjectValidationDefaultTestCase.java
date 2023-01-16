@@ -4,13 +4,15 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.extension.Draft202012;
+package org.mule.extension.general;
 
 import org.junit.Test;
+import org.mule.extension.AbstractSchemaValidationTestCase;
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.runtime.core.api.event.CoreEvent;
 
 import static org.junit.Assert.assertEquals;
+import static org.mule.extension.TestVariables.*;
 
 public class BadObjectValidationDefaultTestCase extends AbstractSchemaValidationTestCase {
 
@@ -27,10 +29,34 @@ public class BadObjectValidationDefaultTestCase extends AbstractSchemaValidation
   }
 
   @Test
+  public void Draft4validateDefaultBehaviour() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT34);
+  }
+
+  @Test
+  public void Draft6validateDefaultBehaviour() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT6);
+  }
+
+  @Test
+  public void Draft7validateDefaultBehaviour() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT7);
+  }
+
+  @Test
+  public void Draft201909validateDefaultBehaviour() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT201909);
+  }
+
+  @Test
   public void validateDefaultBehaviour() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT202012);
+  }
+
+  private void runTestWithSchemaAndValidate(String schema) throws Exception {
 
     CoreEvent flowResult = flowRunner("validate")
-        .withVariable("schema", SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT202012)
+        .withVariable("schema", schema)
         .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
         .withPayload(json).run();
     assertEquals(json, flowResult.getMessage().getPayload().getValue());

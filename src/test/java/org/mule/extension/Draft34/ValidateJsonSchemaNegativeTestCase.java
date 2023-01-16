@@ -8,6 +8,7 @@ package org.mule.extension.Draft34;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.mule.extension.AbstractSchemaValidationTestCase;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 

@@ -15,6 +15,7 @@ import org.hamcrest.Description;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mule.extension.AbstractSchemaValidationTestCase;
 
 public class BadObjectValidationWithSchemaContentsTestCase extends AbstractSchemaValidationTestCase {
 
