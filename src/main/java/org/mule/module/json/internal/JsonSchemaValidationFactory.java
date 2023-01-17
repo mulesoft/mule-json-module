@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * Create instances of {@link JsonSchemaValidator},
  * returning their wrappers making validations, can return  {@link JsonSchemaValidatorNetworkntWrapper} or
- * {@link JsonSchemaValidatorJavaJsonToolsWrapper
+ * {@link JsonSchemaValidatorJavaJsonToolsWrapper}
  */
 public class JsonSchemaValidationFactory {
 

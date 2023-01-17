@@ -8,6 +8,9 @@ package org.mule.module.json.internal;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+/**
+ * Link of the chain, determinate when {@link JsonSchemaValidatorJavaJsonToolsWrapper} have to be returned
+ */
 public class JavaJsonToolsLink extends LibraryLink {
 
   public JavaJsonToolsLink(LibraryLink nextLink) {

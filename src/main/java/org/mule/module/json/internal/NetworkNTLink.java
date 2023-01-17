@@ -15,6 +15,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.schema.JsonSchemaException;
 import com.networknt.schema.SpecVersionDetector;
 
+/**
+ * Link of the chain, determinate when {@link JsonSchemaValidatorNetworkntWrapper} have to be returned
+ */
 public class NetworkNTLink extends LibraryLink {
 
   public NetworkNTLink(LibraryLink nextLink) {
