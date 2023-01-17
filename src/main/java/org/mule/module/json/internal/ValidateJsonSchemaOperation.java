@@ -116,8 +116,9 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
    * @param schemaRedirects Allows to redirect any given URI in the Schema (or even the schema location itself) to any other
    *        specific URI. The most common use case for this feature is to map external namespace URIs without the need to a local
    *        resource
-   * @param dereferencing Draft v4 defines two dereferencing modes: canonical and inline. CANONICAL will be the default option but
-   *        INLINE can also be specified. When validating a v3 draft this attribute is ignored.
+   * @param dereferencing Draft v4 defines two dereferencing modes: canonical and inline.
+   *                      CANONICAL is the default option, you can also specify INLINE.
+   *                      This field affects only when you use Draft v4.
    * @param allowDuplicateKeys if true, the validator will allow duplicate keys, otherwise it will fail.
    * @param allowArbitraryPrecision if true, the validator will use arbitrary precision when reading floating point values,
    *                                otherwise double precision will be used.
