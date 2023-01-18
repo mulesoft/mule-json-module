@@ -18,7 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class ValidateCompliantWithSchemaContentTestCase extends AbstractSchemaValidationTestCase {
+public class ValidateCompliantWithSchemaArrayObjectContentTestCase extends AbstractSchemaValidationTestCase {
 
   private String json;
 

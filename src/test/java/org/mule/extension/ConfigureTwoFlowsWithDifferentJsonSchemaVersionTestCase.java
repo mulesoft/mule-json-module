@@ -7,7 +7,7 @@
 package org.mule.extension;
 
 import static org.mule.extension.TestVariables.JSON_NAMESPACE;
-import static org.mule.extension.TestVariables.SCHEMA_FIELD_INTEGER_REQUIRED_DRAFT202012;
+import static org.mule.extension.TestVariables.SCHEMA_FIELD_INTEGER_REQUIRED_DRAFT7;
 import static org.mule.extension.TestVariables.SCHEMA_FIELD_STRING_REQUIRED_DRAFT202012;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
@@ -19,7 +19,7 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class ConfigureTwoFlowsWithSameJsonSchemaVersion extends AbstractSchemaValidationTestCase {
+public class ConfigureTwoFlowsWithDifferentJsonSchemaVersionTestCase extends AbstractSchemaValidationTestCase {
 
   private String inputFieldInteger;
   private String inputFieldString;
@@ -47,10 +47,10 @@ public class ConfigureTwoFlowsWithSameJsonSchemaVersion extends AbstractSchemaVa
   @Test
   public void RunFlowsAndMakeValidations() throws Exception {
 
-    runTestWithSchema(SCHEMA_FIELD_INTEGER_REQUIRED_DRAFT202012, inputFieldInteger, FLOW1);
+    runTestWithSchema(SCHEMA_FIELD_INTEGER_REQUIRED_DRAFT7, inputFieldInteger, FLOW1);
     runTestWithSchema(SCHEMA_FIELD_STRING_REQUIRED_DRAFT202012, inputFieldString, FLOW2);
 
-    runTestWithSchemaAndExpectError(SCHEMA_FIELD_INTEGER_REQUIRED_DRAFT202012, inputFieldString, FLOW1,
+    runTestWithSchemaAndExpectError(SCHEMA_FIELD_INTEGER_REQUIRED_DRAFT7, inputFieldString, FLOW1,
                                     ERROR_MSG_EXPECTED_STRING_FOUND_INT_EXP);
     runTestWithSchemaAndExpectError(SCHEMA_FIELD_STRING_REQUIRED_DRAFT202012, inputFieldInteger, FLOW2,
                                     ERROR_MSG_EXPECTED_INT_FOUND_STRING_EXP);
