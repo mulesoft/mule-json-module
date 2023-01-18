@@ -6,12 +6,12 @@
  */
 package org.mule.module.json.internal;
 
-import static java.lang.String.format;
 import static org.mule.module.json.api.JsonError.INVALID_SCHEMA;
 import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
 import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static com.google.common.collect.Lists.newArrayList;
@@ -22,6 +22,8 @@ import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
@@ -40,7 +42,7 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
  */
 public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator {
 
-  public static final String VALIDATION_FAILED_MESSAGE = "Json content is not compliant with schema.\n";
+  private static final Pattern INVALID_REFERENCE_MESSAGE_PATTERN = Pattern.compile("fatal: URI.+is not absolute");
 
   private final JsonSchema jsonSchema;
   private final ObjectMapper objectMapper;
@@ -59,21 +61,22 @@ public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator
     try {
       report = jsonSchema.validate(jsonNode);
 
-    } catch (ProcessingException processingException) {
-      //TODO We must create a new error: INVALID_REFERENCE, to inform the user that the external references declared in the Schema cannot be accessed(W-12301483)
-      if (processingException.getClass().getName().contains("ProcessingException")) {
-        throw new MuleRuntimeException(createStaticMessage("Invalid Schema References"), processingException);
-      } else {
-        throw new MuleRuntimeException(createStaticMessage(
-                                                           "Exception was found while trying to validate against json schema. Content was: "
-                                                               + jsonNode.toString()),
-                                       processingException);
+      } catch (ProcessingException e){
+      Matcher messageMatcher = INVALID_REFERENCE_MESSAGE_PATTERN.matcher(e.getMessage());
+      if(messageMatcher.find()){
+        //TODO We must create a new error: INVALID_REFERENCE, to inform the user that the external references declared in the Schema cannot be accessed(W-12301483)
+        throw new MuleRuntimeException(createStaticMessage(INVALID_SCHEMA_REFERENCE), e);
+      }else{
+        throw new MuleRuntimeException(createStaticMessage(ERROR_TRYING_TO_VALIDATE
+                        + jsonNode.toString()),
+                e);
       }
     }
 
     if (!report.isSuccess()) {
-      throw new SchemaValidationException(VALIDATION_FAILED_MESSAGE + report,
-                                          reportAsJson(report, objectMapper));
+      String jsonReport = reportAsJson(report, objectMapper);
+      throw new SchemaValidationException(VALIDATION_FAILED_MESSAGE + jsonReport,
+                                          jsonReport);
     }
   }
 
@@ -97,7 +100,7 @@ public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator
       try {
         return factory.getJsonSchema(resolveLocationIfNecessary(schemaLocation));
       } catch (ProcessingException e) {
-        throw new ModuleException(format("Could not load JSON schema [%s]. %s", schemaLocation, e.getMessage()),
+        throw new ModuleException(format(SCHEMA_NOT_FOUND_MSG + " [%s]. %s", schemaLocation, e.getMessage()),
                                   SCHEMA_NOT_FOUND, e);
       }
     }

@@ -8,6 +8,8 @@ package org.mule.extension;
 
 public class TestVariables {
 
+  protected static final String JSON_NAMESPACE = "JSON";
+
   //Schemas
   //Draft 3
   protected static final String SCHEMA_FSTAB_DRAFTV3 = "/Draft4/schemas/fstab-draftv3.json";
@@ -63,9 +65,8 @@ public class TestVariables {
   protected static final String SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT202012 = "/Draft202012/schemas/object-array-schema.json";
   protected static final String SCHEMA_CONDITIONS_DRAFT202012 = "/Draft202012/schemas/conditions-schema.json";
   protected static final String SCHEMA_DEPENDENT_DRAFT202012 = "/Draft202012/schemas/dependent-schema.json";
-  protected static final String SCHEMA_FIELD_INTEGER_REQUIRED_DRAFT202012 = "/Draft202012/schemas/schema-field-integer-required.json";
-  protected static final String SCHEMA_FIELD_STRING_REQUIRED_DRAFT202012 = "/Draft202012/schemas/schema-field-string-required.json";
-
-
-
+  protected static final String SCHEMA_FIELD_INTEGER_REQUIRED_DRAFT202012 =
+      "/Draft202012/schemas/schema-field-integer-required.json";
+  protected static final String SCHEMA_FIELD_STRING_REQUIRED_DRAFT202012 =
+      "/Draft202012/schemas/schema-field-string-required.json";
 }

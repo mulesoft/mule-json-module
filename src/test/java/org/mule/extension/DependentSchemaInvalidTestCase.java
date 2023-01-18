@@ -6,25 +6,23 @@
  */
 package org.mule.extension;
 
+import static org.mule.extension.TestVariables.JSON_NAMESPACE;
 import static org.mule.extension.TestVariables.SCHEMA_DEPENDENT_DRAFT2019009;
 import static org.mule.extension.TestVariables.SCHEMA_DEPENDENT_DRAFT202012;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.rules.ExpectedException.none;
 
+import org.mule.functional.api.exception.ExpectedError;
+import org.mule.module.json.api.JsonError;
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class DependentSchemaInvalidTestCase extends AbstractSchemaValidationTestCase {
 
   private String json;
 
   @Rule
-  public ExpectedException expectedException = none();
+  public ExpectedError expectedError = ExpectedError.none();
 
   @Override
   protected String getConfigFile() {
@@ -47,22 +45,10 @@ public class DependentSchemaInvalidTestCase extends AbstractSchemaValidationTest
   }
 
   private void runTestWithSchemaAndValidate(String schema) throws Exception {
-    expectedException.expectCause(new BaseMatcher<Throwable>() {
 
-      @Override
-      public boolean matches(Object item) {
-        Exception e = (Exception) item;
-        String report = e.getMessage();
-        assertThat(report, containsString("$.billing_address: is missing but it is required"));
+    expectedError.expectErrorType(JSON_NAMESPACE, JsonError.SCHEMA_NOT_HONOURED.name());
+    expectedError.expectMessage(containsString("$.billing_address: is missing but it is required"));
 
-        return true;
-      }
-
-      @Override
-      public void describeTo(Description description) {
-        description.appendText("Error report did not match");
-      }
-    });
     flowRunner("validate")
         .withVariable("schema", schema)
         .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)

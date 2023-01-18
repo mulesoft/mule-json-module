@@ -6,30 +6,30 @@
  */
 package org.mule.extension;
 
+import static org.mule.extension.TestVariables.JSON_NAMESPACE;
 import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT4;
 import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT6;
 import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT7;
 import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT201909;
 import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT202012;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.rules.ExpectedException.none;
+import static org.junit.Assert.assertEquals;
 
+import org.mule.functional.api.exception.ExpectedError;
+import org.mule.module.json.api.JsonError;
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCase {
+public class BadObjectValidationEnableEnvVarTestCase extends AbstractSchemaValidationTestCase {
 
   private static final String VALIDATOR_FAIL_ON_TRAILING_TOKENS = "jsonSchemaValidator.FailOnTrailingTokens";
 
   private String json;
 
   @Rule
-  public ExpectedException expectedException = none();
+  public ExpectedError expectedError = ExpectedError.none();
 
   @Override
   protected String getConfigFile() {
@@ -74,26 +74,13 @@ public class BadObjectValidationTestCase extends AbstractSchemaValidationTestCas
 
   private void runTestWithSchemaAndValidate(String schema) throws Exception {
 
-    expectedException.expectCause(new BaseMatcher<Throwable>() {
+    expectedError.expectErrorType(JSON_NAMESPACE, JsonError.INVALID_INPUT_JSON.name());
+    expectedError.expectMessage(containsString("Trailing token (of type START_OBJECT) found after value"));
 
-      @Override
-      public boolean matches(Object item) {
-        Exception e = (Exception) item;
-        String report = e.getMessage();
-        assertThat(report, containsString("Trailing token (of type START_OBJECT) found after value"));
-
-        return true;
-      }
-
-      @Override
-      public void describeTo(Description description) {
-        description.appendText("Error report did not match");
-      }
-    });
-
-    flowRunner("validate")
+    CoreEvent event = flowRunner("validate")
         .withVariable("schema", schema)
         .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
         .withPayload(json).run();
+    assertEquals(json, event.getMessage().getPayload().getValue());
   }
 }

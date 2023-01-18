@@ -6,6 +6,7 @@
  */
 package org.mule.extension;
 
+import static org.mule.extension.TestVariables.JSON_NAMESPACE;
 import static org.hamcrest.core.StringContains.containsString;
 
 import org.mule.functional.api.exception.ExpectedError;
@@ -24,7 +25,7 @@ public class TryToLoadFromLocationAndNotExistTestCase extends AbstractSchemaVali
 
   @Test
   public void nullSchema() throws Throwable {
-    expectedError.expectErrorType("JSON", "SCHEMA_NOT_FOUND");
+    expectedError.expectErrorType(JSON_NAMESPACE, "SCHEMA_NOT_FOUND");
     expectedError.expectMessage(containsString("Cannot find schema [this-does-not-exist.json]"));
     flowRunner("validate-non-existing-schema").run();
   }

@@ -6,6 +6,7 @@
  */
 package org.mule.extension;
 
+import static org.mule.extension.TestVariables.JSON_NAMESPACE;
 import static org.mule.extension.TestVariables.SCHEMA_FSTAB_DRAFTV3;
 import static org.mule.extension.TestVariables.SCHEMA_FSTAB_INLINE_DRAFT201909;
 import static org.mule.extension.TestVariables.SCHEMA_FSTAB_INLINE_DRAFT202012;
@@ -203,7 +204,7 @@ public class ValidateJsonSchemaTestCase extends AbstractSchemaValidationTestCase
   }
 
   private void expectValidationError() {
-    expectedError.expectErrorType("JSON", JsonError.SCHEMA_NOT_HONOURED.name());
+    expectedError.expectErrorType(JSON_NAMESPACE, JsonError.SCHEMA_NOT_HONOURED.name());
   }
 
   private void validate(Object content) throws Exception {

@@ -6,86 +6,73 @@
  */
 package org.mule.extension;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.rules.ExpectedException.none;
+import static org.mule.extension.TestVariables.JSON_NAMESPACE;
 import static org.mule.extension.TestVariables.SCHEMA_FIELD_INTEGER_REQUIRED_DRAFT202012;
 import static org.mule.extension.TestVariables.SCHEMA_FIELD_STRING_REQUIRED_DRAFT202012;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertEquals;
 
+import org.mule.functional.api.exception.ExpectedError;
+import org.mule.module.json.api.JsonError;
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class ConfigureTwoFlowsWithSameJsonSchemaVersion extends AbstractSchemaValidationTestCase {
 
-    private String inputFieldInteger;
-    private String inputFieldString;
+  private String inputFieldInteger;
+  private String inputFieldString;
 
-    public static final String FLOW1 = "validate1";
-    public static final String FLOW2 = "validate2";
+  public static final String FLOW1 = "validate1";
+  public static final String FLOW2 = "validate2";
 
-    public static final String ERROR_MSG_EXPECTED_STRING_FOUND_INT_EXP = "string found, integer expected";
-    public static final String ERROR_MSG_EXPECTED_INT_FOUND_STRING_EXP = "integer found, string expected";
+  public static final String ERROR_MSG_EXPECTED_STRING_FOUND_INT_EXP = "string found, integer expected";
+  public static final String ERROR_MSG_EXPECTED_INT_FOUND_STRING_EXP = "integer found, string expected";
 
-    @Rule
-    public ExpectedException expectedException = none();
+  @Rule
+  public ExpectedError expectedError = ExpectedError.none();
 
-    @Override
-    protected String getConfigFile() {
-        return "config/schema-two-validate-flows.xml";
-    }
+  @Override
+  protected String getConfigFile() {
+    return "config/schema-two-validate-flows.xml";
+  }
 
-    @Override
-    protected void doSetUp() throws Exception {
-        inputFieldInteger = doGetResource("inputs/field-integer.json");
-        inputFieldString = doGetResource("inputs/field-string.json");
-    }
+  @Override
+  protected void doSetUp() throws Exception {
+    inputFieldInteger = doGetResource("inputs/field-integer.json");
+    inputFieldString = doGetResource("inputs/field-string.json");
+  }
 
-    @Test
-    public void RunFlowsAndMakeValidations() throws Exception {
+  @Test
+  public void RunFlowsAndMakeValidations() throws Exception {
 
-        runTestWithSchema(SCHEMA_FIELD_INTEGER_REQUIRED_DRAFT202012, inputFieldInteger, FLOW1);
-        runTestWithSchema(SCHEMA_FIELD_STRING_REQUIRED_DRAFT202012, inputFieldString, FLOW2);
+    runTestWithSchema(SCHEMA_FIELD_INTEGER_REQUIRED_DRAFT202012, inputFieldInteger, FLOW1);
+    runTestWithSchema(SCHEMA_FIELD_STRING_REQUIRED_DRAFT202012, inputFieldString, FLOW2);
 
-        runTestWithSchemaAndExpectError(SCHEMA_FIELD_INTEGER_REQUIRED_DRAFT202012, inputFieldString, FLOW1, ERROR_MSG_EXPECTED_STRING_FOUND_INT_EXP);
-        runTestWithSchemaAndExpectError(SCHEMA_FIELD_STRING_REQUIRED_DRAFT202012, inputFieldInteger, FLOW2, ERROR_MSG_EXPECTED_INT_FOUND_STRING_EXP);
-    }
+    runTestWithSchemaAndExpectError(SCHEMA_FIELD_INTEGER_REQUIRED_DRAFT202012, inputFieldString, FLOW1,
+                                    ERROR_MSG_EXPECTED_STRING_FOUND_INT_EXP);
+    runTestWithSchemaAndExpectError(SCHEMA_FIELD_STRING_REQUIRED_DRAFT202012, inputFieldInteger, FLOW2,
+                                    ERROR_MSG_EXPECTED_INT_FOUND_STRING_EXP);
+  }
 
-    private void runTestWithSchema(String schema, String input, String nameFlow) throws Exception {
-        CoreEvent flowResult = flowRunner(nameFlow)
-                .withVariable("schema", schema)
-                .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
-                .withPayload(input).run();
-        assertEquals(input, flowResult.getMessage().getPayload().getValue());
-    }
+  private void runTestWithSchema(String schema, String input, String nameFlow) throws Exception {
+    CoreEvent flowResult = flowRunner(nameFlow)
+        .withVariable("schema", schema)
+        .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
+        .withPayload(input).run();
+    assertEquals(input, flowResult.getMessage().getPayload().getValue());
+  }
 
-    private void runTestWithSchemaAndExpectError(String schema, String input, String nameFlow, String errorMsgExpected) throws Exception {
+  private void runTestWithSchemaAndExpectError(String schema, String input, String nameFlow, String errorMsgExpected)
+      throws Exception {
 
-        expectedException.expectCause(new BaseMatcher<Throwable>() {
+    expectedError.expectErrorType(JSON_NAMESPACE, JsonError.SCHEMA_NOT_HONOURED.name());
+    expectedError.expectMessage(containsString(errorMsgExpected));
 
-            @Override
-            public boolean matches(Object item) {
-                Exception e = (Exception) item;
-                String report = e.getMessage();
-                assertThat(report, containsString(errorMsgExpected));
-
-                return true;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Error report did not match");
-            }
-        });
-
-        flowRunner(nameFlow)
-                .withVariable("schema", schema)
-                .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
-                .withPayload(input).run();
-    }
+    flowRunner(nameFlow)
+        .withVariable("schema", schema)
+        .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
+        .withPayload(input).run();
+  }
 }

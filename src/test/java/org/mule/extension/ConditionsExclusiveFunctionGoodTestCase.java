@@ -9,19 +9,13 @@ package org.mule.extension;
 import static org.mule.extension.TestVariables.SCHEMA_CONDITIONS_DRAFT201909;
 import static org.mule.extension.TestVariables.SCHEMA_CONDITIONS_DRAFT202012;
 import static org.mule.extension.TestVariables.SCHEMA_CONDITIONS_DRAFT7;
-import static org.junit.rules.ExpectedException.none;
 
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class ConditionsExclusiveFunctionGoodTestCase extends AbstractSchemaValidationTestCase {
 
   private String json;
-
-  @Rule
-  public ExpectedException expectedException = none();
 
   @Override
   protected String getConfigFile() {

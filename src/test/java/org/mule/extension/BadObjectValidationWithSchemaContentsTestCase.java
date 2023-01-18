@@ -6,17 +6,15 @@
  */
 package org.mule.extension;
 
+import static org.mule.extension.TestVariables.JSON_NAMESPACE;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.rules.ExpectedException.none;
 
+import org.mule.module.json.api.JsonError;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
+import org.mule.functional.api.exception.ExpectedError;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class BadObjectValidationWithSchemaContentsTestCase extends AbstractSchemaValidationTestCase {
 
@@ -30,7 +28,7 @@ public class BadObjectValidationWithSchemaContentsTestCase extends AbstractSchem
   private String draft202012schemaContent;
 
   @Rule
-  public ExpectedException expectedException = none();
+  public ExpectedError expectedError = ExpectedError.none();
 
   @Override
   protected String getConfigFile() {
@@ -80,22 +78,8 @@ public class BadObjectValidationWithSchemaContentsTestCase extends AbstractSchem
   }
 
   private void runTestWithSchemaAndValidate(String schemaContent) throws Exception {
-
-    expectedException.expectCause(new BaseMatcher<Throwable>() {
-
-      @Override
-      public boolean matches(Object item) {
-        Exception e = (Exception) item;
-        String report = e.getMessage();
-        assertThat(report, containsString("Trailing token (of type START_OBJECT) found after value"));
-        return true;
-      }
-
-      @Override
-      public void describeTo(Description description) {
-        description.appendText("Error report did not match");
-      }
-    });
+    expectedError.expectErrorType(JSON_NAMESPACE, JsonError.INVALID_INPUT_JSON.name());
+    expectedError.expectMessage(containsString("Trailing token (of type START_OBJECT) found after value"));
 
     CoreEvent event = flowRunner("validate")
         .withVariable("schema", schemaContent)

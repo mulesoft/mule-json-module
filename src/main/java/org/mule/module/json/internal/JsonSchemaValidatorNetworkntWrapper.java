@@ -21,6 +21,9 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.SpecVersionDetector;
@@ -34,7 +37,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
 
-  public static final String VALIDATION_FAILED_MESSAGE = "Json content is not compliant with schema.\n";
+  private static final Pattern INVALID_REFERENCE_MESSAGE_PATTERN = Pattern.compile("Reference.+cannot be resolved");
 
   private final JsonSchema jsonSchema;
 
@@ -50,14 +53,15 @@ public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
     try {
       responseValidate = jsonSchema.validate(jsonNode);
     } catch (JsonSchemaException e) {
-      if (e.getMessage().contains("Reference") && e.getMessage().contains("cannot be resolved")) {
+      Matcher messageMatcher = INVALID_REFERENCE_MESSAGE_PATTERN.matcher(e.getMessage());
+      if(messageMatcher.find()) {
         //TODO We must create a new error: INVALID_REFERENCE, to inform the user that the external references declared in the Schema cannot be accessed(W-12301483)
-        throw new MuleRuntimeException(createStaticMessage("Invalid Schema References"), e);
-      } else {
+        throw new MuleRuntimeException(createStaticMessage(INVALID_SCHEMA_REFERENCE), e);
+      } else{
         throw new MuleRuntimeException(createStaticMessage(
-                                                           "Exception was found while trying to validate against json schema. Content was: "
-                                                               + jsonNode.toString()),
-                                       e);
+                ERROR_TRYING_TO_VALIDATE
+                        + jsonNode.toString()),
+                e);
       }
     }
 
@@ -86,7 +90,7 @@ public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
                                        getUriRedirectConfig(schemaRedirects));
       }
     } catch (URISyntaxException e) {
-      throw new ModuleException(format("Could not load JSON schema [%s]. %s", schemaLocation, e.getMessage()),
+      throw new ModuleException(format(SCHEMA_NOT_FOUND_MSG + " [%s]. %s", schemaLocation, e.getMessage()),
                                 SCHEMA_NOT_FOUND, e);
     }
   }

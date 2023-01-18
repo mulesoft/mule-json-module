@@ -16,12 +16,12 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.rules.ExpectedException.none;
 
 import org.mule.test.runner.RunnerDelegateTo;
+import java.util.Collection;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.internal.matchers.ThrowableMessageMatcher;
 import org.junit.rules.ExpectedException;
 import org.junit.runners.Parameterized;
-import java.util.Collection;
 
 @RunnerDelegateTo(Parameterized.class)
 public class ValidateArbitraryPrecisionTestCase extends AbstractSchemaValidationTestCase {

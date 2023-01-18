@@ -79,7 +79,6 @@ public class ValidateCompliantWithSchemaContentTestCase extends AbstractSchemaVa
       public boolean matches(Object item) {
         Exception e = (Exception) item;
         String report = e.getMessage();
-        System.err.println(report);
         assertThat(report, containsString("Json content is not compliant with schema"));
         return true;
       }

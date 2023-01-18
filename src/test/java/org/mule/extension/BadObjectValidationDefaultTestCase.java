@@ -17,8 +17,6 @@ import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.junit.Test;
 
-
-
 public class BadObjectValidationDefaultTestCase extends AbstractSchemaValidationTestCase {
 
   private String json;
