@@ -20,6 +20,8 @@ public class TestVariables {
       "Draft4/schemas/fstab-arbitrary-precision-keys.json";
   protected static final String SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT4 = "/Draft4/schemas/object-array-schema.json";
 
+  protected static final String SCHEMA_MALFORMED = "/Draft4/schemas/malformed-schema.json";
+
   //Draft 6
   protected static final String SCHEMA_FSTAB_JSON_DRAFT6 = "/Draft6/schemas/fstab.json";
   protected static final String SCHEMA_FSTAB_INLINE_DRAFT6 = "/Draft6/schemas/fstab-inline.json";
@@ -37,6 +39,9 @@ public class TestVariables {
   protected static final String SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT7 = "/Draft7/schemas/object-array-schema.json";
 
   protected static final String SCHEMA_CONDITIONS_DRAFT7 = "/Draft7/schemas/conditions-schema.json";
+
+  protected static final String SCHEMA_FIELD_INTEGER_REQUIRED_DRAFT7 = "/Draft202012/schemas/schema-field-integer-required.json";
+
 
   //Draft 201909
   protected static final String SCHEMA_FSTAB_JSON_DRAFT201909 = "/Draft201909/schemas/fstab.json";
@@ -58,4 +63,9 @@ public class TestVariables {
   protected static final String SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT202012 = "/Draft202012/schemas/object-array-schema.json";
   protected static final String SCHEMA_CONDITIONS_DRAFT202012 = "/Draft202012/schemas/conditions-schema.json";
   protected static final String SCHEMA_DEPENDENT_DRAFT202012 = "/Draft202012/schemas/dependent-schema.json";
+  protected static final String SCHEMA_FIELD_INTEGER_REQUIRED_DRAFT202012 = "/Draft202012/schemas/schema-field-integer-required.json";
+  protected static final String SCHEMA_FIELD_STRING_REQUIRED_DRAFT202012 = "/Draft202012/schemas/schema-field-string-required.json";
+
+
+
 }

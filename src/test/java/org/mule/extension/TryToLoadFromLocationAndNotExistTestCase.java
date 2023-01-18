@@ -12,7 +12,7 @@ import org.mule.functional.api.exception.ExpectedError;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class ValidateJsonSchemaNegativeTestCase extends AbstractSchemaValidationTestCase {
+public class TryToLoadFromLocationAndNotExistTestCase extends AbstractSchemaValidationTestCase {
 
   @Rule
   public ExpectedError expectedError = ExpectedError.none();

@@ -6,7 +6,9 @@
  */
 package org.mule.module.json.internal;
 
+import static java.lang.String.format;
 import static org.mule.module.json.api.JsonError.INVALID_SCHEMA;
+import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.api.JsonSchemaDereferencingMode.CANONICAL;
 import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
@@ -38,6 +40,8 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
  */
 public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator {
 
+  public static final String VALIDATION_FAILED_MESSAGE = "Json content is not compliant with schema.\n";
+
   private final JsonSchema jsonSchema;
   private final ObjectMapper objectMapper;
 
@@ -68,7 +72,7 @@ public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator
     }
 
     if (!report.isSuccess()) {
-      throw new SchemaValidationException("Json content is not compliant with schema: \n" + report,
+      throw new SchemaValidationException(VALIDATION_FAILED_MESSAGE + report,
                                           reportAsJson(report, objectMapper));
     }
   }
@@ -82,14 +86,20 @@ public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator
   private JsonSchema loadSchemaLibrary(JsonNode jsonNode, String schemaLocation,
                                        Map<String, String> schemaRedirects, JsonSchemaDereferencingMode dereferencing) {
     JsonSchemaFactory factory = getFactoryAndLoadConfiguration(schemaRedirects, dereferencing);
-    try {
-      if (schemaLocation == null) {
+
+    if (schemaLocation == null) {
+      try {
         return factory.getJsonSchema(jsonNode);
-      } else {
-        return factory.getJsonSchema(resolveLocationIfNecessary(schemaLocation));
+      } catch (ProcessingException e) {
+        throw new ModuleException("Invalid Schema", INVALID_SCHEMA, e);
       }
-    } catch (ProcessingException e) {
-      throw new ModuleException("Invalid Schema", INVALID_SCHEMA, e);
+    } else {
+      try {
+        return factory.getJsonSchema(resolveLocationIfNecessary(schemaLocation));
+      } catch (ProcessingException e) {
+        throw new ModuleException(format("Could not load JSON schema [%s]. %s", schemaLocation, e.getMessage()),
+                                  SCHEMA_NOT_FOUND, e);
+      }
     }
   }
 

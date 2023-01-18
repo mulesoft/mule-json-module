@@ -86,7 +86,7 @@ public abstract class JsonSchemaValidator {
     try {
       return objectMapper.readTree(input);
     } catch (Exception e) {
-      throw new ModuleException(createStaticMessage("Input content was not a valid Json document"), INVALID_INPUT_JSON, e);
+      throw new ModuleException(createStaticMessage("Invalid Input Content"), INVALID_INPUT_JSON, e);
     }
   }
 

@@ -6,9 +6,9 @@
  */
 package org.mule.module.json.internal;
 
-import static org.mule.module.json.internal.JsonSchemaParser.getSchemaJsonNode;
-
 import com.fasterxml.jackson.databind.JsonNode;
+
+import static org.mule.module.json.internal.JsonSchemaParser.getSchemaJsonNode;
 
 /**
  * Create instances of {@link JsonSchemaValidator},

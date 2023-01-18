@@ -7,13 +7,19 @@
 package org.mule.module.json.internal;
 
 import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
+import static org.mule.module.json.api.JsonError.INVALID_SCHEMA;
 import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
 import static org.mule.module.json.internal.ValidatorCommonUtils.isBlank;
 import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
 import static java.lang.String.format;
 import static com.google.common.base.Preconditions.checkState;
+import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
+import com.fasterxml.jackson.core.io.JsonEOFException;
 import org.mule.runtime.extension.api.exception.ModuleException;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,7 +32,8 @@ public class JsonSchemaParser {
 
   private static final ObjectMapper objectMapper = new ObjectMapper();
 
-  private JsonSchemaParser() {}
+  private JsonSchemaParser() {
+  }
 
   public static JsonNode getSchemaJsonNode(String schemaContent, String schemaLocation) {
 
@@ -34,15 +41,19 @@ public class JsonSchemaParser {
       try {
         return objectMapper.readTree(schemaContent);
       } catch (JsonProcessingException e) {
-        throw new ModuleException("Invalid Input Content", INVALID_INPUT_JSON, e);
+        throw new ModuleException("Invalid Json Schema", INVALID_INPUT_JSON, e);
       }
     }
     try {
       checkState(schemaLocation != null, "schemaLocation has not been provided");
       return objectMapper.readTree(new URL(resolveLocationIfNecessary(schemaLocation)));
-    } catch (Exception e) {
+
+    } catch (IllegalArgumentException | MalformedURLException e) {
       throw new ModuleException(format("Could not load JSON schema [%s]. %s", schemaLocation, e.getMessage()),
-                                SCHEMA_NOT_FOUND, e);
+              SCHEMA_NOT_FOUND, e);
+    }catch (IOException e) {
+
+      throw new ModuleException("Invalid Json Schema", INVALID_INPUT_JSON);
     }
   }
 }

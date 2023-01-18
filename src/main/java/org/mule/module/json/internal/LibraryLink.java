@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public abstract class LibraryLink {
 
-  LibraryLink nextLink;
+  private LibraryLink nextLink;
 
   protected LibraryLink(LibraryLink nextLink) {
     this.nextLink = nextLink;

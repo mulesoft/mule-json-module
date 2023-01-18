@@ -11,6 +11,7 @@ import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocation
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static java.lang.String.format;
 
+import com.networknt.schema.JsonSchemaException;
 import org.mule.module.json.internal.error.SchemaValidationException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.extension.api.exception.ModuleException;
@@ -33,6 +34,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
 
+  public static final String VALIDATION_FAILED_MESSAGE = "Json content is not compliant with schema.\n";
+
   private final JsonSchema jsonSchema;
 
   public JsonSchemaValidatorNetworkntWrapper(ValidatorKey key, JsonNode jsonSchemaNode) {
@@ -46,8 +49,7 @@ public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
     Set<ValidationMessage> responseValidate;
     try {
       responseValidate = jsonSchema.validate(jsonNode);
-    } catch (Exception e) {
-
+    } catch (JsonSchemaException e) {
       if (e.getMessage().contains("Reference") && e.getMessage().contains("cannot be resolved")) {
         //TODO We must create a new error: INVALID_REFERENCE, to inform the user that the external references declared in the Schema cannot be accessed(W-12301483)
         throw new MuleRuntimeException(createStaticMessage("Invalid Schema References"), e);
@@ -60,7 +62,7 @@ public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
     }
 
     if (!responseValidate.isEmpty()) {
-      throw new SchemaValidationException("Json content is not compliant with schema: \n" + responseValidate,
+      throw new SchemaValidationException(VALIDATION_FAILED_MESSAGE + responseValidate,
                                           responseValidate.toString());
     }
   }
