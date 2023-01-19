@@ -42,16 +42,16 @@ public class ValidateJsonSchemaTestCase extends AbstractSchemaValidationTestCase
   public static Iterable<Object[]> data() throws Exception {
     return Arrays.asList(new Object[][] {
 
-        {"SimpleV4Schema as String", SCHEMA_FSTAB_JSON_DRAFT4, CANONICAL, getGoodFstab(), getBadFstab(), getBadFstab2()},
-        {"SimpleV4Schema as bytes", SCHEMA_FSTAB_JSON_DRAFT4, CANONICAL, getGoodFstab().getBytes(), getBadFstab().getBytes(),
+        {"Draft4 as String", SCHEMA_FSTAB_JSON_DRAFT4, CANONICAL, getGoodFstab(), getBadFstab(), getBadFstab2()},
+        {"Draft4 as bytes", SCHEMA_FSTAB_JSON_DRAFT4, CANONICAL, getGoodFstab().getBytes(), getBadFstab().getBytes(),
             getBadFstab2().getBytes()},
-        {"SimpleV4Schema as Stream", SCHEMA_FSTAB_JSON_DRAFT4, CANONICAL, toStream(getGoodFstab()), toStream(getBadFstab()),
+        {"Draft4 as Stream", SCHEMA_FSTAB_JSON_DRAFT4, CANONICAL, toStream(getGoodFstab()), toStream(getBadFstab()),
             toStream(getBadFstab2())},
 
-        {"Inline schema as String", SCHEMA_FSTAB_INLINE_DRAFT4, INLINE, getGoodFstabInline(), getBadFstab(), getBadFstab2()},
-        {"Inline schema as bytes", SCHEMA_FSTAB_INLINE_DRAFT4, INLINE, getGoodFstabInline().getBytes(), getBadFstab().getBytes(),
+        {"Draft4: Inline schema as String", SCHEMA_FSTAB_INLINE_DRAFT4, INLINE, getGoodFstabInline(), getBadFstab(), getBadFstab2()},
+        {"Draft4: Inline schema as bytes", SCHEMA_FSTAB_INLINE_DRAFT4, INLINE, getGoodFstabInline().getBytes(), getBadFstab().getBytes(),
             getBadFstab2().getBytes()},
-        {"Inline schema as Stream", SCHEMA_FSTAB_INLINE_DRAFT4, INLINE, toStream(getGoodFstabInline()), toStream(getBadFstab()),
+        {"Draft4: Inline schema as Stream", SCHEMA_FSTAB_INLINE_DRAFT4, INLINE, toStream(getGoodFstabInline()), toStream(getBadFstab()),
             toStream(getBadFstab2())},
 
         {"Draft3 as String", SCHEMA_FSTAB_DRAFTV3, CANONICAL, getGoodFstab(), getBadFstab(), getBadFstab2()},
@@ -60,11 +60,11 @@ public class ValidateJsonSchemaTestCase extends AbstractSchemaValidationTestCase
         {"Draft3 as Stream", SCHEMA_FSTAB_DRAFTV3, CANONICAL, toStream(getGoodFstab()), toStream(getBadFstab()),
             toStream(getBadFstab2())},
 
-        {"ReferringV4Schema as String", SCHEMA_FSTAB_REFERRING_DRAFT4, CANONICAL, getGoodFstab(), getBadFstab(), getBadFstab2()},
-        {"ReferringV4Schema as bytes", SCHEMA_FSTAB_REFERRING_DRAFT4, CANONICAL, getGoodFstab().getBytes(),
+        {"Draft4: ReferringV4Schema as String", SCHEMA_FSTAB_REFERRING_DRAFT4, CANONICAL, getGoodFstab(), getBadFstab(), getBadFstab2()},
+        {"Draft4: ReferringV4Schema as bytes", SCHEMA_FSTAB_REFERRING_DRAFT4, CANONICAL, getGoodFstab().getBytes(),
             getBadFstab().getBytes(),
             getBadFstab2().getBytes()},
-        {"ReferringV4Schema as Stream", SCHEMA_FSTAB_REFERRING_DRAFT4, CANONICAL, toStream(getGoodFstab()),
+        {"Draft4: ReferringV4Schema as Stream", SCHEMA_FSTAB_REFERRING_DRAFT4, CANONICAL, toStream(getGoodFstab()),
             toStream(getBadFstab()),
             toStream(getBadFstab2())},
 

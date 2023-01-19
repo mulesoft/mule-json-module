@@ -6,12 +6,14 @@
  */
 package org.mule.extension;
 
+import static org.junit.Assert.assertEquals;
 import static org.mule.extension.TestVariables.SCHEMA_CONDITIONS_DRAFT201909;
 import static org.mule.extension.TestVariables.SCHEMA_CONDITIONS_DRAFT202012;
 import static org.mule.extension.TestVariables.SCHEMA_CONDITIONS_DRAFT7;
 
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.junit.Test;
+import org.mule.runtime.core.api.event.CoreEvent;
 
 public class ConditionsExclusiveFunctionGoodTestCase extends AbstractSchemaValidationTestCase {
 
@@ -43,9 +45,10 @@ public class ConditionsExclusiveFunctionGoodTestCase extends AbstractSchemaValid
   }
 
   private void runTestWithSchemaAndValidate(String schema) throws Exception {
-    flowRunner("validate")
-        .withVariable("schema", schema)
-        .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
-        .withPayload(json).run();
+    CoreEvent event = flowRunner("validate")
+            .withVariable("schema", schema)
+            .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
+            .withPayload(json).run();
+    assertEquals(json, event.getMessage().getPayload().getValue());
   }
 }

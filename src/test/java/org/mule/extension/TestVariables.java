@@ -9,6 +9,7 @@ package org.mule.extension;
 public class TestVariables {
 
   protected static final String JSON_NAMESPACE = "JSON";
+  protected static final String SCHEMA_WITHOUT_VERSION = "schema-without-version.json";
 
   //Schemas
   //Draft 3

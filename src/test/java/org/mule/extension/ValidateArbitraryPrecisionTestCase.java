@@ -6,6 +6,7 @@
  */
 package org.mule.extension;
 
+import static org.junit.Assert.assertEquals;
 import static org.mule.extension.TestVariables.SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS_DRAFT201909;
 import static org.mule.extension.TestVariables.SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS_DRAFT202012;
 import static org.mule.extension.TestVariables.SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS_DRAFT4;
