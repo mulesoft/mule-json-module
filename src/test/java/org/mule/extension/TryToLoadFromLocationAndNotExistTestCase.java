@@ -6,25 +6,26 @@
  */
 package org.mule.extension;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.mule.functional.api.exception.ExpectedError;
-
+import static org.mule.extension.TestVariables.JSON_NAMESPACE;
 import static org.hamcrest.core.StringContains.containsString;
 
-public class ValidateJsonSchemaNegativeTestCase extends AbstractSchemaValidationTestCase {
+import org.mule.functional.api.exception.ExpectedError;
+import org.junit.Rule;
+import org.junit.Test;
+
+public class TryToLoadFromLocationAndNotExistTestCase extends AbstractSchemaValidationTestCase {
 
   @Rule
   public ExpectedError expectedError = ExpectedError.none();
 
   @Override
   protected String getConfigFile() {
-    return "schema-validation-config.xml";
+    return "config/schema-validation-config.xml";
   }
 
   @Test
   public void nullSchema() throws Throwable {
-    expectedError.expectErrorType("JSON", "SCHEMA_NOT_FOUND");
+    expectedError.expectErrorType(JSON_NAMESPACE, "SCHEMA_NOT_FOUND");
     expectedError.expectMessage(containsString("Cannot find schema [this-does-not-exist.json]"));
     flowRunner("validate-non-existing-schema").run();
   }

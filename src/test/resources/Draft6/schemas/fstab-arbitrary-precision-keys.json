@@ -1,0 +1,8 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "type": "number",
+  "minimum": 0,
+  "maximum": 10000000000000000,
+  "multipleOf": 0.01,
+  "exclusiveMaximum": 10000000000000000
+}

@@ -5,7 +5,6 @@
     },
     "/tmp": {
         "device": "tmpfs",
-        "fstype": "tmpfs",
         "options": [ "size=64M" ]
     },
     "/var/lib/mysql": {

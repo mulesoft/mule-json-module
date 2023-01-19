@@ -6,13 +6,13 @@
  */
 package org.mule.module.json.internal;
 
-import static java.lang.String.format;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.stream.Collectors.toMap;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
 import static org.mule.runtime.api.meta.model.operation.ExecutionType.CPU_INTENSIVE;
 import static org.mule.runtime.extension.api.annotation.param.display.Placement.ADVANCED_TAB;
+import static java.lang.String.format;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.stream.Collectors.toMap;
 
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.module.json.api.SchemaRedirect;
@@ -39,25 +39,23 @@ import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.stereotype.Validator;
+import org.mule.runtime.extension.api.exception.ModuleException;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Map;
+import javax.inject.Inject;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import javax.inject.Inject;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +70,7 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
   private static final int MAX_IDLE_POOL_COUNT = 32;
   private final static Logger LOGGER = LoggerFactory.getLogger(ValidateJsonSchemaOperation.class);
   private JsonModuleResourceReleaser resourceReleaser;
+  private final JsonSchemaValidationFactory jsonSchemaValidationFactory = new JsonSchemaValidationFactory();
 
   @Inject
   TransformationService transformationService;
@@ -117,8 +116,9 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
    * @param schemaRedirects Allows to redirect any given URI in the Schema (or even the schema location itself) to any other
    *        specific URI. The most common use case for this feature is to map external namespace URIs without the need to a local
    *        resource
-   * @param dereferencing Draft v4 defines two dereferencing modes: canonical and inline. CANONICAL will be the default option but
-   *        INLINE can also be specified. When validating a v3 draft this attribute is ignored.
+   * @param dereferencing Draft v4 defines two dereferencing modes: canonical and inline.
+   *                      CANONICAL is the default option, you can also specify INLINE.
+   *                      This field affects only when you use Draft v4.
    * @param allowDuplicateKeys if true, the validator will allow duplicate keys, otherwise it will fail.
    * @param allowArbitraryPrecision if true, the validator will use arbitrary precision when reading floating point values,
    *                                otherwise double precision will be used.
@@ -176,58 +176,12 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
     }
   }
 
-
-  class ValidatorKey {
-
-    private String schemas;
-    private JsonSchemaDereferencingMode dereferencingType;
-    private Map<String, String> schemaRedirects;
-    private final boolean allowDuplicateKeys;
-    private final boolean allowArbitraryPrecision;
-    private String schemaContent;
-
-    public ValidatorKey(String schemas, JsonSchemaDereferencingMode dereferencingType, Map<String, String> schemaRedirects,
-                        boolean allowDuplicateKeys, boolean allowArbitraryPrecision, String schemaContent) {
-      this.schemas = schemas;
-      this.dereferencingType = dereferencingType;
-      this.schemaRedirects = schemaRedirects;
-      this.allowDuplicateKeys = allowDuplicateKeys;
-      this.allowArbitraryPrecision = allowArbitraryPrecision;
-      this.schemaContent = schemaContent;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (obj instanceof ValidatorKey) {
-        ValidatorKey key = (ValidatorKey) obj;
-        return Objects.equals(schemas, key.schemas)
-            && dereferencingType == key.dereferencingType
-            && Objects.equals(schemaRedirects, key.schemaRedirects)
-            && Objects.equals(this.schemaContent, key.schemaContent);
-      }
-
-      return false;
-    }
-
-    @Override
-    public int hashCode() {
-      return new HashCodeBuilder().append(schemas).append(dereferencingType).append(schemaRedirects).toHashCode();
-    }
-  }
-
   private BasePooledObjectFactory<JsonSchemaValidator> createPooledObjectFactory(ValidatorKey key) {
     return new BasePooledObjectFactory<JsonSchemaValidator>() {
 
       @Override
-      public JsonSchemaValidator create() throws Exception {
-        return JsonSchemaValidator.builder()
-            .addSchemaRedirects(key.schemaRedirects)
-            .setDereferencing(key.dereferencingType)
-            .setSchemaLocation(key.schemas)
-            .allowDuplicateKeys(key.allowDuplicateKeys)
-            .allowArbitraryPrecision(key.allowArbitraryPrecision)
-            .setSchemaContent(key.schemaContent)
-            .build();
+      public JsonSchemaValidator create() {
+        return jsonSchemaValidationFactory.create(key);
       }
 
       @Override
@@ -285,5 +239,4 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
     }
     return inputStream;
   }
-
 }

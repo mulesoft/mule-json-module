@@ -6,13 +6,19 @@
  */
 package org.mule.extension;
 
+import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT201909;
+import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT202012;
+import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT4;
+import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT6;
+import static org.mule.extension.TestVariables.SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT7;
+import static org.mule.runtime.api.metadata.DataType.JSON_STRING;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
-import static org.mule.runtime.api.metadata.DataType.JSON_STRING;
+
+import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.runtime.api.exception.ErrorMessageAwareException;
 import org.mule.runtime.api.metadata.TypedValue;
-
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Rule;
@@ -28,7 +34,7 @@ public class ObjectArrayValidationTestCase extends AbstractSchemaValidationTestC
 
   @Override
   protected String getConfigFile() {
-    return "object-array-validation-config.xml";
+    return "config/schema-validation-config.xml";
   }
 
   @Override
@@ -37,7 +43,31 @@ public class ObjectArrayValidationTestCase extends AbstractSchemaValidationTestC
   }
 
   @Test
-  public void validate() throws Exception {
+  public void Draft4validate() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT4);
+  }
+
+  @Test
+  public void Draft6validate() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT6);
+  }
+
+  @Test
+  public void Draft7validate() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT7);
+  }
+
+  @Test
+  public void Draft201909validate() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT201909);
+  }
+
+  @Test
+  public void Draft202012validate() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_REQUIRED_OBJECT_ARRAY_DRAFT202012);
+  }
+
+  private void runTestWithSchemaAndValidate(String schema) throws Exception {
     expectedException.expectCause(new BaseMatcher<Throwable>() {
 
       @Override
@@ -55,6 +85,9 @@ public class ObjectArrayValidationTestCase extends AbstractSchemaValidationTestC
       }
     });
 
-    flowRunner("validate").withPayload(json).run();
+    flowRunner("validate")
+        .withVariable("schema", schema)
+        .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
+        .withPayload(json).run();
   }
 }
