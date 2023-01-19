@@ -38,7 +38,8 @@ public abstract class JsonSchemaValidator {
 
   protected static final String VALIDATION_FAILED_MESSAGE = "Json content is not compliant with schema.\n";
   protected static final String INVALID_SCHEMA_REFERENCE = "Invalid Schema References";
-  protected static final String ERROR_TRYING_TO_VALIDATE = "Exception was found while trying to validate against json schema. Content was: ";
+  protected static final String ERROR_TRYING_TO_VALIDATE =
+      "Exception was found while trying to validate against json schema. Content was: ";
   protected static final String SCHEMA_NOT_FOUND_MSG = "Could not load JSON schema";
 
   /**

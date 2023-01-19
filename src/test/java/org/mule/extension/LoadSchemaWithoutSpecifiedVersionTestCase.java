@@ -55,8 +55,8 @@ public class LoadSchemaWithoutSpecifiedVersionTestCase extends AbstractSchemaVal
   private void runTestAndExpectError(String inputJson) throws Exception {
     expectedError.expectErrorType(JSON_NAMESPACE, JsonError.SCHEMA_NOT_HONOURED.name());
     flowRunner("validate")
-            .withVariable("schema", SCHEMA_WITHOUT_VERSION)
-            .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
-            .withPayload(inputJson).run();
+        .withVariable("schema", SCHEMA_WITHOUT_VERSION)
+        .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
+        .withPayload(inputJson).run();
   }
 }

@@ -46,9 +46,9 @@ public class ConditionsExclusiveFunctionGoodTestCase extends AbstractSchemaValid
 
   private void runTestWithSchemaAndValidate(String schema) throws Exception {
     CoreEvent event = flowRunner("validate")
-            .withVariable("schema", schema)
-            .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
-            .withPayload(json).run();
+        .withVariable("schema", schema)
+        .withVariable("dereferencing", JsonSchemaDereferencingMode.CANONICAL)
+        .withPayload(json).run();
     assertEquals(json, event.getMessage().getPayload().getValue());
   }
 }

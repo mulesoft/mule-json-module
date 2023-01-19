@@ -54,14 +54,14 @@ public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
       responseValidate = jsonSchema.validate(jsonNode);
     } catch (JsonSchemaException e) {
       Matcher messageMatcher = INVALID_REFERENCE_MESSAGE_PATTERN.matcher(e.getMessage());
-      if(messageMatcher.find()) {
+      if (messageMatcher.find()) {
         //TODO We must create a new error: INVALID_REFERENCE, to inform the user that the external references declared in the Schema cannot be accessed(W-12301483)
         throw new MuleRuntimeException(createStaticMessage(INVALID_SCHEMA_REFERENCE), e);
-      } else{
+      } else {
         throw new MuleRuntimeException(createStaticMessage(
-                ERROR_TRYING_TO_VALIDATE
-                        + jsonNode.toString()),
-                e);
+                                                           ERROR_TRYING_TO_VALIDATE
+                                                               + jsonNode.toString()),
+                                       e);
       }
     }
 
