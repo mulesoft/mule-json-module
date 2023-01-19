@@ -6,14 +6,18 @@
  */
 package org.mule.extension;
 
+import static org.junit.Assert.assertEquals;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS_DRAFT201909;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS_DRAFT202012;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS_DRAFT4;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS_DRAFT6;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS_DRAFT7;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.rules.ExpectedException.none;
 
 import org.mule.test.runner.RunnerDelegateTo;
-
 import java.util.Collection;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.internal.matchers.ThrowableMessageMatcher;
@@ -45,15 +49,32 @@ public class ValidateArbitraryPrecisionTestCase extends AbstractSchemaValidation
 
   @Override
   protected String getConfigFile() {
-    return "validate-schema-arbitrary-precision-config.xml";
+    return "config/validate-schema-arbitrary-precision-config.xml";
   }
 
   @Test
-  public void allowArbitraryPrecision() throws Exception {
-    flowRunner(allowArbitraryPrecision ? "validateWithArbitraryPrecision" : "validateWithoutArbitraryPrecision")
-        .withPayload(ARBITRARY_PRECISION_JSON_NUMBER)
-        .withVariable("schema", SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS)
-        .withVariable("allowArbitraryPrecision", allowArbitraryPrecision).run();
+  public void Draft4AllowArbitraryPrecision() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS_DRAFT4);
+  }
+
+  @Test
+  public void Draft6AllowArbitraryPrecision() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS_DRAFT6);
+  }
+
+  @Test
+  public void Draft7AllowArbitraryPrecision() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS_DRAFT7);
+  }
+
+  @Test
+  public void Draft201909AllowArbitraryPrecision() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS_DRAFT201909);
+  }
+
+  @Test
+  public void Draft202012AllowArbitraryPrecision() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_FSTAB_ARBITRARY_PRECISION_KEYS_DRAFT202012);
   }
 
   private static ExpectedException getExpectedExceptionForArbitraryPrecision() {
@@ -62,4 +83,12 @@ public class ValidateArbitraryPrecisionTestCase extends AbstractSchemaValidation
     return expectedException;
   }
 
+
+  private void runTestWithSchemaAndValidate(String schema) throws Exception {
+
+    flowRunner(allowArbitraryPrecision ? "validateWithArbitraryPrecision" : "validateWithoutArbitraryPrecision")
+        .withPayload(ARBITRARY_PRECISION_JSON_NUMBER)
+        .withVariable("schema", schema)
+        .withVariable("allowArbitraryPrecision", allowArbitraryPrecision).run();
+  }
 }

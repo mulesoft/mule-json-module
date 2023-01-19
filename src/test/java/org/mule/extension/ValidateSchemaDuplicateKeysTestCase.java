@@ -6,17 +6,20 @@
  */
 package org.mule.extension;
 
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_JSON_DRAFT201909;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_JSON_DRAFT202012;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_JSON_DRAFT4;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_JSON_DRAFT6;
+import static org.mule.extension.TestVariables.SCHEMA_FSTAB_JSON_DRAFT7;
 import static java.util.Arrays.asList;
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
+import static org.hamcrest.core.Is.is;
 
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.runner.RunnerDelegateTo;
-
 import java.util.Collection;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.internal.matchers.ThrowableMessageMatcher;
@@ -46,16 +49,33 @@ public class ValidateSchemaDuplicateKeysTestCase extends AbstractSchemaValidatio
 
   @Override
   protected String getConfigFile() {
-    return "validate-schema-duplicate-keys-config.xml";
+    return "config/validate-schema-duplicate-keys-config.xml";
   }
 
   @Test
-  public void duplicateKeys() throws Exception {
-    CoreEvent result = flowRunner("validate")
-        .withPayload(getFstabWithDuplicateKeys())
-        .withVariable("schema", SCHEMA_FSTAB_JSON)
-        .withVariable("allowDuplicateKeys", allowDuplicateKeys).run();
-    assertThat(result.getMessage().getPayload().getValue(), is(getFstabWithDuplicateKeys()));
+  public void Draft4duplicateKeys() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_FSTAB_JSON_DRAFT4);
+  }
+
+  @Test
+  public void Draft6duplicateKeys() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_FSTAB_JSON_DRAFT6);
+  }
+
+  @Test
+  public void Draft7duplicateKeys() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_FSTAB_JSON_DRAFT7);
+  }
+
+  @Test
+  public void Draft201909duplicateKeys() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_FSTAB_JSON_DRAFT201909);
+  }
+
+
+  @Test
+  public void Draft202012duplicateKeys() throws Exception {
+    runTestWithSchemaAndValidate(SCHEMA_FSTAB_JSON_DRAFT202012);
   }
 
   private static ExpectedException getExpectedExceptionForDuplicateKeys() {
@@ -64,4 +84,14 @@ public class ValidateSchemaDuplicateKeysTestCase extends AbstractSchemaValidatio
     return expectedException;
   }
 
+
+  private void runTestWithSchemaAndValidate(String schema) throws Exception {
+
+    CoreEvent result = flowRunner("validate")
+        .withPayload(getFstabWithDuplicateKeys())
+        .withVariable("schema", schema)
+        .withVariable("allowDuplicateKeys", allowDuplicateKeys).run();
+    assertThat(result.getMessage().getPayload().getValue(), is(getFstabWithDuplicateKeys()));
+
+  }
 }
