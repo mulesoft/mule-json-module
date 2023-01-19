@@ -6,27 +6,33 @@
  */
 package org.mule.extension;
 
+import static org.mule.extension.TestVariables.JSON_NAMESPACE;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.rules.ExpectedException.none;
+import static org.junit.Assert.assertEquals;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
+import org.mule.module.json.api.JsonError;
+import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.functional.api.exception.ExpectedError;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class BadObjectValidationWithSchemaContentsTestCase extends AbstractSchemaValidationTestCase {
 
   private static final String VALIDATOR_FAIL_ON_TRAILING_TOKENS = "jsonSchemaValidator.FailOnTrailingTokens";
   private String json;
 
+  private String draft4schemaContent;
+  private String draft6schemaContent;
+  private String draft7schemaContent;
+  private String draft201909schemaContent;
+  private String draft202012schemaContent;
+
   @Rule
-  public ExpectedException expectedException = none();
+  public ExpectedError expectedError = ExpectedError.none();
 
   @Override
   protected String getConfigFile() {
-    return "validate-schema-with-schemaContents-config.xml";
+    return "config/schema-content-config.xml";
   }
 
   @Override
@@ -38,26 +44,46 @@ public class BadObjectValidationWithSchemaContentsTestCase extends AbstractSchem
   protected void doSetUp() throws Exception {
     json = doGetResource("inputs/bad-object.json");
     System.setProperty(VALIDATOR_FAIL_ON_TRAILING_TOKENS, "true");
+
+    draft4schemaContent = doGetResource("Draft4/schemas/schema-default.json");
+    draft6schemaContent = doGetResource("Draft6/schemas/schema-default.json");
+    draft7schemaContent = doGetResource("Draft7/schemas/schema-default.json");
+    draft201909schemaContent = doGetResource("Draft201909/schemas/schema-default.json");
+    draft202012schemaContent = doGetResource("Draft202012/schemas/schema-default.json");
   }
 
   @Test
-  public void validate_ErrorDataContent() throws Exception {
-    expectedException.expectCause(new BaseMatcher<Throwable>() {
+  public void Draft4validateDefaultBehaviourWithSchemaContent() throws Exception {
+    runTestWithSchemaAndValidate(draft4schemaContent);
+  }
 
-      @Override
-      public boolean matches(Object item) {
-        Exception e = (Exception) item;
-        String report = e.getMessage();
-        assertThat(report, containsString("Trailing token (of type START_OBJECT) found after value"));
-        return true;
-      }
+  @Test
+  public void Draft6validateDefaultBehaviourWithSchemaContent() throws Exception {
+    runTestWithSchemaAndValidate(draft6schemaContent);
+  }
 
-      @Override
-      public void describeTo(Description description) {
-        description.appendText("Error report did not match");
-      }
-    });
-    flowRunner("validateSchemaWithSchemaContents").withPayload(json).run();
+  @Test
+  public void Draft7validateDefaultBehaviourWithSchemaContent() throws Exception {
+    runTestWithSchemaAndValidate(draft7schemaContent);
+  }
 
+  @Test
+  public void Draft201909validateDefaultBehaviourWithSchemaContent() throws Exception {
+    runTestWithSchemaAndValidate(draft202012schemaContent);
+  }
+
+  @Test
+  public void Draft202012validateDefaultBehaviourWithSchemaContent() throws Exception {
+    runTestWithSchemaAndValidate(draft201909schemaContent);
+  }
+
+  private void runTestWithSchemaAndValidate(String schemaContent) throws Exception {
+    expectedError.expectErrorType(JSON_NAMESPACE, JsonError.INVALID_INPUT_JSON.name());
+    expectedError.expectMessage(containsString("Trailing token (of type START_OBJECT) found after value"));
+
+    CoreEvent event = flowRunner("validate")
+        .withVariable("schema", schemaContent)
+        .withPayload(json).run();
+    assertEquals(json, event.getMessage().getPayload().getValue());
   }
 }

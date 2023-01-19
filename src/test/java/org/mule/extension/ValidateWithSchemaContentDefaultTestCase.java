@@ -8,26 +8,63 @@ package org.mule.extension;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.junit.Test;
 
 public class ValidateWithSchemaContentDefaultTestCase extends AbstractSchemaValidationTestCase {
 
   private String json;
 
+  private String draft4schemaContent;
+  private String draft6schemaContent;
+  private String draft7schemaContent;
+  private String draft201909schemaContent;
+  private String draft202012schemaContent;
+
   @Override
   protected String getConfigFile() {
-    return "validate-schema-with-schemaContents-config.xml";
+    return "config/schema-content-config.xml";
   }
 
   @Override
   protected void doSetUp() throws Exception {
     json = doGetResource("inputs/object-array.json");
+    draft4schemaContent = doGetResource("Draft4/schemas/schema-default.json");
+    draft6schemaContent = doGetResource("Draft6/schemas/schema-default.json");
+    draft7schemaContent = doGetResource("Draft7/schemas/schema-default.json");
+    draft201909schemaContent = doGetResource("Draft201909/schemas/schema-default.json");
+    draft202012schemaContent = doGetResource("Draft202012/schemas/schema-default.json");
   }
 
   @Test
-  public void validateDefaultBehaviourWithSchemaContent() throws Exception {
-    CoreEvent event = flowRunner("validateSchemaWithSchemaContents").withPayload(json).run();
+  public void Draft4validateDefaultBehaviourWithSchemaContent() throws Exception {
+    runTestWithSchemaAndValidate(draft4schemaContent);
+  }
+
+  @Test
+  public void Draft6validateDefaultBehaviourWithSchemaContent() throws Exception {
+    runTestWithSchemaAndValidate(draft6schemaContent);
+  }
+
+  @Test
+  public void Draft7validateDefaultBehaviourWithSchemaContent() throws Exception {
+    runTestWithSchemaAndValidate(draft7schemaContent);
+  }
+
+  @Test
+  public void Draft201909validateDefaultBehaviourWithSchemaContent() throws Exception {
+    runTestWithSchemaAndValidate(draft202012schemaContent);
+  }
+
+  @Test
+  public void Draft202012validateDefaultBehaviourWithSchemaContent() throws Exception {
+    runTestWithSchemaAndValidate(draft201909schemaContent);
+  }
+
+  private void runTestWithSchemaAndValidate(String schemaContent) throws Exception {
+    CoreEvent event = flowRunner("validate")
+        .withVariable("schema", schemaContent)
+        .withPayload(json).run();
     assertEquals(json, event.getMessage().getPayload().getValue());
   }
 }
