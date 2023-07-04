@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:file="http://www.mulesoft.org/schema/mule/file"
+      xmlns:json="http://www.mulesoft.org/schema/mule/json"
+      xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+		http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+		http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+    <munit:config name="BadObjectValidationEnableEnvVarSchemaContentTestCase.xml">
+        <munit:parameterizations>
+            <munit:parameterization name="Draft4validateDefaultBehaviour">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="Draft4/schemas/object-array-schema.json" />
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="Draft6validateDefaultBehaviour">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="Draft6/schemas/object-array-schema.json" />
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="Draft7validateDefaultBehaviour">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="Draft7/schemas/object-array-schema.json" />
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="Draft201909validateDefaultBehaviour">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="Draft201909/schemas/object-array-schema.json" />
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="Draft202012validateDefaultBehaviour">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="Draft202012/schemas/object-array-schema.json" />
+                </munit:parameters>
+            </munit:parameterization>
+        </munit:parameterizations>
+
+    </munit:config>
+
+    <munit:before-suite name="asdf">
+        <ee:transform doc:name="Transform Message">
+            <ee:message >
+                <ee:set-payload>
+                <![CDATA[%dw 2.0
+                    import java!SystemPropertyUtils
+                    output application/java
+                    ---
+                    {
+                        "a": SystemPropertyUtils::setSystemProperty("jsonSchemaValidator.FailOnTrailingTokens","true")
+                    }
+]]>
+                </ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </munit:before-suite>
+
+    <munit:test name="ValidateSchema" expectedErrorType="JSON:INVALID_INPUT_JSON">
+        <munit:execution>
+
+            <file:read doc:name="Read" config-ref="File_Config" path="${jsonSchema}" outputMimeType="text/plain"/>
+            <set-variable value="#[payload]" doc:name="Set Variable" variableName="schemaContent"/>
+            <file:read doc:name="Read" config-ref="File_Config" path="inputs/bad-object.json"/>
+        </munit:execution>
+        <munit:validation>
+            <json:validate-schema>
+                <json:contents ><![CDATA[#[vars.schemaContent]]]></json:contents>
+            </json:validate-schema>
+        </munit:validation>
+    </munit:test>
+
+    <munit:after-suite name='Clear system properties'>
+        <ee:transform doc:name="Transform Message" doc:id="b9122c19-9710-408e-87de-1ea6ee01acba" >
+            <ee:message >
+                <ee:set-payload ><![CDATA[%dw 2.0
+import java!SystemPropertyUtils
+output application/java
+ ---
+{
+    "a": SystemPropertyUtils::clearSystemProperty("jsonSchemaValidator.FailOnTrailingTokens")
+}
+]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+
+    </munit:after-suite>
+
+
+
+
+</mule>
