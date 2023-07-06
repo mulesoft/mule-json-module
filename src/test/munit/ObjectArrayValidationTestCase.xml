@@ -46,7 +46,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 
     </munit:config>
 
-    <munit:test name="ValidateSchema" expectedErrorType="JSON:SCHEMA_NOT_HONOURED" >
+    <munit:test name="ObjectArrayValidationFailTest" expectedErrorType="JSON:SCHEMA_NOT_HONOURED" >
         <munit:execution>
             <set-variable value="${jsonSchema}" doc:name="Set Variable" variableName="schema"/>
             <file:read doc:name="Read" config-ref="File_Config" path="inputs/object-array.json"/>

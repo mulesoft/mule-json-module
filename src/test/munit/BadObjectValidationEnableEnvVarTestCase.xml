@@ -46,7 +46,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 
     </munit:config>
 
-    <munit:before-suite name="asdf">
+    <munit:before-suite name="set system property">
         <ee:transform doc:name="Transform Message">
             <ee:message >
                 <ee:set-payload>
@@ -63,7 +63,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
         </ee:transform>
     </munit:before-suite>
 
-    <munit:test name="ValidateSchema" expectedErrorType="JSON:INVALID_INPUT_JSON">
+    <munit:test name="BadObjectValidationEnableEnvVarTest" expectedErrorType="JSON:INVALID_INPUT_JSON">
         <munit:execution>
 
             <set-variable value="${jsonSchema}" doc:name="Set Variable" variableName="schema"/>
