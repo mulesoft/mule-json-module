@@ -7,27 +7,27 @@ import java.util.Properties;
 
 public class SystemPropertyUtils {
 
-    public static void setSystemProperty(String key, String value) {
-        try {
-            Properties props = System.getProperties();
-            props.setProperty(key, value);
-        }catch (NullPointerException e){
-            return;
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to set system property", e);
-        }
+  public static void setSystemProperty(String key, String value) {
+    try {
+      Properties props = System.getProperties();
+      props.setProperty(key, value);
+    } catch (NullPointerException e) {
+      return;
+    } catch (Exception e) {
+      throw new IllegalStateException("Failed to set system property", e);
     }
+  }
 
-    public static String getSystemProperty(String key){
-        try {
-            Properties props = System.getProperties();
-            return props.getProperty(key);
-        } catch (Exception e){
-            throw new IllegalStateException("Failed to get system property", e);
-        }
+  public static String getSystemProperty(String key) {
+    try {
+      Properties props = System.getProperties();
+      return props.getProperty(key);
+    } catch (Exception e) {
+      throw new IllegalStateException("Failed to get system property", e);
     }
+  }
 
-    public static void clearSystemProperty(String key){
-        System.clearProperty(key);
-    }
+  public static void clearSystemProperty(String key) {
+    System.clearProperty(key);
+  }
 }
