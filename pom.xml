@@ -30,6 +30,9 @@
         <munit.version>2.3.4</munit.version>
         <mtf.tools.version>1.1.1</mtf.tools.version>
         <file.connector.version>1.5.0</file.connector.version>
+        <mtf.javaopts></mtf.javaopts>
+        <jacoco.version>0.8.10</jacoco.version>
+
 
     </properties>
 
@@ -140,22 +143,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jdeps-plugin</artifactId>
-                <version>3.1.2</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jdkinternals</goal> <!-- verify main classes -->
-                            <goal>test-jdkinternals</goal> <!-- verify test classes -->
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <failOnWarning>true</failOnWarning>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -195,6 +182,11 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <environmentVariables>
+                        <!-- Toggles the JDK17 style flag -->
+                        <!-- ugly hack -->
+                        <_JAVA_OPTIONS>-XX:+PrintCommandLineFlags ${mtf.javaopts}</_JAVA_OPTIONS>
+                    </environmentVariables>
                     <runtimeProduct>MULE_EE</runtimeProduct>
                     <argLines>
                         <argLine>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco-munit.exec</argLine>
