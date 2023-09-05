@@ -97,11 +97,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.mozilla</groupId>
-            <artifactId>rhino</artifactId>
-            <version>${org.mozilla.rhino.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
             <version>${jakarta.mail.version}</version>
