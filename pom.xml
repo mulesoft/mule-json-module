@@ -25,7 +25,7 @@
         <commons.pool2.version>2.11.1</commons.pool2.version>
         <commons.lang3.version>3.13.0</commons.lang3.version>
         <org.mozilla.rhino.version>1.7.14</org.mozilla.rhino.version>
-        <com.networknt.version>1.0.76</com.networknt.version>
+        <com.networknt.version>1.0.86</com.networknt.version>
         <settings.file>${java.io.tmpdir}/effective-settings.xml</settings.file>
 
         <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
