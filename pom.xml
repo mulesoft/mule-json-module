@@ -27,15 +27,26 @@
         <org.mozilla.rhino.version>1.7.14</org.mozilla.rhino.version>
         <com.networknt.version>1.0.76</com.networknt.version>
         <settings.file>${java.io.tmpdir}/effective-settings.xml</settings.file>
-        <munit.version>2.3.4</munit.version>
-        <mtf.tools.version>1.1.1</mtf.tools.version>
         <file.connector.version>1.5.0</file.connector.version>
-        <mtf.javaopts></mtf.javaopts>
-        <jacoco.version>0.8.10</jacoco.version>
         <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
         <license.maven.plugin.version>4.2</license.maven.plugin.version>
         <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
         <licenseYear>2023</licenseYear>
+
+        <!-- Old config -->
+        <!--
+        <munit.version>2.3.4</munit.version>
+        <mtf.tools.version>1.1.1</mtf.tools.version>
+        <mtf.javaopts></mtf.javaopts>
+        <jacoco.version>0.8.10</jacoco.version>
+        -->
+
+        <!-- New config -->
+        <jacoco.version>0.8.10</jacoco.version>
+        <munit.version>3.0.0-SNAPSHOT</munit.version>
+        <mtf.tools.version>1.2.0-SNAPSHOT</mtf.tools.version>
+        <mtf.javaopts></mtf.javaopts>
+        <munit.extensions.maven.plugin.version>1.2.0-SNAPSHOT</munit.extensions.maven.plugin.version>
     </properties>
 
     <dependencies>
@@ -172,7 +183,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-invoker-plugin</artifactId>
@@ -211,16 +221,26 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <jvm>/Library/Java/JavaVirtualMachines/temurin-8.jdk/Contents/Home/bin/java</jvm>
+                    <!--
+                    <jvm>/Library/Java/JavaVirtualMachines/microsoft-17.jdk/Contents/Home/bin/java</jvm>
+                    -->
+                    <runtimeVersion>4.5.0-rc11</runtimeVersion>
+                    <runtimeProduct>MULE_EE</runtimeProduct>
                     <environmentVariables>
                         <!-- Toggles the JDK17 style flag -->
                         <!-- ugly hack -->
                         <_JAVA_OPTIONS>-XX:+PrintCommandLineFlags ${mtf.javaopts}</_JAVA_OPTIONS>
                     </environmentVariables>
-                    <runtimeProduct>MULE_EE</runtimeProduct>
                     <argLines>
                         <argLine>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco-munit.exec</argLine>
                     </argLines>
-
+                    <runtimeConfiguration>
+                        <discoverRuntimes>
+                            <product>ALL</product>
+                            <includeSnapshots>true</includeSnapshots>
+                        </discoverRuntimes>
+                    </runtimeConfiguration>
                 </configuration>
                 <dependencies>
                     <dependency>
