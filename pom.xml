@@ -221,10 +221,10 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <jvm>/Library/Java/JavaVirtualMachines/temurin-8.jdk/Contents/Home/bin/java</jvm>
                     <!--
-                    <jvm>/Library/Java/JavaVirtualMachines/microsoft-17.jdk/Contents/Home/bin/java</jvm>
+                    <jvm>/Library/Java/JavaVirtualMachines/temurin-8.jdk/Contents/Home/bin/java</jvm>
                     -->
+                    <jvm>/Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home/bin/java</jvm>
                     <runtimeVersion>4.5.0-rc11</runtimeVersion>
                     <runtimeProduct>MULE_EE</runtimeProduct>
                     <environmentVariables>
@@ -267,6 +267,13 @@
                         <version>${file.connector.version}</version>
                         <classifier>mule-plugin</classifier>
                     </dependency>
+                    <!--
+                    <dependency>
+                        <groupId>org.sonatype.plexus</groupId>
+                        <artifactId>plexus-sec-dispatcher</artifactId>
+                        <version>2.0</version>
+                    </dependency>
+                    -->
                 </dependencies>
             </plugin>
         </plugins>
