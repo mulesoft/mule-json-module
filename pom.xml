@@ -23,7 +23,7 @@
         <guava.version>32.1.2-jre</guava.version>
         <jakarta.mail.version>2.0.1</jakarta.mail.version>
         <commons.pool2.version>2.11.1</commons.pool2.version>
-        <commons.lang3.version>3.12.0</commons.lang3.version>
+        <commons.lang3.version>3.13.0</commons.lang3.version>
         <org.mozilla.rhino.version>1.7.14</org.mozilla.rhino.version>
         <com.networknt.version>1.0.76</com.networknt.version>
         <settings.file>${java.io.tmpdir}/effective-settings.xml</settings.file>
@@ -157,7 +157,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-help-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.4.0</version>
                 <executions>
                     <execution>
                         <phase>process-test-resources</phase>
@@ -176,7 +176,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-invoker-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>3.6.0</version>
                 <configuration>
                     <debug>false</debug>
                     <streamLogs>true</streamLogs>
