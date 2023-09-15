@@ -12,7 +12,8 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-json-module</artifactId>
-    <version>2.4.2-SNAPSHOT</version>
+    <!-- Remember to upgrade the version in src/it/tita/pom.xml -->
+    <version>2.4.2</version>
     <packaging>mule-extension</packaging>
     <name>Json Module</name>
 
@@ -25,7 +26,7 @@
         <commons.pool2.version>2.11.1</commons.pool2.version>
         <commons.lang3.version>3.13.0</commons.lang3.version>
         <org.mozilla.rhino.version>1.7.14</org.mozilla.rhino.version>
-        <com.networknt.version>1.0.76</com.networknt.version>
+        <com.networknt.version>1.0.79</com.networknt.version>
         <settings.file>${java.io.tmpdir}/effective-settings.xml</settings.file>
 
         <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
