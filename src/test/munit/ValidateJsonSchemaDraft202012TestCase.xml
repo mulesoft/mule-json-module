@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:file="http://www.mulesoft.org/schema/mule/file"
+      xmlns:json="http://www.mulesoft.org/schema/mule/json"
+      xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+		http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+		http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+    <munit:config name="ValidateJsonSchemaDraft202012TestCase.xml">
+        <munit:parameterizations>
+            <munit:parameterization name="Draft202012CanonicalValidateSchemaContent">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="/Draft202012/schemas/fstab.json" />
+                    <munit:parameter propertyName="jsonSchemaMode" value="CANONICAL" />
+                    <munit:parameter propertyName="goodJson" value="inputs/fstab-good.json" />
+                    <munit:parameter propertyName="badJson" value="inputs/fstab-bad.json" />
+                    <munit:parameter propertyName="bad2Json" value="inputs/fstab-bad2.json" />
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="Draft202012InlineValidateSchemaContent">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="/Draft202012/schemas/fstab-inline.json" />
+                    <munit:parameter propertyName="jsonSchemaMode" value="INLINE" />
+                    <munit:parameter propertyName="goodJson" value="inputs/fstab-good-inline.json" />
+                    <munit:parameter propertyName="badJson" value="inputs/fstab-bad.json" />
+                    <munit:parameter propertyName="bad2Json" value="inputs/fstab-bad2.json" />
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="Draft202012ReferringValidateSchemaContent">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="/Draft202012/schemas/fstab-referring.json" />
+                    <munit:parameter propertyName="jsonSchemaMode" value="CANONICAL" />
+                    <munit:parameter propertyName="goodJson" value="inputs/fstab-good.json" />
+                    <munit:parameter propertyName="badJson" value="inputs/fstab-bad.json" />
+                    <munit:parameter propertyName="bad2Json" value="inputs/fstab-bad2.json" />
+                </munit:parameters>
+            </munit:parameterization>
+        </munit:parameterizations>
+    </munit:config>
+
+    <munit:test name="SchemaValidationDraft202012AsInputStreamTest">
+        <munit:execution>
+            <set-variable value="${jsonSchema}" variableName="schema"/>
+            <set-variable value="${jsonSchemaMode}" variableName="schemaMode"/>
+            <set-variable value="${goodJson}" variableName="goodJson"/>
+            <file:read config-ref="File_Config" path="#[vars.goodJson]"/>
+        </munit:execution>
+        <munit:validation>
+            <json:validate-schema schema="#[vars.schema]" dereferencing="#[vars.schemaMode]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="SchemaValidationDraft202012AsStringTest">
+        <munit:execution>
+            <set-variable value="${jsonSchema}" variableName="schema"/>
+            <set-variable value="${jsonSchemaMode}" variableName="schemaMode"/>
+            <set-variable value="${goodJson}" variableName="goodJson"/>
+            <file:read config-ref="File_Config" path="#[vars.goodJson]"/>
+            <ee:transform >
+                <ee:message >
+                    <ee:set-payload ><![CDATA[%dw 2.0
+                        output application/java
+                        ---
+                        payload]]>
+                    </ee:set-payload>
+                </ee:message>
+            </ee:transform>
+            <ee:transform >
+                <ee:message >
+                    <ee:set-payload ><![CDATA[%dw 2.0
+                        output application/json
+                        ---
+                        payload]]>
+                    </ee:set-payload>
+                </ee:message>
+            </ee:transform>
+        </munit:execution>
+        <munit:validation>
+            <json:validate-schema schema="#[vars.schema]" dereferencing="#[vars.schemaMode]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="SchemaValidationDraft202012AsBytesTest">
+        <munit:execution>
+            <set-variable value="${jsonSchema}" variableName="schema"/>
+            <set-variable value="${jsonSchemaMode}" variableName="schemaMode"/>
+            <set-variable value="${goodJson}" variableName="goodJson"/>
+            <file:read config-ref="File_Config" path="#[vars.goodJson]"/>
+            <ee:transform >
+                <ee:message >
+                    <ee:set-payload ><![CDATA[%dw 2.0
+                        output application/java
+                        ---
+                        payload]]>
+                    </ee:set-payload>
+                </ee:message>
+            </ee:transform>
+            <ee:transform >
+                <ee:message >
+                    <ee:set-payload ><![CDATA[%dw 2.0
+                        output text/plain
+                        ---
+                        write(payload, "application/json")]]>
+                    </ee:set-payload>
+                </ee:message>
+            </ee:transform>
+            <ee:transform >
+                <ee:message >
+                    <ee:set-payload ><![CDATA[%dw 2.0
+                        output application/java
+                        ---
+                        (payload as String) as Binary {class: "byte[]"}]]>
+                    </ee:set-payload>
+                </ee:message>
+            </ee:transform>
+        </munit:execution>
+        <munit:validation>
+            <json:validate-schema schema="#[vars.schema]" dereferencing="#[vars.schemaMode]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="SchemaValidationDraft202012BadSchemaTest" expectedErrorType="JSON:SCHEMA_NOT_HONOURED">
+        <munit:execution>
+            <set-variable value="${jsonSchema}" variableName="schema"/>
+            <set-variable value="${jsonSchemaMode}" variableName="schemaMode"/>
+            <set-variable value="${badJson}" variableName="badJson"/>
+            <file:read config-ref="File_Config" path="#[vars.badJson]"/>
+        </munit:execution>
+        <munit:validation>
+            <json:validate-schema schema="#[vars.schema]" dereferencing="#[vars.schemaMode]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="SchemaValidationDraft202012Bad2SchemaTest" expectedErrorType="JSON:SCHEMA_NOT_HONOURED">
+        <munit:execution>
+            <set-variable value="${jsonSchema}" variableName="schema"/>
+            <set-variable value="${jsonSchemaMode}" variableName="schemaMode"/>
+            <set-variable value="${bad2Json}" variableName="bad2Json"/>
+            <file:read config-ref="File_Config" path="#[vars.bad2Json]"/>
+        </munit:execution>
+        <munit:validation>
+            <json:validate-schema schema="#[vars.schema]" dereferencing="#[vars.schemaMode]"/>
+        </munit:validation>
+    </munit:test>
+
+</mule>

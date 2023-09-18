@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:file="http://www.mulesoft.org/schema/mule/file"
+      xmlns:json="http://www.mulesoft.org/schema/mule/json"
+      xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+		http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+		http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+    <munit:config name="ValidateSchemaDuplicateKeysTestCase.xml">
+        <munit:parameterizations>
+            <!-- for successful validation, it requires Rhino library -->
+            <!--
+            <munit:parameterization name="Draft4validateSchemaContent">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="/Draft4/schemas/fstab.json" />
+                </munit:parameters>
+            </munit:parameterization>
+            -->
+            <munit:parameterization name="Draft6validateSchemaContent">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="/Draft6/schemas/fstab.json" />
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="Draft7validateSchemaContent">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="/Draft7/schemas/fstab.json" />
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="Draft201909validateSchemaContent">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="/Draft201909/schemas/fstab.json" />
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="Draft202012validateSchemaContent">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="/Draft202012/schemas/fstab.json" />
+                </munit:parameters>
+            </munit:parameterization>
+        </munit:parameterizations>
+    </munit:config>
+
+    <munit:test name="whenDuplicateKeysNotAllowed_thenThrowException" expectedException="org.mule.runtime.api.exception.MuleRuntimeException">
+        <munit:execution>
+            <set-variable value="${jsonSchema}" variableName="schema"/>
+            <file:read config-ref="File_Config" path="inputs/fstab-duplicate-keys.json"/>
+        </munit:execution>
+        <munit:validation>
+            <json:validate-schema schema="#[vars.schema]" allowDuplicateKeys="#[false]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="whenDuplicateKeysAllowed_thenValidationSuccessful">
+        <munit:execution>
+            <set-variable value="${jsonSchema}" variableName="schema"/>
+            <file:read config-ref="File_Config" path="inputs/fstab-duplicate-keys.json"/>
+        </munit:execution>
+        <munit:validation>
+            <json:validate-schema schema="#[vars.schema]" allowDuplicateKeys="#[true]"/>
+        </munit:validation>
+    </munit:test>
+
+</mule>
