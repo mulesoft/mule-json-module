@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:file="http://www.mulesoft.org/schema/mule/file"
+      xmlns:json="http://www.mulesoft.org/schema/mule/json"
+      xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+		http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+		http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+    <munit:config name="ValidateArbitraryPrecisionTestCase.xml">
+        <munit:parameterizations>
+            <munit:parameterization name="Draft4validateSchemaContent">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="/Draft4/schemas/fstab-arbitrary-precision-keys.json" />
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="Draft6validateSchemaContent">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="/Draft6/schemas/fstab-arbitrary-precision-keys.json" />
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="Draft7validateSchemaContent">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="/Draft7/schemas/fstab-arbitrary-precision-keys.json" />
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="Draft201909validateSchemaContent">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="/Draft201909/schemas/fstab-arbitrary-precision-keys.json" />
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="Draft202012validateSchemaContent">
+                <munit:parameters>
+                    <munit:parameter propertyName="jsonSchema" value="/Draft202012/schemas/fstab-arbitrary-precision-keys.json" />
+                </munit:parameters>
+            </munit:parameterization>
+        </munit:parameterizations>
+    </munit:config>
+
+    <munit:test name="whenArbitraryPrecisionNotAllowed_thenThrowException" expectedException="org.mule.runtime.api.exception.MuleRuntimeException">
+        <munit:execution>
+            <set-variable value="${jsonSchema}" variableName="schema"/>
+            <set-payload value="9999999999999999.99" ></set-payload>
+        </munit:execution>
+        <munit:validation>
+            <json:validate-schema schema="#[vars.schema]" allowArbitraryPrecision="false"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="whenAllowArbitraryPrecision_thenValidationSuccessful">
+        <munit:execution>
+            <set-variable value="${jsonSchema}" variableName="schema"/>
+            <set-payload value="9999999999999999.99" ></set-payload>
+        </munit:execution>
+        <munit:validation>
+            <json:validate-schema schema="#[vars.schema]" allowArbitraryPrecision="true"/>
+        </munit:validation>
+    </munit:test>
+
+</mule>
