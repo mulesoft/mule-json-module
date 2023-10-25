@@ -6,6 +6,7 @@
  */
 package org.mule.module.json.api;
 
+import org.mule.module.json.internal.util.ExcludeFromGeneratedCoverage;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 
 /**
@@ -33,5 +34,15 @@ public class SchemaRedirect {
 
   public String getTo() {
     return to;
+  }
+
+  @ExcludeFromGeneratedCoverage
+  public void setFrom(String from) {
+    this.from = from;
+  }
+
+  @ExcludeFromGeneratedCoverage
+  public void setTo(String to) {
+    this.to = to;
   }
 }
