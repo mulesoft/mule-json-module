@@ -11,7 +11,11 @@ import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.dsl.xml.Xml;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
+import org.mule.sdk.api.annotation.JavaVersionSupport;
 
+import static org.mule.sdk.api.meta.JavaVersion.JAVA_11;
+import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
+import static org.mule.sdk.api.meta.JavaVersion.JAVA_8;
 
 /**
  * The JSON module contains tools to help you deal with JSON documents
@@ -20,6 +24,7 @@ import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
 @Extension(name = "JSON")
 @ErrorTypes(JsonError.class)
 @Operations(ValidateJsonSchemaOperation.class)
+@JavaVersionSupport({JAVA_8, JAVA_11, JAVA_17})
 public class JsonModule {
 
 }
