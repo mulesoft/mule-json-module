@@ -19,6 +19,6 @@ public class JavaJsonToolsLink extends LibraryLink {
 
   @Override
   public JsonSchemaValidator getWrapper(ValidatorKey key, JsonNode schemaJsonNode) {
-    return new JsonSchemaValidatorJavaJsonToolsWrapper(key, schemaJsonNode);
+    return new JsonSchemaValidatorNetworkntWrapper(key, schemaJsonNode);
   }
 }

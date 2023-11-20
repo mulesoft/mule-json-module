@@ -17,7 +17,7 @@
     <name>Json Module</name>
 
     <properties>
-        <mule.sdk.api.version>0.6.0</mule.sdk.api.version>
+        <mule.sdk.api.version>0.7.0</mule.sdk.api.version>
         <jackson.version>2.15.2</jackson.version>
         <jackson.databind.version>2.15.2</jackson.databind.version>
         <json.schema.validation.version>2.2.14</json.schema.validation.version>
@@ -30,7 +30,7 @@
         <settings.file>${java.io.tmpdir}/effective-settings.xml</settings.file>
         <munit.version>3.1.0-SNAPSHOT</munit.version>
         <mtf.tools.version>1.2.0-SNAPSHOT</mtf.tools.version>
-        <file.connector.version>2.0.0-SNAPSHOT</file.connector.version>
+        <file.connector.version>1.5.2-Q4TESTING-W-14148523-SNAPSHOT</file.connector.version>
         <munit.extensions.maven.plugin.version>1.2.0-SNAPSHOT</munit.extensions.maven.plugin.version>
         <mtf.javaopts></mtf.javaopts>
         <jacoco.version>0.8.10</jacoco.version>
