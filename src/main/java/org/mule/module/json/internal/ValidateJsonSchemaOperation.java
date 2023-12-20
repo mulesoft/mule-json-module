@@ -16,9 +16,7 @@ import static java.util.stream.Collectors.toMap;
 
 import org.mule.module.json.api.JsonSchemaDereferencingMode;
 import org.mule.module.json.api.SchemaRedirect;
-import org.mule.module.json.internal.cleanup.JsonModuleResourceReleaser;
 import org.mule.module.json.internal.error.SchemaValidatorErrorTypeProvider;
-import org.mule.module.json.internal.cleanup.InstanceMonitor;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
@@ -64,19 +62,15 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.0
  */
-public class ValidateJsonSchemaOperation implements Disposable, Startable, Stoppable, Initialisable {
+public class ValidateJsonSchemaOperation implements Startable, Stoppable {
 
   private static final int MIN_IDLE_POOL_COUNT = 1;
   private static final int MAX_IDLE_POOL_COUNT = 32;
   private final static Logger LOGGER = LoggerFactory.getLogger(ValidateJsonSchemaOperation.class);
-  private JsonModuleResourceReleaser resourceReleaser;
   private final JsonSchemaValidationFactory jsonSchemaValidationFactory = new JsonSchemaValidationFactory();
 
   @Inject
   TransformationService transformationService;
-
-  @Inject
-  InstanceMonitor monitor;
 
   @Inject
   SchedulerService schedulerService;
@@ -156,23 +150,6 @@ public class ValidateJsonSchemaOperation implements Disposable, Startable, Stopp
       validator.validate(contentInputStream);
     } finally {
       pool.returnObject(validator);
-    }
-  }
-
-  @Override
-  public void dispose() {
-    if (monitor.unregister() == 0) {
-      resourceReleaser.releaseExecutors();
-    }
-  }
-
-  @Override
-  public void initialise() throws InitialisationException {
-    if (this.resourceReleaser == null) {
-      this.resourceReleaser = new JsonModuleResourceReleaser(schedulerService);
-    }
-    if (monitor.register() == 1) {
-      resourceReleaser.restoreExecutorServices();
     }
   }
 

@@ -11,10 +11,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import static org.mule.module.json.internal.JsonSchemaParser.getSchemaJsonNode;
 
 /**
- * Create instances of {@link JsonSchemaValidator},
- * returning their wrappers making validations, can return  {@link JsonSchemaValidatorNetworkntWrapper} or
- * {@link JsonSchemaValidatorJavaJsonToolsWrapper}
- */
+* Create instances of {@link JsonSchemaValidator},
+* returning their wrappers making validations, can return  {@link JsonSchemaValidatorNetworkntWrapper} or
+* {@link JsonSchemaFriendWrapper}
+*/
 public class JsonSchemaValidationFactory {
 
   private final LibraryLink firstLinkInTheChain;
@@ -23,8 +23,8 @@ public class JsonSchemaValidationFactory {
    * Here is defined the order of the links
    */
   public JsonSchemaValidationFactory() {
-    JavaJsonToolsLink javaJsonToolsSecondLink = new JavaJsonToolsLink(null);
-    firstLinkInTheChain = new NetworkNTLink(javaJsonToolsSecondLink);
+    JavaSchemaFriendLink lastLinkOnTheChain = new JavaSchemaFriendLink(null);
+    firstLinkInTheChain = new NetworkNTLink(lastLinkOnTheChain);
   }
 
   public JsonSchemaValidator create(ValidatorKey key) {

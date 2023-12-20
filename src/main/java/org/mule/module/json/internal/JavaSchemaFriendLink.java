@@ -11,14 +11,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * Link of the chain, determinate when {@link JsonSchemaValidatorJavaJsonToolsWrapper} have to be returned
  */
-public class JavaJsonToolsLink extends LibraryLink {
+public class JavaSchemaFriendLink extends LibraryLink {
 
-  public JavaJsonToolsLink(LibraryLink nextLink) {
+  public JavaSchemaFriendLink(LibraryLink nextLink) {
     super(nextLink);
   }
 
   @Override
   public JsonSchemaValidator getWrapper(ValidatorKey key, JsonNode schemaJsonNode) {
-    return new JsonSchemaValidatorJavaJsonToolsWrapper(key, schemaJsonNode);
+    return new JsonSchemaFriendWrapper(key, schemaJsonNode);
   }
 }
