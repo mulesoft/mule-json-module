@@ -18,7 +18,6 @@ import org.mule.runtime.api.scheduler.SchedulerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -36,7 +35,7 @@ public class JsonModuleResourceReleaser {
 
   /**
    * Creates a JsonModuleResourceReleaserInstance
-   * @param schedulerService
+   * @param schedulerService the scheduler service.
    */
   public JsonModuleResourceReleaser(SchedulerService schedulerService) {
     this.schedulerService = schedulerService;
@@ -44,7 +43,6 @@ public class JsonModuleResourceReleaser {
 
   /**
    *  Shutdowns the json validation library executors.
-   *
    *  The Json Schema Validator Library Leaks threads
    *  in every application un-deployment.
    *  The leak is produced by the LoadingMessageSourceProvider. This class
@@ -53,167 +51,66 @@ public class JsonModuleResourceReleaser {
    */
   public synchronized void releaseExecutors() {
     LOGGER.debug("Stopping the known executors services");
-    Field bundleField = null;
-    boolean isAccessible = false;
+    MessageBundle messageBundle = JsonNodeReader.getBundle();
     try {
-      bundleField = JsonNodeReader.class.getDeclaredField("BUNDLE");
-      isAccessible = bundleField.isAccessible();
-      bundleField.setAccessible(true);
-      MessageBundle messageBundle = (MessageBundle) bundleField.get(null);
       cleanMessageBundle(messageBundle);
-    } catch (NoSuchFieldException | IllegalAccessException | InterruptedException ex) {
-      LOGGER.error("Caught exception while stopping the Executor Service reference of the JsonNodeReader class: {}",
-                   ex.getMessage(), ex);
-    } finally {
-      if (bundleField != null) {
-        bundleField.setAccessible(isAccessible);
-      }
+    } catch (InterruptedException ex) {
+      LOGGER.error(ex.getMessage(), ex);
+      Thread.currentThread().interrupt();
     }
 
-    bundleField = null;
-    isAccessible = false;
-    try {
-      bundleField = MessageBundles.class.getDeclaredField("BUNDLES");
-      isAccessible = bundleField.isAccessible();
-      bundleField.setAccessible(true);
-      Map<Class<? extends MessageBundleLoader>, MessageBundle> bundles =
-          (Map<Class<? extends MessageBundleLoader>, MessageBundle>) bundleField.get(null);
-      for (MessageBundle bundle : bundles.values()) {
+    Map<Class<? extends MessageBundleLoader>, MessageBundle> bundles =
+        MessageBundles.getBundles();
+    for (MessageBundle bundle : bundles.values()) {
+      try {
         cleanMessageBundle(bundle);
-      }
-    } catch (NoSuchFieldException | IllegalAccessException | InterruptedException ex) {
-      LOGGER.error("Caught exception while stopping the Executor Service references of the MessageBundles class: {}",
-                   ex.getMessage(), ex);
-    } finally {
-      if (bundleField != null) {
-        bundleField.setAccessible(isAccessible);
+      } catch (InterruptedException ex) {
+        LOGGER.error(ex.getMessage(), ex);
+        Thread.currentThread().interrupt();
       }
     }
 
-    bundleField = null;
-    isAccessible = false;
-
+    messageBundle = ProcessingMessage.getBundle();
     try {
-      bundleField = ProcessingMessage.class.getDeclaredField("BUNDLE");
-      isAccessible = bundleField.isAccessible();
-      bundleField.setAccessible(true);
-      MessageBundle messageBundle = (MessageBundle) bundleField.get(null);
       cleanMessageBundle(messageBundle);
-    } catch (NoSuchFieldException | IllegalAccessException | InterruptedException ex) {
-      LOGGER.error("Caught exception while stopping the Executor Service references of the ProcessingMessage class: {}",
-                   ex.getMessage(), ex);
-    } finally {
-      if (bundleField != null) {
-        bundleField.setAccessible(isAccessible);
-      }
+    } catch (InterruptedException ex) {
+      LOGGER.error(ex.getMessage(), ex);
+      Thread.currentThread().interrupt();
     }
-
   }
 
   /**
    * Stops the Executor Service instances of the MessageBundle class
    * @param bundle a MessageBundle Instance
-   * @throws NoSuchFieldException the requested field does not exists
    * @throws InterruptedException the executor shutdown was interrupted due timeout
    */
   private void cleanMessageBundle(MessageBundle bundle)
-      throws NoSuchFieldException, IllegalAccessException, InterruptedException {
+      throws InterruptedException {
 
-    Field providersField = null;
-    Field serviceField = null;
-    boolean isProviderFieldAccessible = false;
-    boolean isServiceFieldAccessible = false;
-
-    try {
-      providersField = MessageBundle.class.getDeclaredField("providers");
-      isProviderFieldAccessible = providersField.isAccessible();
-      providersField.setAccessible(true);
-
-      List<MessageSourceProvider> messageSourceProviders = (List<MessageSourceProvider>) providersField.get(bundle);
-      for (MessageSourceProvider provider : messageSourceProviders) {
-        if (provider instanceof LoadingMessageSourceProvider) {
-          try {
-            serviceField = LoadingMessageSourceProvider.class.getDeclaredField("service");
-            isServiceFieldAccessible = serviceField.isAccessible();
-            serviceField.setAccessible(true);
-            ExecutorService service = (ExecutorService) serviceField.get(provider);
-            service.shutdown();
-            service.awaitTermination(10, SECONDS);
-          } finally {
-            if (serviceField != null) {
-              serviceField.setAccessible(isServiceFieldAccessible);
-            }
-            serviceField = null;
-            isServiceFieldAccessible = false;
-          }
-        }
-      }
-    } finally {
-      if (providersField != null) {
-        providersField.setAccessible(isProviderFieldAccessible);
+    List<MessageSourceProvider> messageSourceProviders = bundle.getProviders();
+    for (MessageSourceProvider provider : messageSourceProviders) {
+      if (provider instanceof LoadingMessageSourceProvider) {
+        ExecutorService service = ((LoadingMessageSourceProvider) provider).getService();
+        service.shutdown();
+        service.awaitTermination(10, SECONDS);
       }
     }
   }
+
 
   /**
    * Restores de ExecutorServices for the underlying library.
    */
   public synchronized void restoreExecutorServices() {
-    Field bundleField = null;
-    boolean isAccessible = false;
-    try {
-      bundleField = JsonNodeReader.class.getDeclaredField("BUNDLE");
-      isAccessible = bundleField.isAccessible();
-      bundleField.setAccessible(true);
-      MessageBundle messageBundle = (MessageBundle) bundleField.get(null);
-      restoreMessageBundle(messageBundle);
-    } catch (NoSuchFieldException | IllegalAccessException ex) {
-      LOGGER.error("Caught exception while stopping the Executor Service reference of the JsonNodeReader class: {}",
-                   ex.getMessage(), ex);
-    } finally {
-      if (bundleField != null) {
-        bundleField.setAccessible(isAccessible);
-      }
+
+    MessageBundle messageBundle = JsonNodeReader.getBundle();
+    restoreMessageBundle(messageBundle);
+    for (MessageBundle bundle : MessageBundles.getBundles().values()) {
+      restoreMessageBundle(bundle);
     }
 
-    bundleField = null;
-    isAccessible = false;
-
-    try {
-      bundleField = MessageBundles.class.getDeclaredField("BUNDLES");
-      isAccessible = bundleField.isAccessible();
-      bundleField.setAccessible(true);
-      Map<Class<? extends MessageBundleLoader>, MessageBundle> bundles =
-          (Map<Class<? extends MessageBundleLoader>, MessageBundle>) bundleField.get(null);
-      for (MessageBundle bundle : bundles.values()) {
-        restoreMessageBundle(bundle);
-      }
-    } catch (NoSuchFieldException | IllegalAccessException ex) {
-      LOGGER.error("Caught exception while stopping the Executor Service references of the MessageBundles class: {}",
-                   ex.getMessage(), ex);
-    } finally {
-      if (bundleField != null) {
-        bundleField.setAccessible(isAccessible);
-      }
-    }
-
-    bundleField = null;
-    isAccessible = false;
-
-    try {
-      bundleField = ProcessingMessage.class.getDeclaredField("BUNDLE");
-      isAccessible = bundleField.isAccessible();
-      bundleField.setAccessible(true);
-      MessageBundle messageBundle = (MessageBundle) bundleField.get(null);
-      restoreMessageBundle(messageBundle);
-    } catch (NoSuchFieldException | IllegalAccessException ex) {
-      LOGGER.error("Caught exception while stopping the Executor Service references of the ProcessingMessage class: {}",
-                   ex.getMessage(), ex);
-    } finally {
-      if (bundleField != null) {
-        bundleField.setAccessible(isAccessible);
-      }
-    }
+    messageBundle = ProcessingMessage.getBundle();
+    restoreMessageBundle(messageBundle);
 
   }
 
@@ -221,53 +118,19 @@ public class JsonModuleResourceReleaser {
    * Restores the executor service for a given MessageBundle Instance
    * @param bundle MessageBundle to restore the Executor service
    *               When restored the SchedulerService is used.
-   * @throws NoSuchFieldException The target field does not exists
-   * @throws IllegalAccessException The target field is not accessible
    */
-  private void restoreMessageBundle(MessageBundle bundle)
-      throws NoSuchFieldException, IllegalAccessException {
+  private void restoreMessageBundle(MessageBundle bundle) {
 
-    Field providersField = null;
-    boolean isProvidersFieldAccessible = false;
-    Field serviceField = null;
-    boolean isServiceFieldAccessible = false;
+    List<MessageSourceProvider> messageSourceProviders = bundle.getProviders();
 
-
-    try {
-      providersField = MessageBundle.class.getDeclaredField("providers");
-      isProvidersFieldAccessible = providersField.isAccessible();
-      providersField.setAccessible(true);
-
-      List<MessageSourceProvider> messageSourceProviders = (List<MessageSourceProvider>) providersField.get(bundle);
-
-      for (MessageSourceProvider provider : messageSourceProviders) {
-        if (provider instanceof LoadingMessageSourceProvider) {
-          try {
-            serviceField = LoadingMessageSourceProvider.class.getDeclaredField("service");
-            isServiceFieldAccessible = serviceField.isAccessible();
-            serviceField.setAccessible(true);
-            ExecutorService service = (ExecutorService) serviceField.get(provider);
-            if (service.isShutdown()) {
-              service = schedulerService.customScheduler(SchedulerConfig.config().withMaxConcurrentTasks(3).withPrefix("pool"));
-              serviceField.set(provider, service);
-            }
-          } finally {
-            if (serviceField != null) {
-              serviceField.setAccessible(isServiceFieldAccessible);
-              serviceField = null;
-            }
-            isServiceFieldAccessible = false;
-          }
+    for (MessageSourceProvider provider : messageSourceProviders) {
+      if (provider instanceof LoadingMessageSourceProvider) {
+        ExecutorService service = ((LoadingMessageSourceProvider) provider).getService();
+        if (service.isShutdown()) {
+          service = schedulerService.customScheduler(SchedulerConfig.config().withMaxConcurrentTasks(3).withPrefix("pool"));
+          ((LoadingMessageSourceProvider) provider).setService(service);
         }
       }
-
-    } finally {
-      if (providersField != null) {
-        providersField.setAccessible(isProvidersFieldAccessible);
-      }
     }
-
-
   }
-
 }
