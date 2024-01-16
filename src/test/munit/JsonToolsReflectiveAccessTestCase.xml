@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+        xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+        xmlns="http://www.mulesoft.org/schema/mule/core"
+        xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+        http://www.mulesoft.org/schema/mule/munit-tools http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        ">
+    <global-property name="extensionName" value="JSON"/>
+    <munit:config name="JsonToolsReflectiveAccessTestCase.xml">
+        <munit:parameterizations>
+            <munit:parameterization name="JsonNodeReader">
+                <munit:parameters>
+                    <munit:parameter propertyName="className" value="com.github.fge.jackson.JsonNodeReader"/>
+                    <munit:parameter propertyName="memberName" value="BUNDLE"/>
+                    <munit:parameter propertyName="memberModifiers" value="public static final"/>
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="ProcessingMessage">
+                <munit:parameters>
+                    <munit:parameter propertyName="className" value="com.github.fge.jsonschema.core.report.ProcessingMessage"/>
+                    <munit:parameter propertyName="memberName" value="BUNDLE"/>
+                    <munit:parameter propertyName="memberModifiers" value="public static final"/>
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="MessageBundles">
+                <munit:parameters>
+                    <munit:parameter propertyName="className" value="com.github.fge.msgsimple.load.MessageBundles"/>
+                    <munit:parameter propertyName="memberName" value="BUNDLES"/>
+                    <munit:parameter propertyName="memberModifiers" value="public static final"/>
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="MessageBundle">
+                <munit:parameters>
+                    <munit:parameter propertyName="className" value="com.github.fge.msgsimple.bundle.MessageBundle"/>
+                    <munit:parameter propertyName="memberName" value="providers"/>
+                    <munit:parameter propertyName="memberModifiers" value="public final"/>
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="LoadingMessageSourceProvider">
+                <munit:parameters>
+                    <munit:parameter propertyName="className" value="com.github.fge.msgsimple.provider.LoadingMessageSourceProvider"/>
+                    <munit:parameter propertyName="memberName" value="service"/>
+                    <munit:parameter propertyName="memberModifiers" value="public final"/>
+                </munit:parameters>
+            </munit:parameterization>
+        </munit:parameterizations>
+    </munit:config>
+
+    <munit:test name="VerifyClassLoaderUsesConnectorDirectory" description="Ensures that the modified class is loaded">
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression='#[
+%dw 2.0
+import invokeExactMethod from java!org::apache::commons::lang3::reflect::MethodUtils
+var artifactClassLoader = app.registry."_muleClassLoaderRepository"."artifactClassLoaders"."domain/default/app/${app.name}/plugin/${extensionName}"
+var classResource = invokeExactMethod(artifactClassLoader, "getResource", ["${className}" replace "." with ("/") ++ ".class"])
+ ---
+classResource.file
+                    ]'
+                    is='#[MunitTools::startsWith("file:${project.build.directory}")]'
+            />
+        </munit:validation>
+    </munit:test>
+    <munit:test name="VerifyClassMemberHasPublicModifiers" description="Ensures that the class member is public">
+        <munit:validation>
+            <munit-tools:assert-that
+                    expression='#[
+%dw 2.0
+import invokeExactMethod from java!org::apache::commons::lang3::reflect::MethodUtils
+import valueOf from java!java::lang::String
+import getDeclaredField from java!ClassUtils
+var artifactClassLoader = app.registry."_muleClassLoaderRepository"."artifactClassLoaders"."domain/default/app/${app.name}/plugin/${extensionName}"
+var memberObject = getDeclaredField(artifactClassLoader, "${className}", "${memberName}")
+var memberDefinition = valueOf(memberObject)
+ ---
+memberDefinition
+                    ]'
+                    is='#[MunitTools::startsWith("${memberModifiers}")]'
+            />
+        </munit:validation>
+    </munit:test>
+</mule>

@@ -17,6 +17,8 @@
     <name>Json Module</name>
 
     <properties>
+        <javaassist.version>3.27.0-GA</javaassist.version>
+        <exec.maven.plugin.version>1.6.0</exec.maven.plugin.version>
         <jackson.version>2.15.2</jackson.version>
         <jackson.databind.version>2.15.2</jackson.databind.version>
         <json.schema.validation.version>2.2.14</json.schema.validation.version>
@@ -42,6 +44,12 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>${javaassist.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -125,6 +133,34 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${exec.maven.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>process-reflective-access-classes</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>org.mule.module.json.internal.build.ReflectiveAccessClassProcessor</mainClass>
+                    <arguments>
+                        <argument>${project.build.outputDirectory}</argument>
+                    </arguments>
+                    <includePluginDependencies>true</includePluginDependencies>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.javassist</groupId>
+                        <artifactId>javassist</artifactId>
+                        <version>${javaassist.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
@@ -226,6 +262,11 @@
 
                 </configuration>
                 <dependencies>
+                    <dependency>
+                        <groupId>com.github.java-json-tools</groupId>
+                        <artifactId>json-schema-validator</artifactId>
+                        <version>${json.schema.validation.version}</version>
+                    </dependency>
                     <dependency>
                         <groupId>com.mulesoft.munit</groupId>
                         <artifactId>munit-runner</artifactId>
