@@ -1,35 +1,36 @@
-/**
- * (c) 2003-2024 MuleSoft, Inc. The software in this package is published under the terms of the Commercial Free Software license V.1 a copy of which has been included with this distribution in the LICENSE.md file.
+/*
+ * Copyright (c) 2024, Salesforce, Inc.
+ * SPDX-License-Identifier: Apache-2
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+import org.mule.runtime.module.artifact.api.classloader.ClassLoaderRepository;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
-/*
- * Copyright 2023 Salesforce, Inc. All rights reserved.
- * The software in this package is published under the terms of the CPAL v1.0
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
+/**
+ * Provides utilities related to {@link Class} instances needed for tests due to DataWeave limitations.
  */
 public class ClassUtils {
 
   private ClassUtils() {}
 
-  public static Field getDeclaredField(String className, String fieldName) {
-    try {
-      Class<?> type = Class.forName(className);
-      return type.getDeclaredField(fieldName);
-    } catch (ClassNotFoundException | NoSuchFieldException e) {
-      throw new RuntimeException(e);
-    }
+  public static Field getDeclaredField(ClassLoader classLoader, String className, String fieldName)
+      throws ClassNotFoundException, NoSuchFieldException {
+    return classLoader.loadClass(className).getDeclaredField(fieldName);
   }
 
-  public static Field getDeclaredField(ClassLoader classLoader, String className, String fieldName) {
-    try {
-      Class<?> type = classLoader.loadClass(className);
-      return type.getDeclaredField(fieldName);
-    } catch (ClassNotFoundException | NoSuchFieldException e) {
-      throw new RuntimeException(e);
-    }
+  public static ClassLoader getClassLoader(ClassLoaderRepository repository, String classLoaderId) {
+    return repository.find(classLoaderId).orElse(null);
   }
 }

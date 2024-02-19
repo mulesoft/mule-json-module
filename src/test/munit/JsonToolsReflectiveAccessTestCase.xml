@@ -11,41 +11,42 @@
         http://www.mulesoft.org/schema/mule/munit-tools http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
         ">
     <global-property name="extensionName" value="JSON"/>
+    <global-property name="shadePackage" value="org.mule.module.json.internal.shaded"/>
     <munit:config name="JsonToolsReflectiveAccessTestCase.xml">
         <munit:parameterizations>
             <munit:parameterization name="JsonNodeReader">
                 <munit:parameters>
                     <munit:parameter propertyName="className" value="com.github.fge.jackson.JsonNodeReader"/>
                     <munit:parameter propertyName="memberName" value="BUNDLE"/>
-                    <munit:parameter propertyName="memberModifiers" value="public static final"/>
+                    <munit:parameter propertyName="expectedModifiers" value="public static"/>
                 </munit:parameters>
             </munit:parameterization>
             <munit:parameterization name="ProcessingMessage">
                 <munit:parameters>
                     <munit:parameter propertyName="className" value="com.github.fge.jsonschema.core.report.ProcessingMessage"/>
                     <munit:parameter propertyName="memberName" value="BUNDLE"/>
-                    <munit:parameter propertyName="memberModifiers" value="public static final"/>
+                    <munit:parameter propertyName="expectedModifiers" value="public static"/>
                 </munit:parameters>
             </munit:parameterization>
             <munit:parameterization name="MessageBundles">
                 <munit:parameters>
                     <munit:parameter propertyName="className" value="com.github.fge.msgsimple.load.MessageBundles"/>
                     <munit:parameter propertyName="memberName" value="BUNDLES"/>
-                    <munit:parameter propertyName="memberModifiers" value="public static final"/>
+                    <munit:parameter propertyName="expectedModifiers" value="public static"/>
                 </munit:parameters>
             </munit:parameterization>
             <munit:parameterization name="MessageBundle">
                 <munit:parameters>
                     <munit:parameter propertyName="className" value="com.github.fge.msgsimple.bundle.MessageBundle"/>
                     <munit:parameter propertyName="memberName" value="providers"/>
-                    <munit:parameter propertyName="memberModifiers" value="public final"/>
+                    <munit:parameter propertyName="expectedModifiers" value="public"/>
                 </munit:parameters>
             </munit:parameterization>
             <munit:parameterization name="LoadingMessageSourceProvider">
                 <munit:parameters>
                     <munit:parameter propertyName="className" value="com.github.fge.msgsimple.provider.LoadingMessageSourceProvider"/>
                     <munit:parameter propertyName="memberName" value="service"/>
-                    <munit:parameter propertyName="memberModifiers" value="public final"/>
+                    <munit:parameter propertyName="expectedModifiers" value="public"/>
                 </munit:parameters>
             </munit:parameterization>
         </munit:parameterizations>
@@ -57,8 +58,9 @@
                     expression='#[
 %dw 2.0
 import invokeExactMethod from java!org::apache::commons::lang3::reflect::MethodUtils
-var artifactClassLoader = app.registry."_muleClassLoaderRepository"."artifactClassLoaders"."domain/default/app/${app.name}/plugin/${extensionName}"
-var classResource = invokeExactMethod(artifactClassLoader, "getResource", ["${className}" replace "." with ("/") ++ ".class"])
+import getClassLoader from java!ClassUtils
+var artifactClassLoader = getClassLoader(app.registry."_muleClassLoaderRepository", "domain/default/app/${app.name}/plugin/${extensionName}")
+var classResource = invokeExactMethod(artifactClassLoader, "getResource", ["${shadePackage}.${className}" replace "." with ("/") ++ ".class"])
  ---
 classResource.file
                     ]'
@@ -71,16 +73,16 @@ classResource.file
             <munit-tools:assert-that
                     expression='#[
 %dw 2.0
-import invokeExactMethod from java!org::apache::commons::lang3::reflect::MethodUtils
 import valueOf from java!java::lang::String
 import getDeclaredField from java!ClassUtils
-var artifactClassLoader = app.registry."_muleClassLoaderRepository"."artifactClassLoaders"."domain/default/app/${app.name}/plugin/${extensionName}"
-var memberObject = getDeclaredField(artifactClassLoader, "${className}", "${memberName}")
+import getClassLoader from java!ClassUtils
+var artifactClassLoader = getClassLoader(app.registry."_muleClassLoaderRepository", "domain/default/app/${app.name}/plugin/${extensionName}")
+var memberObject = getDeclaredField(artifactClassLoader, "${shadePackage}.${className}", "${memberName}")
 var memberDefinition = valueOf(memberObject)
  ---
 memberDefinition
                     ]'
-                    is='#[MunitTools::startsWith("${memberModifiers}")]'
+                    is='#[MunitTools::startsWith("${expectedModifiers}")]'
             />
         </munit:validation>
     </munit:test>
