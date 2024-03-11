@@ -14,21 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mule.module.json.internal;
+import org.mule.runtime.module.artifact.api.classloader.ClassLoaderRepository;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import java.lang.reflect.Field;
 
 /**
- * Link of the chain, determinate when {@link JsonSchemaValidatorJavaJsonToolsWrapper} have to be returned
+ * Provides utilities related to {@link Class} instances needed for tests due to DataWeave limitations.
  */
-public class JavaJsonToolsLink extends LibraryLink {
+public class ClassUtils {
 
-  public JavaJsonToolsLink(LibraryLink nextLink) {
-    super(nextLink);
+  private ClassUtils() {}
+
+  public static Field getDeclaredField(ClassLoader classLoader, String className, String fieldName)
+      throws ClassNotFoundException, NoSuchFieldException {
+    return classLoader.loadClass(className).getDeclaredField(fieldName);
   }
 
-  @Override
-  public JsonSchemaValidator getWrapper(ValidatorKey key, JsonNode schemaJsonNode) {
-    return new JsonSchemaValidatorJavaJsonToolsWrapper(key, schemaJsonNode);
+  public static ClassLoader getClassLoader(ClassLoaderRepository repository, String classLoaderId) {
+    return repository.find(classLoaderId).orElse(null);
   }
 }
