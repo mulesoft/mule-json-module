@@ -19,6 +19,7 @@
     <properties>
         <jackson.version>2.15.2</jackson.version>
         <jackson.databind.version>2.15.2</jackson.databind.version>
+        <jackson.dataformat.yaml.version>2.16.2</jackson.dataformat.yaml.version>
         <json.schema.validation.version>2.2.14</json.schema.validation.version>
         <guava.version>32.1.2-jre</guava.version>
         <jakarta.mail.version>2.0.1</jakarta.mail.version>
@@ -62,6 +63,10 @@
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-annotations</artifactId>
+                </exclusion>
+                <exclusion>
+                        <groupId>com.fasterxml.jackson.dataformat</groupId>
+                        <artifactId>jackson-dataformat-yaml</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
@@ -117,6 +122,11 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+            <version>2.16.2</version>
         </dependency>
     </dependencies>
 
