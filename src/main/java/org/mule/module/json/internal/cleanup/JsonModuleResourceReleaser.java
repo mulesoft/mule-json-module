@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -42,6 +41,11 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  **/
 public class JsonModuleResourceReleaser {
 
+  private static final String BUNDLE = "BUNDLE";
+  private static final String BUNDLES = "BUNDLES";
+  private static final String PROVIDERS = "providers";
+  private static final String SERVICE = "service";
+  private static final String POOL = "pool";
   private static final Logger LOGGER = LoggerFactory.getLogger(JsonModuleResourceReleaser.class);
   SchedulerService schedulerService;
 
@@ -55,7 +59,6 @@ public class JsonModuleResourceReleaser {
 
   /**
    *  Shutdowns the json validation library executors.
-   *
    *  The Json Schema Validator Library Leaks threads
    *  in every application un-deployment.
    *  The leak is produced by the LoadingMessageSourceProvider. This class
@@ -66,7 +69,7 @@ public class JsonModuleResourceReleaser {
     LOGGER.debug("Stopping the known executors services");
     Field bundleField;
     try {
-      bundleField = JsonNodeReader.class.getDeclaredField("BUNDLE");
+      bundleField = JsonNodeReader.class.getDeclaredField(BUNDLE);
       MessageBundle messageBundle = (MessageBundle) bundleField.get(null);
       cleanMessageBundle(messageBundle);
     } catch (NoSuchFieldException | IllegalAccessException ex) {
@@ -75,7 +78,7 @@ public class JsonModuleResourceReleaser {
     }
 
     try {
-      bundleField = MessageBundles.class.getDeclaredField("BUNDLES");
+      bundleField = MessageBundles.class.getDeclaredField(BUNDLES);
       Map<Class<? extends MessageBundleLoader>, MessageBundle> bundles =
           (Map<Class<? extends MessageBundleLoader>, MessageBundle>) bundleField.get(null);
       for (MessageBundle bundle : bundles.values()) {
@@ -87,7 +90,7 @@ public class JsonModuleResourceReleaser {
     }
 
     try {
-      bundleField = ProcessingMessage.class.getDeclaredField("BUNDLE");
+      bundleField = ProcessingMessage.class.getDeclaredField(BUNDLE);
       MessageBundle messageBundle = (MessageBundle) bundleField.get(null);
       cleanMessageBundle(messageBundle);
     } catch (NoSuchFieldException | IllegalAccessException ex) {
@@ -108,12 +111,12 @@ public class JsonModuleResourceReleaser {
     Field providersField;
     Field serviceField;
 
-    providersField = MessageBundle.class.getDeclaredField("providers");
+    providersField = MessageBundle.class.getDeclaredField(PROVIDERS);
 
     List<MessageSourceProvider> messageSourceProviders = (List<MessageSourceProvider>) providersField.get(bundle);
     for (MessageSourceProvider provider : messageSourceProviders) {
       if (provider instanceof LoadingMessageSourceProvider) {
-        serviceField = LoadingMessageSourceProvider.class.getDeclaredField("service");
+        serviceField = LoadingMessageSourceProvider.class.getDeclaredField(SERVICE);
         ExecutorService service = (ExecutorService) serviceField.get(provider);
         service.shutdown();
 
@@ -133,7 +136,7 @@ public class JsonModuleResourceReleaser {
   public synchronized void restoreExecutorServices() {
     Field bundleField;
     try {
-      bundleField = JsonNodeReader.class.getDeclaredField("BUNDLE");
+      bundleField = JsonNodeReader.class.getDeclaredField(BUNDLE);
       MessageBundle messageBundle = (MessageBundle) bundleField.get(null);
       restoreMessageBundle(messageBundle);
     } catch (NoSuchFieldException | IllegalAccessException ex) {
@@ -142,7 +145,7 @@ public class JsonModuleResourceReleaser {
     }
 
     try {
-      bundleField = MessageBundles.class.getDeclaredField("BUNDLES");
+      bundleField = MessageBundles.class.getDeclaredField(BUNDLES);
       Map<Class<? extends MessageBundleLoader>, MessageBundle> bundles =
           (Map<Class<? extends MessageBundleLoader>, MessageBundle>) bundleField.get(null);
       for (MessageBundle bundle : bundles.values()) {
@@ -154,7 +157,7 @@ public class JsonModuleResourceReleaser {
     }
 
     try {
-      bundleField = ProcessingMessage.class.getDeclaredField("BUNDLE");
+      bundleField = ProcessingMessage.class.getDeclaredField(BUNDLE);
       MessageBundle messageBundle = (MessageBundle) bundleField.get(null);
       restoreMessageBundle(messageBundle);
     } catch (NoSuchFieldException | IllegalAccessException ex) {
@@ -177,16 +180,16 @@ public class JsonModuleResourceReleaser {
     Field providersField;
     Field serviceField;
 
-    providersField = MessageBundle.class.getDeclaredField("providers");
+    providersField = MessageBundle.class.getDeclaredField(PROVIDERS);
 
     List<MessageSourceProvider> messageSourceProviders = (List<MessageSourceProvider>) providersField.get(bundle);
 
     for (MessageSourceProvider provider : messageSourceProviders) {
       if (provider instanceof LoadingMessageSourceProvider) {
-        serviceField = LoadingMessageSourceProvider.class.getDeclaredField("service");
+        serviceField = LoadingMessageSourceProvider.class.getDeclaredField(SERVICE);
         ExecutorService service = (ExecutorService) serviceField.get(provider);
         if (service.isShutdown()) {
-          service = schedulerService.customScheduler(SchedulerConfig.config().withMaxConcurrentTasks(3).withPrefix("pool"));
+          service = schedulerService.customScheduler(SchedulerConfig.config().withMaxConcurrentTasks(3).withPrefix(POOL));
           serviceField.set(provider, service);
         }
       }
