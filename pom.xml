@@ -24,7 +24,7 @@
         <jackson.databind.version>2.15.2</jackson.databind.version>
         <jackson.dataformat.yaml.version>2.16.2</jackson.dataformat.yaml.version>
         <json.schema.validation.version>2.2.14</json.schema.validation.version>
-        <guava.version>32.1.2-jre</guava.version>
+        <guava.version>32.1.3-jre</guava.version>
         <jakarta.mail.version>2.0.1</jakarta.mail.version>
         <commons.pool2.version>2.11.1</commons.pool2.version>
         <commons.lang3.version>3.13.0</commons.lang3.version>
