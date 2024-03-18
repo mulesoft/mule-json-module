@@ -14,21 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mule.module.json.internal;
+package org.mule.module.json.internal.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/**
- * Link of the chain, determinate when {@link JsonSchemaValidatorJavaJsonToolsWrapper} have to be returned
- */
-public class JavaJsonToolsLink extends LibraryLink {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface ExcludeFromGeneratedCoverage {
 
-  public JavaJsonToolsLink(LibraryLink nextLink) {
-    super(nextLink);
-  }
-
-  @Override
-  public JsonSchemaValidator getWrapper(ValidatorKey key, JsonNode schemaJsonNode) {
-    return new JsonSchemaValidatorJavaJsonToolsWrapper(key, schemaJsonNode);
-  }
 }

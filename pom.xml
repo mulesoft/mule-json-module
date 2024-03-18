@@ -17,6 +17,9 @@
     <name>Json Module</name>
 
     <properties>
+        <mule.sdk.api.version>0.7.0</mule.sdk.api.version>
+        <mule.extensions.shade.plugin.version>1.0.4</mule.extensions.shade.plugin.version>
+        <exec.maven.plugin.version>1.6.0</exec.maven.plugin.version>
         <jackson.version>2.15.2</jackson.version>
         <jackson.databind.version>2.15.2</jackson.databind.version>
         <jackson.dataformat.yaml.version>2.16.2</jackson.dataformat.yaml.version>
@@ -25,21 +28,29 @@
         <jakarta.mail.version>2.0.1</jakarta.mail.version>
         <commons.pool2.version>2.11.1</commons.pool2.version>
         <commons.lang3.version>3.13.0</commons.lang3.version>
-        <org.mozilla.rhino.version>1.7.14</org.mozilla.rhino.version>
         <com.networknt.version>1.0.76</com.networknt.version>
         <settings.file>${java.io.tmpdir}/effective-settings.xml</settings.file>
-        <munit.version>2.3.4</munit.version>
-        <mtf.tools.version>1.1.2</mtf.tools.version>
-        <file.connector.version>1.5.1</file.connector.version>
+        <munit.version>3.1.0</munit.version>
+        <mtf.tools.version>1.2.0</mtf.tools.version>
+        <munit.extensions.maven.plugin.version>1.2.0</munit.extensions.maven.plugin.version>
+        <file.connector.version>1.5.2</file.connector.version>
         <mtf.javaopts></mtf.javaopts>
         <jacoco.version>0.8.10</jacoco.version>
         <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
         <license.maven.plugin.version>4.2</license.maven.plugin.version>
-        <licensePath>LICENSE_HEADER_CPAL.txt</licensePath>
-        <licenseYear>2023</licenseYear>
+        <licensePath>LICENSE_HEADER.txt</licensePath>
+        <licenseYear>2024</licenseYear>
+        <!-- munit-tools 3.1.0 requires runtime 4.3.0 or higher -->
+        <runtimeVersion>4.3.0</runtimeVersion>
+        <maven.repo.local>${settings.localRepository}</maven.repo.local>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.mule.sdk</groupId>
+            <artifactId>mule-sdk-api</artifactId>
+            <version>${mule.sdk.api.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -132,6 +143,94 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${exec.maven.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>build-mule-shaders-module</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>mule-shaders-module</workingDirectory>
+                            <executable>mvn</executable>
+                            <arguments>
+                                <argument>install</argument>
+                                <argument>-Dmaven.repo.local=${maven.repo.local}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.mule.runtime.plugins</groupId>
+                <artifactId>mule-extensions-shade-plugin</artifactId>
+                <version>${mule.extensions.shade.plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.mule.modules</groupId>
+                        <artifactId>mule-shaders-module</artifactId>
+                        <version>1.0.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.github.java-json-tools</groupId>
+                        <artifactId>json-schema-validator</artifactId>
+                        <version>${json.schema.validation.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <shaderHint>ReflectiveAccessShader</shaderHint>
+                    <artifactSet>
+                        <includes>
+                            <include>com.github.java-json-tools:*</include>
+                        </includes>
+                    </artifactSet>
+                    <relocations>
+                        <relocation>
+                            <pattern>com.github.fge</pattern>
+                            <shadedPattern>org.mule.module.json.internal.shaded.com.github.fge</shadedPattern>
+                        </relocation>
+                    </relocations>
+                    <transformers>
+                        <transformer implementation="org.mule.module.shaders.api.ReflectiveAccessShaderTransformer">
+                            <members>
+                                <classMember>
+                                    <className>com.github.fge.jackson.JsonNodeReader</className>
+                                    <memberName>BUNDLE</memberName>
+                                </classMember>
+                                <classMember>
+                                    <className>com.github.fge.jsonschema.core.report.ProcessingMessage</className>
+                                    <memberName>BUNDLE</memberName>
+                                </classMember>
+                                <classMember>
+                                    <className>com.github.fge.msgsimple.load.MessageBundles</className>
+                                    <memberName>BUNDLES</memberName>
+                                </classMember>
+                                <classMember>
+                                    <className>com.github.fge.msgsimple.bundle.MessageBundle</className>
+                                    <memberName>providers</memberName>
+                                </classMember>
+                                <classMember>
+                                    <className>com.github.fge.msgsimple.provider.LoadingMessageSourceProvider</className>
+                                    <memberName>service</memberName>
+                                </classMember>
+                            </members>
+                        </transformer>
+                    </transformers>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
@@ -234,6 +333,11 @@
                 </configuration>
                 <dependencies>
                     <dependency>
+                        <groupId>com.github.java-json-tools</groupId>
+                        <artifactId>json-schema-validator</artifactId>
+                        <version>${json.schema.validation.version}</version>
+                    </dependency>
+                    <dependency>
                         <groupId>com.mulesoft.munit</groupId>
                         <artifactId>munit-runner</artifactId>
                         <version>${munit.version}</version>
@@ -261,4 +365,19 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>mule-plugin</id>
+            <name>Mule Repository</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>mule-plugin</id>
+            <name>Mule Repository</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
 </project>
