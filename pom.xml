@@ -43,9 +43,17 @@
         <!-- munit-tools 3.1.0 requires runtime 4.3.0 or higher -->
         <runtimeVersion>4.3.0</runtimeVersion>
         <maven.repo.local>${settings.localRepository}</maven.repo.local>
+        <org.mozilla.rhino.version>1.7.15</org.mozilla.rhino.version>
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.mozilla</groupId>
+            <artifactId>rhino</artifactId>
+            <version>${org.mozilla.rhino.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.mule.sdk</groupId>
             <artifactId>mule-sdk-api</artifactId>
