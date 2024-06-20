@@ -43,6 +43,7 @@
         <!-- munit-tools 3.1.0 requires runtime 4.3.0 or higher -->
         <runtimeVersion>4.3.0</runtimeVersion>
         <maven.repo.local>${settings.localRepository}</maven.repo.local>
+        <org.mozilla.rhino.version>1.7.15</org.mozilla.rhino.version>
     </properties>
 
     <dependencies>
@@ -61,7 +62,11 @@
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.mozilla</groupId>
+            <artifactId>rhino</artifactId>
+            <version>${org.mozilla.rhino.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.github.java-json-tools</groupId>
             <artifactId>json-schema-validator</artifactId>
