@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft/2020-12/schema#",
   "type": "array",
-  "prefixItems": {
+  "prefixItems": [{
     "type": "object",
     "properties": {
       "a": {
@@ -16,5 +16,5 @@
       }
     },
     "not": {"required":["c"]}
-  }
+  }]
 }
