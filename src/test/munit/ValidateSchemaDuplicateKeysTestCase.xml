@@ -17,14 +17,11 @@
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
     <munit:config name="ValidateSchemaDuplicateKeysTestCase.xml">
         <munit:parameterizations>
-            <!-- for successful validation, it requires Rhino library -->
-            <!--
             <munit:parameterization name="Draft4validateSchemaContent">
                 <munit:parameters>
                     <munit:parameter propertyName="jsonSchema" value="/Draft4/schemas/fstab.json" />
                 </munit:parameters>
             </munit:parameterization>
-            -->
             <munit:parameterization name="Draft6validateSchemaContent">
                 <munit:parameters>
                     <munit:parameter propertyName="jsonSchema" value="/Draft6/schemas/fstab.json" />
