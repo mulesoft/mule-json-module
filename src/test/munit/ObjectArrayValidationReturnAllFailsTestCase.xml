@@ -34,14 +34,15 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
                 <error-handler >
                     <on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" type="JSON:SCHEMA_NOT_HONOURED">
                         <set-variable value="#[error.errorMessage.payload]" variableName="errorPayload"/>
-                        <set-variable value="#[error.errorType.asString]" variableName="errorType"/>
+                        <set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;{error:error.errorType}]"  variableName="errorType"/>
+                        <set-variable value='#[vars.errorType.error.namespace ++":"++ vars.errorType.error.identifier]' variableName="identifier"/>
                     </on-error-continue>
                 </error-handler>
             </try>
         </munit:execution>
         <munit:validation>
             <munit-tools:assert-equals actual="#[sizeOf(vars.errorPayload)]" expected="#[10]"/>
-            <munit-tools:assert-equals actual="#[vars.errorType]" expected="JSON:SCHEMA_NOT_HONOURED"/>
+            <munit-tools:assert-equals actual="#[vars.identifier]" expected="JSON:SCHEMA_NOT_HONOURED"/>
         </munit:validation>
     </munit:test>
 </mule>
