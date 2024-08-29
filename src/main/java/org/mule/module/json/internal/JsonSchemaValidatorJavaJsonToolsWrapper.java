@@ -69,7 +69,7 @@ public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator
     JsonNode jsonNode = super.asJsonNode(inputStream);
     ProcessingReport report;
     try {
-      report = jsonSchema.validate(jsonNode);
+      report = jsonSchema.validate(jsonNode, true);
 
     } catch (ProcessingException e) {
       Matcher messageMatcher = INVALID_REFERENCE_MESSAGE_PATTERN.matcher(e.getMessage());
@@ -85,8 +85,7 @@ public class JsonSchemaValidatorJavaJsonToolsWrapper extends JsonSchemaValidator
 
     if (!report.isSuccess()) {
       String jsonReport = reportAsJson(report, objectMapper);
-      throw new SchemaValidationException(VALIDATION_FAILED_MESSAGE + jsonReport,
-                                          jsonReport);
+      throw new SchemaValidationException(jsonReport);
     }
   }
 
