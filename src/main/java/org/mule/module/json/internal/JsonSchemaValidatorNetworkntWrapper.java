@@ -76,8 +76,7 @@ public class JsonSchemaValidatorNetworkntWrapper extends JsonSchemaValidator {
     }
 
     if (!responseValidate.isEmpty()) {
-      throw new SchemaValidationException(VALIDATION_FAILED_MESSAGE + responseValidate,
-                                          responseValidate.toString());
+      throw new SchemaValidationException(responseValidate.toString());
     }
   }
 

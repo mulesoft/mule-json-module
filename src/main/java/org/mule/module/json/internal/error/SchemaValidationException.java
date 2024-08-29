@@ -42,6 +42,10 @@ public class SchemaValidationException extends ModuleException implements ErrorM
     this.message = Message.builder().value(problemsJson).mediaType(MediaType.APPLICATION_JSON).build();
   }
 
+  public SchemaValidationException(String validationResult) {
+    this(validationResult, validationResult);
+  }
+
   /**
    * {@inheritDoc}
    */
