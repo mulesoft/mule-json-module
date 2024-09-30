@@ -37,7 +37,7 @@
         <mtf.javaopts></mtf.javaopts>
         <jacoco.version>0.8.10</jacoco.version>
         <mulesoftLicenseVersion>1.4.0</mulesoftLicenseVersion>
-        <license.maven.plugin.version>4.2</license.maven.plugin.version>
+        <license.maven.plugin.version>4.6</license.maven.plugin.version>
         <licensePath>LICENSE_HEADER.txt</licensePath>
         <licenseYear>2024</licenseYear>
         <!-- munit-tools 3.1.0 requires runtime 4.3.0 or higher -->
