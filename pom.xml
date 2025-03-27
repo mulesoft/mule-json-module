@@ -26,7 +26,7 @@
         <json.schema.validation.version>2.2.14</json.schema.validation.version>
         <guava.version>33.3.0-jre</guava.version>
         <jakarta.mail.version>2.0.1</jakarta.mail.version>
-        <commons.pool2.version>2.11.1</commons.pool2.version>
+        <commons.pool2.version>2.12.1</commons.pool2.version>
         <commons.lang3.version>3.17.0</commons.lang3.version>
         <com.networknt.version>1.0.87</com.networknt.version>
         <settings.file>${java.io.tmpdir}/effective-settings.xml</settings.file>
