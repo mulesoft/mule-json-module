@@ -323,6 +323,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <minMuleVersionConfig>CONNECTOR</minMuleVersionConfig>
                     <environmentVariables>
                         <!-- Toggles the JDK17 style flag -->
                         <!-- ugly hack -->
