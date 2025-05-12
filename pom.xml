@@ -40,8 +40,6 @@
         <license.maven.plugin.version>4.2</license.maven.plugin.version>
         <licensePath>LICENSE_HEADER.txt</licensePath>
         <licenseYear>2024</licenseYear>
-        <!-- munit-tools 3.1.0 requires runtime 4.3.0 or higher -->
-        <runtimeVersion>4.3.0</runtimeVersion>
         <maven.repo.local>${settings.localRepository}</maven.repo.local>
         <org.mozilla.rhino.version>1.7.15</org.mozilla.rhino.version>
     </properties>
