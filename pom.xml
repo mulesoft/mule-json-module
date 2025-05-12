@@ -323,13 +323,12 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <minMuleVersionConfig>RUNTIME</minMuleVersionConfig>
+                    <minMuleVersionConfig>CONNECTOR</minMuleVersionConfig>
                     <environmentVariables>
                         <!-- Toggles the JDK17 style flag -->
                         <!-- ugly hack -->
                         <_JAVA_OPTIONS>-XX:+PrintCommandLineFlags ${mtf.javaopts}</_JAVA_OPTIONS>
                     </environmentVariables>
-                    <runtimeProduct>MULE_EE</runtimeProduct>
                     <argLines>
                         <argLine>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco-munit.exec</argLine>
                     </argLines>
