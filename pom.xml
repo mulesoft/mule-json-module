@@ -40,8 +40,6 @@
         <license.maven.plugin.version>4.2</license.maven.plugin.version>
         <licensePath>LICENSE_HEADER.txt</licensePath>
         <licenseYear>2024</licenseYear>
-        <!-- munit-tools 3.1.0 requires runtime 4.3.0 or higher -->
-        <runtimeVersion>4.3.0</runtimeVersion>
         <maven.repo.local>${settings.localRepository}</maven.repo.local>
         <org.mozilla.rhino.version>1.7.15</org.mozilla.rhino.version>
     </properties>
@@ -325,12 +323,12 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <minMuleVersionConfig>CONNECTOR</minMuleVersionConfig>
                     <environmentVariables>
                         <!-- Toggles the JDK17 style flag -->
                         <!-- ugly hack -->
                         <_JAVA_OPTIONS>-XX:+PrintCommandLineFlags ${mtf.javaopts}</_JAVA_OPTIONS>
                     </environmentVariables>
-                    <runtimeProduct>MULE_EE</runtimeProduct>
                     <argLines>
                         <argLine>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco-munit.exec</argLine>
                     </argLines>
