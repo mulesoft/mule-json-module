@@ -6,3 +6,4 @@ additionalTestConfigs:
   jdk17:
     testJdkTool: OPEN-JDK17
     mavenAdditionalArgs: -Dtest=none -DfailIfNoTests=false -DminVersion=4.6.0
+    
