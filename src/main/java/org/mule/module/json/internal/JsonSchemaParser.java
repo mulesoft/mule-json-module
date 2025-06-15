@@ -107,9 +107,9 @@ public class JsonSchemaParser {
       }
 
       if (isIpAddress(host) && (LOCAL_IP_PATTERN.matcher(host).matches() || LOCAL_IPV6_PATTERN.matcher(host).matches())) {
-          SELF_REF_CACHE.put(host, true);
-          return true;
-        }
+        SELF_REF_CACHE.put(host, true);
+        return true;
+      }
 
 
       // DNS resolution for more complex cases
