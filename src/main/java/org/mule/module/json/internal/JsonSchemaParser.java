@@ -28,6 +28,8 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.String.format;
@@ -45,6 +47,17 @@ public class JsonSchemaParser {
   private static final ObjectMapper objectMapper = new ObjectMapper();
   private static final Logger logger = getLogger(JsonSchemaParser.class);
   private static final Set<String> KNOWN_SELF_HOSTS = getLocalHostnamesAndIps();
+
+  // Cache for host self-reference checks
+  private static final ConcurrentHashMap<String, Boolean> SELF_REF_CACHE = new ConcurrentHashMap<>();
+
+  // Pattern for fast local IP checks (IPv4)
+  private static final Pattern LOCAL_IP_PATTERN = Pattern.compile(
+                                                                  "^(127\\.\\d+\\.\\d+\\.\\d+|0\\.0\\.0\\.0|10\\..*|192\\.168\\..*|172\\.(1[6-9]|2\\d|3[01])\\..*)$");
+
+  // Pattern for fast IPv6 local checks
+  private static final Pattern LOCAL_IPV6_PATTERN = Pattern.compile(
+                                                                    "^(::1|fe80:.*|fc00:.*|fd00:.*)$");
 
   private JsonSchemaParser() {}
 
@@ -77,19 +90,55 @@ public class JsonSchemaParser {
   private static boolean isSelfReferencingOrInternal(String schemaUrl) {
     try {
       URL url = new URL(schemaUrl);
-      String host = url.getHost();
-      // Normalize to lowercase to catch variations like "LOCALHOST"
-      host = host.toLowerCase(Locale.ROOT);
+      String host = url.getHost().toLowerCase(Locale.ROOT);
+      Boolean cached = SELF_REF_CACHE.get(host);
+      if (cached != null) {
+        return cached;
+      }
+
+      if ("localhost".equals(host)) {
+        SELF_REF_CACHE.put(host, true);
+        return true;
+      }
+
+      if (KNOWN_SELF_HOSTS.contains(host)) {
+        SELF_REF_CACHE.put(host, true);
+        return true;
+      }
+
+      if (isIpAddress(host) && (LOCAL_IP_PATTERN.matcher(host).matches() || LOCAL_IPV6_PATTERN.matcher(host).matches())) {
+          SELF_REF_CACHE.put(host, true);
+          return true;
+        }
+
+
+      // DNS resolution for more complex cases
       InetAddress address = InetAddress.getByName(host);
-      return address.isAnyLocalAddress() // covers 0.0.0.0
+      boolean result = address.isAnyLocalAddress() // covers 0.0.0.0
           || address.isLoopbackAddress() // 127.x.x.x
           || address.isSiteLocalAddress() // 192.168.x.x, 10.x.x.x, etc.
-          || KNOWN_SELF_HOSTS.contains(host)
           || KNOWN_SELF_HOSTS.contains(address.getHostAddress());
 
+      SELF_REF_CACHE.put(host, result);
+      return result;
+
     } catch (MalformedURLException | UnknownHostException e) {
+      // Cache negative result for this host
+      String host = null;
+      try {
+        host = new URL(schemaUrl).getHost().toLowerCase(Locale.ROOT);
+      } catch (Exception ignore) {
+      }
+      if (host != null) {
+        SELF_REF_CACHE.put(host, false);
+      }
       return false;
     }
+  }
+
+  private static boolean isIpAddress(String host) {
+    // Simple check for IPv4 or IPv6 address
+    return host.chars().allMatch(c -> Character.isDigit(c) || c == '.' || c == ':');
   }
 
   private static Set<String> getLocalHostnamesAndIps() {
