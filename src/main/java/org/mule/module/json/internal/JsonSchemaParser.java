@@ -91,22 +91,13 @@ public class JsonSchemaParser {
     try {
       URL url = new URL(schemaUrl);
       String host = url.getHost().toLowerCase(Locale.ROOT);
-      Boolean cached = SELF_REF_CACHE.get(host);
+      Boolean cached = SELF_REF_CACHE.containsKey(host);
       if (cached != null) {
         return cached;
       }
 
-      if ("localhost".equals(host)) {
-        SELF_REF_CACHE.put(host, true);
-        return true;
-      }
-
-      if (KNOWN_SELF_HOSTS.contains(host)) {
-        SELF_REF_CACHE.put(host, true);
-        return true;
-      }
-
-      if (isIpAddress(host) && (LOCAL_IP_PATTERN.matcher(host).matches() || LOCAL_IPV6_PATTERN.matcher(host).matches())) {
+      if ("localhost".equals(host) || KNOWN_SELF_HOSTS.contains(host)
+          || isIpAddress(host) && (LOCAL_IP_PATTERN.matcher(host).matches() || LOCAL_IPV6_PATTERN.matcher(host).matches())) {
         SELF_REF_CACHE.put(host, true);
         return true;
       }
