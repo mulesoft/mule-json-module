@@ -23,7 +23,11 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.NetworkInterface;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Locale;
@@ -33,8 +37,7 @@ import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.String.format;
-import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
-import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
+import static org.mule.module.json.api.JsonError.*;
 import static org.mule.module.json.internal.ValidatorCommonUtils.isBlank;
 import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -74,7 +77,7 @@ public class JsonSchemaParser {
     try {
       checkState(schemaLocation != null, "schemaLocation has not been provided");
       if (isSelfReferencingOrInternal(schemaLocation)) {
-        throw new ModuleException("Self-referencing or internal URLs are not allowed for schemaLocation", INVALID_INPUT_JSON);
+        throw new ModuleException("Self-referencing or internal URLs are not allowed for schemaLocation", INVALID_SCHEMA);
       }
       return objectMapper.readTree(new URL(resolveLocationIfNecessary(schemaLocation)));
 
@@ -91,13 +94,13 @@ public class JsonSchemaParser {
     try {
       URL url = new URL(schemaUrl);
       String host = url.getHost().toLowerCase(Locale.ROOT);
-      Boolean cached = SELF_REF_CACHE.containsKey(host);
+      Boolean cached = SELF_REF_CACHE.get(host);
       if (cached != null) {
         return cached;
       }
 
       if ("localhost".equals(host) || KNOWN_SELF_HOSTS.contains(host)
-          || isIpAddress(host) && (LOCAL_IP_PATTERN.matcher(host).matches() || LOCAL_IPV6_PATTERN.matcher(host).matches())) {
+          || (LOCAL_IP_PATTERN.matcher(host).matches() || LOCAL_IPV6_PATTERN.matcher(host).matches())) {
         SELF_REF_CACHE.put(host, true);
         return true;
       }
@@ -119,17 +122,13 @@ public class JsonSchemaParser {
       try {
         host = new URL(schemaUrl).getHost().toLowerCase(Locale.ROOT);
       } catch (Exception ignore) {
+        //ignore
       }
       if (host != null) {
         SELF_REF_CACHE.put(host, false);
       }
       return false;
     }
-  }
-
-  private static boolean isIpAddress(String host) {
-    // Simple check for IPv4 or IPv6 address
-    return host.chars().allMatch(c -> Character.isDigit(c) || c == '.' || c == ':');
   }
 
   private static Set<String> getLocalHostnamesAndIps() {
