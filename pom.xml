@@ -198,6 +198,7 @@
                                     </includes>
                                 </fileSet>
                             </fileSets>
+                            <skipOnFailure>false</skipOnFailure>
                         </configuration>
                     </execution>
                     <execution>

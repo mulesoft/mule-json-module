@@ -37,7 +37,10 @@ import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.String.format;
-import static org.mule.module.json.api.JsonError.*;
+import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
+import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
+import static org.mule.module.json.api.JsonError.INVALID_SCHEMA;
+
 import static org.mule.module.json.internal.ValidatorCommonUtils.isBlank;
 import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -121,8 +124,8 @@ public class JsonSchemaParser {
       String host = null;
       try {
         host = new URL(schemaUrl).getHost().toLowerCase(Locale.ROOT);
-      } catch (Exception ignore) {
-        //ignore
+      } catch (Exception exception) {
+        logger.debug(exception.getMessage());
       }
       if (host != null) {
         SELF_REF_CACHE.put(host, false);
