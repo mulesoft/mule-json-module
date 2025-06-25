@@ -16,22 +16,34 @@
  */
 package org.mule.module.json.internal;
 
-import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
-import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
-import static org.mule.module.json.internal.ValidatorCommonUtils.isBlank;
-import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
-import static java.lang.String.format;
-import static com.google.common.base.Preconditions.checkState;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import org.mule.runtime.extension.api.exception.ModuleException;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.net.NetworkInterface;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
+
+import static com.google.common.base.Preconditions.checkState;
+import static java.lang.String.format;
+import static org.mule.module.json.api.JsonError.SCHEMA_NOT_FOUND;
+import static org.mule.module.json.api.JsonError.INVALID_INPUT_JSON;
+import static org.mule.module.json.api.JsonError.INVALID_SCHEMA;
+
+import static org.mule.module.json.internal.ValidatorCommonUtils.isBlank;
+import static org.mule.module.json.internal.ValidatorCommonUtils.resolveLocationIfNecessary;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * The objective is get the Json Schema, from a Path (SchemaLocation) or a String(SchemaContent), like a JsonNode.
@@ -40,6 +52,18 @@ public class JsonSchemaParser {
 
   private static final ObjectMapper objectMapper = new ObjectMapper();
   private static final Logger logger = getLogger(JsonSchemaParser.class);
+  private static final Set<String> KNOWN_SELF_HOSTS = getLocalHostnamesAndIps();
+
+  // Cache for host self-reference checks
+  private static final ConcurrentHashMap<String, Boolean> SELF_REF_CACHE = new ConcurrentHashMap<>();
+
+  // Pattern for fast local IP checks (IPv4)
+  private static final Pattern LOCAL_IP_PATTERN = Pattern.compile(
+                                                                  "^(127\\.\\d+\\.\\d+\\.\\d+|0\\.0\\.0\\.0|10\\..*|192\\.168\\..*|172\\.(1[6-9]|2\\d|3[01])\\..*)$");
+
+  // Pattern for fast IPv6 local checks
+  private static final Pattern LOCAL_IPV6_PATTERN = Pattern.compile(
+                                                                    "^(::1|fe80:.*|fc00:.*|fd00:.*)$");
 
   private JsonSchemaParser() {}
 
@@ -55,6 +79,9 @@ public class JsonSchemaParser {
     }
     try {
       checkState(schemaLocation != null, "schemaLocation has not been provided");
+      if (isSelfReferencingOrInternal(schemaLocation)) {
+        throw new ModuleException("Self-referencing or internal URLs are not allowed for schemaLocation", INVALID_SCHEMA);
+      }
       return objectMapper.readTree(new URL(resolveLocationIfNecessary(schemaLocation)));
 
     } catch (IllegalArgumentException | MalformedURLException e) {
@@ -64,5 +91,70 @@ public class JsonSchemaParser {
       logger.error(e.getMessage());
       throw new ModuleException(format("Malformed Json Schema: %s", e.getMessage()), INVALID_INPUT_JSON);
     }
+  }
+
+  private static boolean isSelfReferencingOrInternal(String schemaUrl) {
+    try {
+      URL url = new URL(schemaUrl);
+      String host = url.getHost().toLowerCase(Locale.ROOT);
+      Boolean cached = SELF_REF_CACHE.get(host);
+      if (cached != null) {
+        return cached;
+      }
+
+      if ("localhost".equals(host) || KNOWN_SELF_HOSTS.contains(host)
+          || (LOCAL_IP_PATTERN.matcher(host).matches() || LOCAL_IPV6_PATTERN.matcher(host).matches())) {
+        SELF_REF_CACHE.put(host, true);
+        return true;
+      }
+
+
+      // DNS resolution for more complex cases
+      InetAddress address = InetAddress.getByName(host);
+      boolean result = address.isAnyLocalAddress() // covers 0.0.0.0
+          || address.isLoopbackAddress() // 127.x.x.x
+          || address.isSiteLocalAddress() // 192.168.x.x, 10.x.x.x, etc.
+          || KNOWN_SELF_HOSTS.contains(address.getHostAddress());
+
+      SELF_REF_CACHE.put(host, result);
+      return result;
+
+    } catch (MalformedURLException | UnknownHostException e) {
+      // Cache negative result for this host
+      String host = null;
+      try {
+        host = new URL(schemaUrl).getHost().toLowerCase(Locale.ROOT);
+      } catch (Exception exception) {
+        logger.debug(exception.getMessage());
+      }
+      if (host != null) {
+        SELF_REF_CACHE.put(host, false);
+      }
+      return false;
+    }
+  }
+
+  private static Set<String> getLocalHostnamesAndIps() {
+    Set<String> selfHosts = new HashSet<>();
+    try {
+      InetAddress localHost = InetAddress.getLocalHost();
+      selfHosts.add(localHost.getHostName().toLowerCase(Locale.ROOT));
+      selfHosts.add(localHost.getCanonicalHostName().toLowerCase(Locale.ROOT));
+      selfHosts.add(localHost.getHostAddress());
+
+      // Also add all IPs from all interfaces
+      Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+      while (interfaces.hasMoreElements()) {
+        NetworkInterface netInterface = interfaces.nextElement();
+        Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
+        while (addresses.hasMoreElements()) {
+          InetAddress addr = addresses.nextElement();
+          selfHosts.add(addr.getHostAddress());
+        }
+      }
+    } catch (Exception e) {
+      logger.warn("Could not resolve local hostnames and IPs for self-reference check", e);
+    }
+    return selfHosts;
   }
 }

@@ -19,27 +19,27 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
         <munit:parameterizations>
             <munit:parameterization name="Draft4validateSchemaContent">
                 <munit:parameters>
-                    <munit:parameter propertyName="jsonSchema" value="/Draft4/schemas/schema-default.json" />
+                    <munit:parameter propertyName="jsonSchema" value="/Draft4/schemas/schema-default.json"/>
                 </munit:parameters>
             </munit:parameterization>
             <munit:parameterization name="Draft6validateSchemaContent">
                 <munit:parameters>
-                    <munit:parameter propertyName="jsonSchema" value="/Draft6/schemas/schema-default.json" />
+                    <munit:parameter propertyName="jsonSchema" value="/Draft6/schemas/schema-default.json"/>
                 </munit:parameters>
             </munit:parameterization>
             <munit:parameterization name="Draft7validateSchemaContent">
                 <munit:parameters>
-                    <munit:parameter propertyName="jsonSchema" value="/Draft7/schemas/schema-default.json" />
+                    <munit:parameter propertyName="jsonSchema" value="/Draft7/schemas/schema-default.json"/>
                 </munit:parameters>
             </munit:parameterization>
             <munit:parameterization name="Draft201909validateSchemaContent">
                 <munit:parameters>
-                    <munit:parameter propertyName="jsonSchema" value="/Draft201909/schemas/schema-default.json" />
+                    <munit:parameter propertyName="jsonSchema" value="/Draft201909/schemas/schema-default.json"/>
                 </munit:parameters>
             </munit:parameterization>
             <munit:parameterization name="Draft202012validateSchemaContent">
                 <munit:parameters>
-                    <munit:parameter propertyName="jsonSchema" value="/Draft202012/schemas/schema-default.json" />
+                    <munit:parameter propertyName="jsonSchema" value="/Draft202012/schemas/schema-default.json"/>
                 </munit:parameters>
             </munit:parameterization>
         </munit:parameterizations>
@@ -51,11 +51,23 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
             <file:read config-ref="File_Config" path="inputs/object-array.json"/>
         </munit:execution>
         <munit:validation>
-            <json:validate-schema schema="#[vars.schema]" />
+            <json:validate-schema schema="#[vars.schema]"/>
         </munit:validation>
     </munit:test>
 
 
+    <flow name="validate-self-referential-schema">
+        <json:validate-schema schema="http://localhost:8081/test"/>
+    </flow>
+
+    <munit:test name="SchemaContentValidationLocalURLTest"
+                description="Test that self-referencing/internal URLs are blocked"
+                expectedErrorType="JSON:INVALID_SCHEMA"
+                expectedErrorDescription="Self-referencing or internal URLs are not allowed for schemaLocation">
+        <munit:execution>
+            <flow-ref name="validate-self-referential-schema"/>
+        </munit:execution>
+    </munit:test>
 
 
 </mule>
