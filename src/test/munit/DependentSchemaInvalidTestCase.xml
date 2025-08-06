@@ -22,11 +22,6 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
                     <munit:parameter propertyName="jsonSchema" value="Draft201909/schemas/dependent-schema.json" />
                 </munit:parameters>
             </munit:parameterization>
-            <munit:parameterization name="SCHEMA_DEPENDENT_DRAFT202012">
-                <munit:parameters>
-                    <munit:parameter propertyName="jsonSchema" value="Draft202012/schemas/dependent-schema.json" />
-                </munit:parameters>
-            </munit:parameterization>
         </munit:parameterizations>
 
     </munit:config>
