@@ -41,7 +41,7 @@
         <licensePath>LICENSE_HEADER.txt</licensePath>
         <licenseYear>2024</licenseYear>
         <maven.repo.local>${settings.localRepository}</maven.repo.local>
-        <org.mozilla.rhino.version>1.7.15</org.mozilla.rhino.version>
+        <org.mozilla.rhino.version>1.7.15.1</org.mozilla.rhino.version>
     </properties>
 
     <dependencies>
